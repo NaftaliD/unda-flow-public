@@ -23,7 +23,7 @@ npm run format         # prettier --write .
 Database (Supabase CLI via npx; the local stack needs Docker):
 
 ```
-npm run db:start       # prints the local API URL and anon key for .env.local
+npm run db:start       # prints the local API URL and publishable key for .env.local
 npx supabase migration new <name>   # then edit supabase/migrations/<ts>_<name>.sql
 npm run db:reset       # re-apply all migrations
 npm run db:types       # regenerate src/data/database.types.ts (commit it; CI diffs it)
@@ -38,7 +38,7 @@ Read `PLAN.md` before any work. It defines the product (a Pilates lesson planner
 
 ## Planned architecture (from PLAN.md)
 
-- Stack: TypeScript strict, React + Vite SPA, Tailwind + shadcn/ui, TanStack Router/Query, React Hook Form + Zod, dnd-kit, i18next, Supabase (Postgres/Auth/RLS, no custom server), Cloudflare Pages hosting, Vitest + Playwright.
+- Stack: TypeScript strict, React + Vite SPA, Tailwind + shadcn/ui, TanStack Router/Query, React Hook Form + Zod, dnd-kit, i18next, Supabase (Postgres/Auth/RLS, no custom server), Cloudflare Workers static assets hosting (`wrangler.jsonc`, deployed with `npx wrangler deploy`; the SPA fallback is `not_found_handling`, so there is no `_redirects`), Vitest + Playwright.
 - Layers under `src/`: `domain/` is pure TS (types, Zod schemas, equipment matching, duration totals; no React or Supabase) and must be unit-tested. `data/` is the **only** code allowed to import supabase-js. `features/` holds UI per feature.
 - Every schema change is an additive migration in `supabase/migrations`. RLS is created in the same migration as its table, and generated DB types are committed.
 - "Methods are data, not code": block/dynamic/classic are rows in `methods`. Never write `if (method === 'block')` in the UI.
@@ -51,7 +51,8 @@ Read `PLAN.md` before any work. It defines the product (a Pilates lesson planner
 
 - All UI strings go through i18n (`en.json` + `he.json`); Hebrew is RTL. Use CSS logical properties only (`ms-`, `pe-`; never `ml-`, `left-`).
 - Colours only via theme tokens (CSS variables mapped to Tailwind); no raw hex in components. Terracotta and sage fail contrast for small text on cream.
-- No `service_role` key in client code or in GitHub/Cloudflare settings (local seed/import scripts only). Secrets go in git-ignored `.env.local`, with a committed `.env.example`.
+- Supabase keys: client uses `VITE_SUPABASE_URL` + `VITE_SUPABASE_PUBLISHABLE_KEY` (`sb_publishable_...`; never the legacy anon/JWT keys). The secret key (`sb_secret_...`) is for local seed/import scripts only, never in client code, GitHub secrets or Cloudflare settings. Missing env vars show a config error screen (`src/data/env.ts`, `src/app/ConfigError.tsx`). Secrets go in git-ignored `.env.local`, with a committed `.env.example`.
+- The hosted project has "Automatically expose new tables" off: every table-creating migration must explicitly `ENABLE ROW LEVEL SECURITY` and `GRANT` privileges to `authenticated` (and `anon` only where intended). Never rely on default privileges.
 - Content: exercise/block names stay in English; write descriptions in our own words; do not copy text/images/video from the provider or other providers, and don't use "the provider" in branding (D6).
 - Don't invent the mat-class template (the instructor defines it). Ask before changing the data model or seed content.
 - Keep `main` deployable; one increment per branch/PR series. Order of work: migration + RLS, regenerate types, data hooks, then UI.

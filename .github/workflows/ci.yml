@@ -18,7 +18,7 @@ jobs:
     env:
       # Dummy values: the build and the anonymous smoke test never reach Supabase.
       VITE_SUPABASE_URL: http://127.0.0.1:54321
-      VITE_SUPABASE_ANON_KEY: ci-dummy-anon-key
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_dummy
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5

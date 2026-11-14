@@ -60,7 +60,7 @@ Rules:
 | i18n | i18next, `src/locales/en.json` + `he.json`, `dir` set from locale | D2. |
 | Backend | Supabase: Postgres, Auth, RLS, Storage | No custom server in v1. Client talks to Postgres via supabase-js; RLS is the security boundary. |
 | Server logic (later) | Supabase Edge Functions | Only for things that cannot run in the client (billing webhooks, AI suggestions). |
-| Hosting | **Cloudflare Pages** (static), connected to the GitHub repo | Free plan, preview deploy per branch/PR. Needs an SPA fallback (`public/_redirects`: `/* /index.html 200`). |
+| Hosting | **Cloudflare Workers static assets** (not classic Pages, not Vercel), connected to the GitHub repo | Preview builds on. Build command `npm run build`, deploy command `npx wrangler deploy` (`wrangler` is a pinned dev dependency). `wrangler.jsonc` serves `./dist` with `"not_found_handling": "single-page-application"`, which is the SPA fallback: no Worker script, no `main` entry, no `_redirects` file. |
 | Keep-alive | GitHub Actions scheduled workflow | Supabase's free plan pauses a project after a week with no activity; a twice-weekly request prevents that. Remove when the project moves to a paid plan. |
 | Tests | Vitest (unit), Playwright (end-to-end smoke) | |
 | CI | GitHub Actions: typecheck, lint, unit tests, build | |
@@ -106,6 +106,7 @@ unda-flow/
 │  ├─ migrations/
 │  └─ seed/           blocks.sql, equipment.sql, exercises.block.csv + import script
 ├─ e2e/
+├─ wrangler.jsonc
 └─ .github/workflows/ci.yml
 ```
 
@@ -252,9 +253,9 @@ Each increment is a vertical slice: migration + data layer + UI + tests, deploye
 ### Increment 0 — Walking skeleton
 - Scaffold Vite + React + TS, Tailwind, shadcn/ui themed with section 3 tokens, routing, i18n (`en`/`he`, RTL switch), lint, Vitest, Playwright.
 - Supabase project, local dev via Supabase CLI, first migration: `profiles` (with `role`) + RLS + create-on-signup trigger + `is_admin()`.
-- Auth (email magic link first; Google sign-in added once OAuth credentials exist), protected routes, sign out. App bar with logo placeholder.
-- CI workflow; production deploy on Cloudflare Pages with preview deploys (build command `npm run build`, output `dist`, env vars `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`).
-- Keep-alive: `.github/workflows/keep-supabase-alive.yml`, scheduled twice a week (e.g. `cron: '17 6 * * 1,4'`) plus `workflow_dispatch`. It sends one authenticated read to the Supabase REST API (a `select` of one row from a tiny public-read `keep_alive` table, created in the first migration with RLS allowing anonymous `SELECT` only) using repo secrets `SUPABASE_URL` and `SUPABASE_ANON_KEY`, and **fails the job on a non-2xx response** so GitHub emails the repo owner if it stops working.
+- Auth: email magic link only for now, with the auth code structured so Google sign-in can be added later without rework (no Google button until OAuth credentials exist). Protected routes, sign out. App bar with logo placeholder.
+- CI workflow; production deploy on Cloudflare Workers static assets with preview builds (build command `npm run build`, deploy command `npx wrangler deploy`, `wrangler.jsonc` as in section 4). Build-time variables, set in Cloudflare's build settings: `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. If either is missing the app shows a clear configuration error screen instead of failing silently.
+- Keep-alive: `.github/workflows/keep-supabase-alive.yml`, scheduled twice a week (`cron: '17 6 * * 1,4'`) plus `workflow_dispatch`. It sends one GET to the Supabase REST API selecting one row from a tiny public-read `keep_alive` table (created in the first migration with one row, RLS enabled, a policy allowing anonymous `SELECT` only, and `GRANT SELECT` to `anon`), using repo secrets `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (sent as the `apikey` header only; publishable keys are not JWTs). It **fails the job on any non-2xx response** so GitHub emails the repo owner if it stops working.
 - **Done when:** the partner signs in on the production URL, sees a branded empty home screen, can switch English/Hebrew, CI is green, and a manual run of the keep-alive workflow succeeds.
 
 ### Increment 1 — Shared library
@@ -309,8 +310,9 @@ Each increment is a vertical slice: migration + data layer + UI + tests, deploye
 
 - One increment per branch/PR series; keep `main` deployable.
 - Migration and RLS first, regenerate types, then data hooks, then UI.
-- No table without RLS. No `service_role` key in client code or in GitHub/Cloudflare settings (seed/import scripts only, run locally).
-- Secrets never go in the repo: local values in `.env.local` (git-ignored), with a committed `.env.example` listing the variable names.
+- No table without RLS. The hosted project has the Data API on, "Automatically expose new tables" **off** and automatic RLS on, so every migration that creates a table must (a) still run `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` explicitly, so local and hosted behave the same, and (b) explicitly `GRANT` the needed privileges to `authenticated`, and to `anon` only where anonymous access is intended. Never rely on default privileges: local Supabase may grant them automatically and hide a missing grant until production.
+- Supabase keys: use the publishable key (`sb_publishable_...`, replaces "anon") in the client and the secret key (`sb_secret_...`, replaces "service_role") only in local seed/import scripts. Do not use the legacy JWT keys. The secret key never goes in client code, GitHub secrets, or Cloudflare settings.
+- Secrets never go in the repo: local values in `.env.local` (git-ignored), with a committed `.env.example` listing the variable names (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`).
 - Every string through i18n; no physical-direction CSS (`ml-`, `left-`).
 - Colours only via theme tokens.
 - Unit-test everything in `src/domain`; one Playwright smoke test per flow as it lands.

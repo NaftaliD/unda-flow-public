@@ -7,3 +7,4 @@ supabase
 PLAN.md
 CLAUDE.md
 src/data/database.types.ts
+wrangler.jsonc

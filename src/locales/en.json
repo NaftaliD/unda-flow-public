@@ -25,6 +25,10 @@
     "emptyTitle": "No lessons yet",
     "emptyBody": "Your lesson planner is on its way. Lessons you build will appear here."
   },
+  "config": {
+    "title": "App is not configured",
+    "body": "These build-time environment variables are missing or empty. Set them in the build settings (or .env.local for local development) and rebuild."
+  },
   "notFound": {
     "title": "Page not found",
     "back": "Back to home"

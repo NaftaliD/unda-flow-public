@@ -31,3 +31,4 @@ test-results
 supabase/.temp
 supabase/.branches
 *.tsbuildinfo
+.wrangler

@@ -75,6 +75,9 @@ create trigger profiles_protect_role
   before update on public.profiles
   for each row execute function public.profiles_protect_role();
 
+-- Trigger functions are never called by API roles; do not rely on default EXECUTE grants.
+revoke execute on function public.profiles_protect_role() from public, anon, authenticated;
+
 -- ---------------------------------------------------------------------------
 -- Create a profile on signup.
 -- ---------------------------------------------------------------------------
@@ -101,6 +104,8 @@ $$;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
 -- ---------------------------------------------------------------------------
 -- keep_alive: one public-read row so a scheduled workflow can ping the project

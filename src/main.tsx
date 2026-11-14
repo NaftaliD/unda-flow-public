@@ -2,15 +2,34 @@ import { RouterProvider } from '@tanstack/react-router'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './app/theme.css'
+import { ConfigError } from './app/ConfigError'
 import { Providers } from './app/providers'
-import { createAppRouter } from './app/router'
+import { missingEnv } from './data/env'
 
-const router = createAppRouter()
+async function main() {
+  const root = createRoot(document.getElementById('root')!)
+  const missing = missingEnv()
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Providers>
-      <RouterProvider router={router} />
-    </Providers>
-  </StrictMode>,
-)
+  if (missing.length > 0) {
+    root.render(
+      <StrictMode>
+        <Providers>
+          <ConfigError missing={missing} />
+        </Providers>
+      </StrictMode>,
+    )
+    return
+  }
+
+  // Imported lazily: the router pulls in the Supabase client, which requires the env variables.
+  const { createAppRouter } = await import('./app/router')
+  root.render(
+    <StrictMode>
+      <Providers>
+        <RouterProvider router={createAppRouter()} />
+      </Providers>
+    </StrictMode>,
+  )
+}
+
+void main()
