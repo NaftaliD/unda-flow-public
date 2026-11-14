@@ -1,0 +1,32 @@
+{
+  "app": {
+    "name": "Unda Flow",
+    "logoAlt": "Unda"
+  },
+  "nav": {
+    "language": "שפה",
+    "signOut": "התנתקות"
+  },
+  "login": {
+    "title": "התחברות",
+    "subtitle": "קישור התחברות יישלח לכתובת הדוא״ל.",
+    "emailLabel": "דוא״ל",
+    "emailPlaceholder": "you@example.com",
+    "submit": "שליחת קישור",
+    "sending": "שולח…",
+    "checkEmailTitle": "בדקו את תיבת הדוא״ל",
+    "checkEmailBody": "שלחנו קישור התחברות אל {{email}}. יש לפתוח אותו במכשיר הזה כדי להמשיך.",
+    "useAnother": "שימוש בכתובת אחרת",
+    "error": "לא הצלחנו לשלוח את הקישור. אפשר לנסות שוב."
+  },
+  "home": {
+    "greeting": "שלום, {{name}}",
+    "greetingAnonymous": "שלום",
+    "emptyTitle": "עדיין אין שיעורים",
+    "emptyBody": "מתכנן השיעורים בדרך. שיעורים שייבנו יופיעו כאן."
+  },
+  "notFound": {
+    "title": "הדף לא נמצא",
+    "back": "חזרה לדף הבית"
+  }
+}
