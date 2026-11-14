@@ -7,7 +7,12 @@ import {
   type RouterHistory,
 } from '@tanstack/react-router'
 import { getSession } from '@/data/auth'
+import { fetchIsAdmin } from '@/data/queries/profile'
+import { ReviewPage } from '@/features/admin/ReviewPage'
 import { LoginPage } from '@/features/auth/LoginPage'
+import { ExercisePage } from '@/features/exercises/ExercisePage'
+import { LibraryPage } from '@/features/exercises/LibraryPage'
+import { NewExercisePage } from '@/features/exercises/NewExercisePage'
 import { HomePage } from '@/features/home/HomePage'
 import { AppLayout } from './AppLayout'
 import { NotFound } from './NotFound'
@@ -39,7 +44,45 @@ const homeRoute = createRoute({
   component: HomePage,
 })
 
-const routeTree = rootRoute.addChildren([loginRoute, protectedRoute.addChildren([homeRoute])])
+const exercisesRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/exercises',
+  component: LibraryPage,
+})
+
+const newExerciseRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/exercises/new',
+  validateSearch: (search: Record<string, unknown>): { from?: string } =>
+    typeof search.from === 'string' ? { from: search.from } : {},
+  component: NewExercisePage,
+})
+
+const exerciseRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/exercises/$id',
+  component: ExercisePage,
+})
+
+const reviewRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/admin/review',
+  beforeLoad: async () => {
+    if (!(await fetchIsAdmin())) throw redirect({ to: '/' })
+  },
+  component: ReviewPage,
+})
+
+const routeTree = rootRoute.addChildren([
+  loginRoute,
+  protectedRoute.addChildren([
+    homeRoute,
+    exercisesRoute,
+    newExerciseRoute,
+    exerciseRoute,
+    reviewRoute,
+  ]),
+])
 
 export function createAppRouter(history?: RouterHistory) {
   return createRouter({ routeTree, history })

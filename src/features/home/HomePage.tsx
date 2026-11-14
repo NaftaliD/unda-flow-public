@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { WaveDivider } from '@/components/WaveDivider'
 import { useSession } from '@/data/auth'
@@ -18,6 +19,9 @@ export function HomePage() {
         <WaveDivider />
         <h2 className="text-lg font-semibold">{t('home.emptyTitle')}</h2>
         <p className="max-w-xs text-sm text-muted-foreground">{t('home.emptyBody')}</p>
+        <Link to="/exercises" className="text-sm font-semibold underline">
+          {t('home.browseLibrary')}
+        </Link>
       </div>
     </section>
   )

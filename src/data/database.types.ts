@@ -23,7 +23,93 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "keep_alive": {
+            "blocks": {
+                  Row: {
+                    "default_position": number,"goal": string | null,"id": string,"key": string,"method_id": string,"name": string,"owner_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "default_position"?: number,"goal"?: string | null,"id"?: string,"key": string,"method_id": string,"name": string,"owner_id"?: string | null
+                  }
+                  Update: {
+                    "default_position"?: number,"goal"?: string | null,"id"?: string,"key"?: string,"method_id"?: string,"name"?: string,"owner_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "blocks_method_id_fkey"
+      columns: ["method_id"]
+isOneToOne: false
+      referencedRelation: "methods"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"equipment": {
+                  Row: {
+                    "id": string,"key": string,"kind": Database["public"]['Enums']["equipment_kind"],"name": string,"owner_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"key": string,"kind": Database["public"]['Enums']["equipment_kind"],"name": string,"owner_id"?: string | null
+                  }
+                  Update: {
+                    "id"?: string,"key"?: string,"kind"?: Database["public"]['Enums']["equipment_kind"],"name"?: string,"owner_id"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"exercise_equipment": {
+                  Row: {
+                    "alt_group": number,"equipment_id": string,"exercise_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "alt_group"?: number,"equipment_id": string,"exercise_id": string
+                  }
+                  Update: {
+                    "alt_group"?: number,"equipment_id"?: string,"exercise_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "exercise_equipment_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "exercise_equipment_exercise_id_fkey"
+      columns: ["exercise_id"]
+isOneToOne: false
+      referencedRelation: "exercises"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"exercises": {
+                  Row: {
+                    "block_id": string,"created_at": string,"cues": string | null,"default_duration_sec": number | null,"default_reps": number | null,"default_springs": string | null,"description": string | null,"id": string,"is_archived": boolean,"level": Database["public"]['Enums']["exercise_level"],"media_url": string | null,"method_id": string,"name": string,"owner_id": string | null,"review_status": Database["public"]['Enums']["review_status"],"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "block_id": string,"created_at"?: string,"cues"?: string | null,"default_duration_sec"?: number | null,"default_reps"?: number | null,"default_springs"?: string | null,"description"?: string | null,"id"?: string,"is_archived"?: boolean,"level"?: Database["public"]['Enums']["exercise_level"],"media_url"?: string | null,"method_id": string,"name": string,"owner_id"?: string | null,"review_status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string
+                  }
+                  Update: {
+                    "block_id"?: string,"created_at"?: string,"cues"?: string | null,"default_duration_sec"?: number | null,"default_reps"?: number | null,"default_springs"?: string | null,"description"?: string | null,"id"?: string,"is_archived"?: boolean,"level"?: Database["public"]['Enums']["exercise_level"],"media_url"?: string | null,"method_id"?: string,"name"?: string,"owner_id"?: string | null,"review_status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "exercises_block_id_fkey"
+      columns: ["block_id"]
+isOneToOne: false
+      referencedRelation: "blocks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "exercises_method_id_fkey"
+      columns: ["method_id"]
+isOneToOne: false
+      referencedRelation: "methods"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"keep_alive": {
                   Row: {
                     "id": number,"pinged_at": string
                   }
@@ -33,6 +119,20 @@ export type Database = {
                   }
                   Update: {
                     "id"?: number,"pinged_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"methods": {
+                  Row: {
+                    "id": string,"is_active": boolean,"key": string,"name": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"is_active"?: boolean,"key": string,"name": string
+                  }
+                  Update: {
+                    "id"?: string,"is_active"?: boolean,"key"?: string,"name"?: string
                   }
                   Relationships: [
                     
@@ -59,10 +159,13 @@ export type Database = {
           Functions: {
             "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"save_exercise":
+{ Args: { "payload": Json }; Returns: string
                            }
           }
           Enums: {
-            "user_role": "user"|"admin"
+            "equipment_kind": "apparatus"|"prop","exercise_level": "fundamental"|"intermediate"|"advanced","review_status": "needs_review"|"verified","user_role": "user"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -182,7 +285,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "user_role": ["user", "admin"]
+            "equipment_kind": ["apparatus", "prop"],"exercise_level": ["fundamental", "intermediate", "advanced"],"review_status": ["needs_review", "verified"],"user_role": ["user", "admin"]
           }
         }
 } as const

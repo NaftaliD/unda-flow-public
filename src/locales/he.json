@@ -5,7 +5,10 @@
   },
   "nav": {
     "language": "שפה",
-    "signOut": "התנתקות"
+    "signOut": "התנתקות",
+    "main": "ראשי",
+    "library": "ספרייה",
+    "review": "בדיקה"
   },
   "login": {
     "title": "התחברות",
@@ -23,7 +26,8 @@
     "greeting": "שלום, {{name}}",
     "greetingAnonymous": "שלום",
     "emptyTitle": "עדיין אין שיעורים",
-    "emptyBody": "מתכנן השיעורים בדרך. שיעורים שייבנו יופיעו כאן."
+    "emptyBody": "מתכנן השיעורים בדרך. שיעורים שייבנו יופיעו כאן.",
+    "browseLibrary": "לעיון בספריית התרגילים"
   },
   "config": {
     "title": "האפליקציה לא הוגדרה",
@@ -32,5 +36,88 @@
   "notFound": {
     "title": "הדף לא נמצא",
     "back": "חזרה לדף הבית"
+  },
+  "levels": {
+    "fundamental": "בסיסי",
+    "intermediate": "בינוני",
+    "advanced": "מתקדם"
+  },
+  "library": {
+    "title": "ספריית תרגילים",
+    "new": "תרגיל חדש",
+    "search": "חיפוש",
+    "searchPlaceholder": "חיפוש תרגילים",
+    "block": "בלוק",
+    "allBlocks": "כל הבלוקים",
+    "level": "רמה",
+    "allLevels": "כל הרמות",
+    "equipmentTitle": "ציוד זמין היום",
+    "equipmentHint": "הצגת תרגילים שמתאימים לציוד שנבחר בלבד. בלי בחירה מוצג הכול.",
+    "scope": "של מי התרגילים",
+    "scopes": {
+      "all": "הכול",
+      "shared": "משותפים",
+      "mine": "שלי"
+    },
+    "showArchived": "הצגת ארכיון",
+    "count_one": "תרגיל {{count}}",
+    "count_two": "{{count}} תרגילים",
+    "count_other": "{{count}} תרגילים",
+    "loading": "טוען…",
+    "loadError": "לא ניתן לטעון את הספרייה. כדאי לרענן.",
+    "emptyTitle": "לא נמצאו תרגילים",
+    "emptyBody": "אפשר להסיר מסנן.",
+    "mine": "שלי",
+    "archived": "בארכיון",
+    "needsReview": "ממתין לבדיקה",
+    "noEquipment": "ללא ציוד"
+  },
+  "exercise": {
+    "newTitle": "תרגיל חדש",
+    "editTitle": "עריכת תרגיל",
+    "name": "שם",
+    "block": "בלוק",
+    "level": "רמה",
+    "description": "תיאור",
+    "cues": "הנחיות",
+    "reps": "חזרות ברירת מחדל",
+    "duration": "משך ברירת מחדל (בשניות)",
+    "springs": "קפיצים",
+    "equipmentTitle": "ציוד נדרש",
+    "equipmentHelp": "כל דרישה מתקיימת באמצעות פריט אחד מהנבחרים בה. כשצריך יותר מדבר אחד, מוסיפים דרישה נוספת.",
+    "requirementN": "דרישה {{n}}: אחד מתוך",
+    "addRequirement": "הוספת דרישה",
+    "removeRequirement": "הסרת דרישה",
+    "save": "שמירה",
+    "saving": "שומר…",
+    "create": "יצירת תרגיל",
+    "duplicate": "שכפול כתרגיל שלי",
+    "sharedNote": "זה תרגיל משותף. אפשר לשכפל אותו וליצור גרסה אישית.",
+    "adminSharedNote": "זה תרגיל משותף. שינויים יהיו גלויים לכולם.",
+    "archive": "העברה לארכיון",
+    "unarchive": "שחזור",
+    "delete": "מחיקה",
+    "confirmDelete": "למחוק את התרגיל? לא ניתן לבטל את הפעולה.",
+    "verify": "סימון כמאומת",
+    "saveAndVerify": "שמירה ואימות",
+    "back": "חזרה לספרייה",
+    "saveError": "לא הצלחנו לשמור. אפשר לנסות שוב.",
+    "notFound": "התרגיל לא נמצא.",
+    "copyName": "{{name}} (עותק)",
+    "errors": {
+      "required": "שדה חובה",
+      "positive": "יש להזין מספר שלם גדול מאפס",
+      "emptyGroup": "יש לבחור פריט אחד לפחות, או להסיר את הדרישה הריקה."
+    }
+  },
+  "review": {
+    "title": "תור בדיקה",
+    "intro": "תרגילים שיובאו וממתינים לאימות.",
+    "emptyTitle": "הכול מאומת",
+    "remaining_one": "תרגיל {{count}} לבדיקה",
+    "remaining_two": "{{count}} תרגילים לבדיקה",
+    "remaining_other": "{{count}} תרגילים לבדיקה",
+    "verify": "אימות",
+    "edit": "עריכה"
   }
 }

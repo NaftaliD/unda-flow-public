@@ -5,7 +5,10 @@
   },
   "nav": {
     "language": "Language",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "main": "Main",
+    "library": "Library",
+    "review": "Review"
   },
   "login": {
     "title": "Welcome back",
@@ -23,7 +26,8 @@
     "greeting": "Hello, {{name}}",
     "greetingAnonymous": "Hello",
     "emptyTitle": "No lessons yet",
-    "emptyBody": "Your lesson planner is on its way. Lessons you build will appear here."
+    "emptyBody": "Your lesson planner is on its way. Lessons you build will appear here.",
+    "browseLibrary": "Browse the exercise library"
   },
   "config": {
     "title": "App is not configured",
@@ -32,5 +36,86 @@
   "notFound": {
     "title": "Page not found",
     "back": "Back to home"
+  },
+  "levels": {
+    "fundamental": "Fundamental",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced"
+  },
+  "library": {
+    "title": "Exercise library",
+    "new": "New exercise",
+    "search": "Search",
+    "searchPlaceholder": "Search exercises",
+    "block": "Block",
+    "allBlocks": "All blocks",
+    "level": "Level",
+    "allLevels": "All levels",
+    "equipmentTitle": "Equipment available today",
+    "equipmentHint": "Show only exercises that work with the equipment you pick. Leave empty to show everything.",
+    "scope": "Whose exercises",
+    "scopes": {
+      "all": "All",
+      "shared": "Shared",
+      "mine": "Mine"
+    },
+    "showArchived": "Show archived",
+    "count_one": "{{count}} exercise",
+    "count_other": "{{count}} exercises",
+    "loading": "Loading…",
+    "loadError": "Could not load the library. Please refresh.",
+    "emptyTitle": "No exercises match",
+    "emptyBody": "Try removing a filter.",
+    "mine": "Mine",
+    "archived": "Archived",
+    "needsReview": "Needs review",
+    "noEquipment": "No equipment needed"
+  },
+  "exercise": {
+    "newTitle": "New exercise",
+    "editTitle": "Edit exercise",
+    "name": "Name",
+    "block": "Block",
+    "level": "Level",
+    "description": "Description",
+    "cues": "Cues",
+    "reps": "Default reps",
+    "duration": "Default duration (seconds)",
+    "springs": "Springs",
+    "equipmentTitle": "Equipment required",
+    "equipmentHelp": "Each requirement is met by any one of the items chosen in it. Add another requirement when more than one thing is needed.",
+    "requirementN": "Requirement {{n}}: needs one of",
+    "addRequirement": "Add requirement",
+    "removeRequirement": "Remove requirement",
+    "save": "Save",
+    "saving": "Saving…",
+    "create": "Create exercise",
+    "duplicate": "Duplicate as mine",
+    "sharedNote": "This is a shared exercise. Duplicate it to make your own version.",
+    "adminSharedNote": "This is a shared exercise. Changes are visible to everyone.",
+    "archive": "Archive",
+    "unarchive": "Restore",
+    "delete": "Delete",
+    "confirmDelete": "Delete this exercise? This cannot be undone.",
+    "verify": "Mark as verified",
+    "saveAndVerify": "Save and verify",
+    "back": "Back to library",
+    "saveError": "Could not save. Please try again.",
+    "notFound": "Exercise not found.",
+    "copyName": "{{name}} (copy)",
+    "errors": {
+      "required": "Required",
+      "positive": "Enter a whole number above zero",
+      "emptyGroup": "Choose at least one item, or remove the empty requirement."
+    }
+  },
+  "review": {
+    "title": "Review queue",
+    "intro": "Imported exercises waiting for verification.",
+    "emptyTitle": "Everything is verified",
+    "remaining_one": "{{count}} exercise to review",
+    "remaining_other": "{{count}} exercises to review",
+    "verify": "Verify",
+    "edit": "Edit"
   }
 }

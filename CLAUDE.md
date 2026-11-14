@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Increment 0 (walking skeleton) is built: Vite + React + TS SPA, Tailwind theme, i18n (en/he), Supabase auth, `profiles` migration, CI and keep-alive workflows. `supabase/seed/exercises.block.csv` (118 rows; columns `name, block_key, equipment, level, series`) is for Increment 1.
+Increment 0 (walking skeleton) is live. Increment 1 (shared library) is built on branch `inc-1-library`: `methods/blocks/equipment/exercises/exercise_equipment` migration with RLS and grants, `save_exercise` RPC, domain rules (`src/domain`), library/review UI, and the CSV import script. `supabase/seed/exercises.block.csv` has 117 exercises (columns `name, block_key, equipment, level, series`); the `series` column is not imported until Increment 3. Blocks, methods and equipment are reference data inside the migration, not in `seed.sql`.
 
 ## Commands
 
@@ -31,7 +31,14 @@ npx supabase migration new <name>   # then edit supabase/migrations/<ts>_<name>.
 npm run db:reset       # re-apply all migrations
 npm run db:types       # regenerate src/data/database.types.ts (commit it; CI diffs it)
 npm run db:test        # pgTAP tests in supabase/tests/database/
+# Import the seed exercises (insert-only; refuses if shared exercises already exist).
+# Needs SUPABASE_URL + SUPABASE_SECRET_KEY (sb_secret_...) in the env or .env.local.
+# Local values: `npx supabase status -o json`. For the hosted project paste the key in the
+# terminal for that one command; never commit it or put it in CI/Cloudflare.
+npm run db:import
 ```
+
+The local e2e specs (`e2e/*.local.spec.ts`) also need the seed imported, and `admin.local.spec.ts` promotes a user with `docker exec supabase_db_unda-flow psql`.
 
 Local magic-link emails arrive in Mailpit at http://127.0.0.1:54324.
 

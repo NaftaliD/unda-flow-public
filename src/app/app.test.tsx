@@ -12,7 +12,11 @@ vi.mock('@/data/auth', () => ({
   signInWithMagicLink: vi.fn(),
   signOut: vi.fn(),
 }))
-vi.mock('@/data/queries/profile', () => ({ useProfile: () => ({ data: undefined }) }))
+vi.mock('@/data/queries/profile', () => ({
+  useProfile: () => ({ data: undefined }),
+  useCurrentUser: () => ({ userId: 'u1', isAdmin: false }),
+  fetchIsAdmin: () => Promise.resolve(false),
+}))
 
 import i18n from './i18n'
 import { Providers } from './providers'
