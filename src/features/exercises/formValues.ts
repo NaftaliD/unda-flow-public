@@ -1,5 +1,5 @@
 import type { Exercise } from '@/data/queries/library'
-import { requirementsToGroups } from '@/domain/equipment'
+import { optionalEquipmentIds, requirementsToGroups } from '@/domain/equipment'
 import type { ExerciseFormInput } from '@/domain/schemas'
 
 export function toFormValues(e: Exercise, nameOverride?: string): ExerciseFormInput {
@@ -13,5 +13,6 @@ export function toFormValues(e: Exercise, nameOverride?: string): ExerciseFormIn
     defaultDurationSec: e.defaultDurationSec ?? '',
     defaultSprings: e.defaultSprings ?? '',
     groups: requirementsToGroups(e.requirements),
+    optionalIds: optionalEquipmentIds(e.requirements),
   }
 }

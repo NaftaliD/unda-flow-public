@@ -53,7 +53,7 @@ Read `PLAN.md` before any work. It defines the product (a Pilates lesson planner
 - Every schema change is an additive migration in `supabase/migrations`. RLS is created in the same migration as its table, and generated DB types are committed.
 - "Methods are data, not code": block/dynamic/classic are rows in `methods`. Never write `if (method === 'block')` in the UI.
 - Shared vs. private content is one mechanism: `owner_id IS NULL` means shared library (admin-writable), `owner_id = auth.uid()` means private. Private data is scoped to the user ID, never an IP.
-- Equipment matching: an exercise is available when every `alt_group` in `exercise_equipment` has at least one item in the available set. Items already in a lesson that become unavailable are kept with a warning badge, never silently deleted.
+- Equipment matching: an exercise is available when every `alt_group` in `exercise_equipment` has at least one item in the available set. Rows with `is_optional` are bonus accessories: shown ("Bonus: Ring") but ignored for availability. The library groups rows with the same name and block into one entry (`groupByMovement`); each version remains a separate exercise row. Items already in a lesson that become unavailable are kept with a warning badge, never silently deleted.
 - Lessons copy their structure from templates, so editing a template never alters past lessons.
 - CSV seed format: in `equipment`, `|` separates alternatives and `+` separates required groups (`reformer+box`, `mat|reformer|cadillac`); rows sharing a `series` become a series in CSV order. Import as shared content with `review_status = 'needs_review'`.
 

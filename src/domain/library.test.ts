@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { describeRequirements, filterExercises, type LibraryExercise } from './library'
+import {
+  describeBonus,
+  describeRequirements,
+  filterExercises,
+  groupByMovement,
+  type LibraryExercise,
+} from './library'
 
 const ex = (over: Partial<LibraryExercise>): LibraryExercise => ({
   id: 'x',
@@ -73,5 +79,34 @@ describe('describeRequirements', () => {
         (id) => names[id] ?? id,
       ),
     ).toBe('Reformer + Ball / Ring')
+  })
+})
+
+describe('groupByMovement', () => {
+  const row = (id: string, name: string, blockId = 'b1') => ({ id, name, blockId })
+  it('merges the same movement on different apparatus, keeping order', () => {
+    const groups = groupByMovement([
+      row('1', 'Calf Raises'),
+      row('2', 'Pelvic Curl'),
+      row('3', 'calf raises '),
+      row('4', 'Calf Raises'),
+    ])
+    expect(groups.map((g) => g.variants.map((v) => v.id))).toEqual([['1', '3', '4'], ['2']])
+    expect(groups[0]!.name).toBe('Calf Raises')
+  })
+  it('keeps the same name in different blocks apart', () => {
+    expect(groupByMovement([row('1', 'Rolling', 'b1'), row('2', 'Rolling', 'b2')])).toHaveLength(2)
+  })
+})
+
+describe('describeBonus', () => {
+  it('lists bonus accessories only', () => {
+    const reqs = [
+      { equipmentId: 'reformer', altGroup: 0 },
+      { equipmentId: 'ring', altGroup: 0, optional: true },
+      { equipmentId: 'band', altGroup: 0, optional: true },
+    ]
+    expect(describeBonus(reqs, (id) => id.toUpperCase())).toBe('RING, BAND')
+    expect(describeBonus([], (id) => id)).toBe('')
   })
 })

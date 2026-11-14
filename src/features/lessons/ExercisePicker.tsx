@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import type { Block, Equipment, Exercise } from '@/data/queries/library'
 import { missingEquipment } from '@/domain/equipment'
 import { pickerEntries } from '@/domain/lesson'
-import { describeRequirements, type Level } from '@/domain/library'
+import { describeBonus, describeRequirements, type Level } from '@/domain/library'
 
 type Props = {
   open: boolean
@@ -141,6 +141,8 @@ function PickerBody({
                   <span className="text-sm text-muted-foreground">
                     {describeRequirements(exercise.requirements, nameOf) ||
                       t('library.noEquipment')}
+                    {describeBonus(exercise.requirements, nameOf) &&
+                      ` · ${t('library.bonus', { items: describeBonus(exercise.requirements, nameOf) })}`}
                   </span>
                   {!ok && (
                     <span className="text-sm font-medium">

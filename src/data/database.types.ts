@@ -59,14 +59,14 @@ isOneToOne: false
                   ]
                 },"exercise_equipment": {
                   Row: {
-                    "alt_group": number,"equipment_id": string,"exercise_id": string
+                    "alt_group": number,"equipment_id": string,"exercise_id": string,"is_optional": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "alt_group"?: number,"equipment_id": string,"exercise_id": string
+                    "alt_group"?: number,"equipment_id": string,"exercise_id": string,"is_optional"?: boolean
                   }
                   Update: {
-                    "alt_group"?: number,"equipment_id"?: string,"exercise_id"?: string
+                    "alt_group"?: number,"equipment_id"?: string,"exercise_id"?: string,"is_optional"?: boolean
                   }
                   Relationships: [
                     {

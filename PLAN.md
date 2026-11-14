@@ -139,6 +139,8 @@ exercise_equipment  exercise_id, equipment_id, alt_group smallint
                     -- rows sharing an alt_group are alternatives (any one is enough);
                     -- every alt_group of an exercise must be satisfied.
                     -- "reformer AND (ball OR ring)" = {reformer: 0, ball: 1, ring: 1}
+                    -- is_optional = a "bonus" accessory: shown, but never affects availability
+                    -- (alt_group ignored). Apparatus are always required; props can be required or bonus.
 
 series              id, owner_id?, block_id, name            -- e.g. "Reformer foot work", "Arms supine"
 series_items        series_id, exercise_id, position         -- added to a lesson in one action
@@ -229,7 +231,7 @@ Exercises: import `supabase/seed/exercises.block.csv` (supplied with this plan) 
 
 **F1 — Sign in.** Magic link or Google → profile created on first login → lesson list.
 
-**F2 — Browse and extend the library.** List with search and filters (block, level, equipment, shared/mine) → create/edit a custom exercise: name, block, level, defaults, cues, equipment requirements with alternatives → archive instead of delete when used in a lesson. Shared exercises are read-only for normal users, with "duplicate as mine".
+**F2 — Browse and extend the library.** The same movement on several apparatus (same name and block) is shown as one library entry listing its versions; each version stays its own exercise row. List with search and filters (block, level, equipment, shared/mine) → create/edit a custom exercise: name, block, level, defaults, cues, equipment requirements with alternatives → archive instead of delete when used in a lesson. Shared exercises are read-only for normal users, with "duplicate as mine".
 
 **F3 — Build a lesson (core flow).**
 1. "New lesson" → title, date, level, target duration.

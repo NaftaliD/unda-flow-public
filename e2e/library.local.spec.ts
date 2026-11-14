@@ -18,6 +18,12 @@ test('browse and filter the shared library, then add a private exercise', async 
   // Seeded shared content is visible to a brand-new user.
   await expect(page.getByText('Pelvic Curl')).toBeVisible()
 
+  // The same movement on several apparatus is one entry listing its versions.
+  await page.getByLabel('Search').fill('Calf Raises')
+  await expect(page.getByText('Calf Raises')).toHaveCount(1)
+  await expect(page.getByText(/\d+ versions/)).toBeVisible()
+  await page.getByLabel('Search').fill('')
+
   // Chair only: mat/reformer/cadillac exercises disappear, chair exercises remain.
   const equipment = page.getByRole('group', { name: 'Equipment available today' })
   await equipment.getByRole('button', { name: 'Chair' }).click()

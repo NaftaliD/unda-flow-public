@@ -31,6 +31,8 @@ export function useSaveExercise() {
           default_springs: input.defaultSprings ?? '',
           review_status: input.reviewStatus ?? null,
           groups: input.groups,
+          // an accessory that is also required stays required
+          optional: input.optionalIds.filter((id) => !input.groups.some((g) => g.includes(id))),
         },
       })
       if (error) throw error

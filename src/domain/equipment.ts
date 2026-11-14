@@ -1,4 +1,5 @@
-export type Requirement = { equipmentId: string; altGroup: number }
+/** `optional` = a bonus accessory: shown, but never decides availability. */
+export type Requirement = { equipmentId: string; altGroup: number; optional?: boolean }
 export type KeyedRequirement = { equipmentKey: string; altGroup: number }
 
 /**
@@ -23,10 +24,16 @@ export function missingEquipment(
   return requirementsToGroups(requirements).filter((ids) => !ids.some((id) => available.has(id)))
 }
 
-/** Requirement rows -> groups of equipment ids, ordered by alt_group. */
+/** Bonus (optional) accessory ids, in row order. */
+export function optionalEquipmentIds(requirements: readonly Requirement[]): string[] {
+  return requirements.filter((r) => r.optional).map((r) => r.equipmentId)
+}
+
+/** Required requirement rows -> groups of equipment ids, ordered by alt_group. Bonus rows are ignored. */
 export function requirementsToGroups(requirements: readonly Requirement[]): string[][] {
   const byGroup = new Map<number, string[]>()
   for (const r of requirements) {
+    if (r.optional) continue
     const list = byGroup.get(r.altGroup) ?? []
     list.push(r.equipmentId)
     byGroup.set(r.altGroup, list)

@@ -72,7 +72,7 @@ export function useExercises() {
       const { data, error } = await supabase
         .from('exercises')
         .select(
-          'id, owner_id, block_id, name, description, cues, level, default_reps, default_duration_sec, default_springs, review_status, is_archived, exercise_equipment(equipment_id, alt_group)',
+          'id, owner_id, block_id, name, description, cues, level, default_reps, default_duration_sec, default_springs, review_status, is_archived, exercise_equipment(equipment_id, alt_group, is_optional)',
         )
         .order('name')
       if (error) throw error
@@ -92,6 +92,7 @@ export function useExercises() {
         requirements: e.exercise_equipment.map((r) => ({
           equipmentId: r.equipment_id,
           altGroup: r.alt_group,
+          optional: r.is_optional,
         })),
       }))
     },

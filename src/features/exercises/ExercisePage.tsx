@@ -11,7 +11,7 @@ import {
 } from '@/data/mutations/exercises'
 import { useBlocks, useEquipment, useExercises } from '@/data/queries/library'
 import { useCurrentUser } from '@/data/queries/profile'
-import { describeRequirements } from '@/domain/library'
+import { describeBonus, describeRequirements } from '@/domain/library'
 import type { ExerciseFormValues } from '@/domain/schemas'
 import { ExerciseForm } from './ExerciseForm'
 import { toFormValues } from './formValues'
@@ -49,6 +49,10 @@ export function ExercisePage() {
 
   const editable = exercise.ownerId === userId || (exercise.ownerId === null && isAdmin === true)
   const blockName = blocks.data?.find((b) => b.id === exercise.blockId)?.name
+  const bonusText = describeBonus(
+    exercise.requirements,
+    (eid) => equipment.data?.find((e) => e.id === eid)?.name ?? '?',
+  )
   const equipmentText =
     describeRequirements(
       exercise.requirements,
@@ -103,6 +107,7 @@ export function ExercisePage() {
         </div>
         <dl className="flex flex-col gap-3 text-sm">
           <Detail label={t('exercise.equipmentTitle')} value={equipmentText} />
+          <Detail label={t('exercise.bonusTitle')} value={bonusText} />
           <Detail label={t('exercise.description')} value={exercise.description} />
           <Detail label={t('exercise.cues')} value={exercise.cues} />
           <Detail label={t('exercise.reps')} value={exercise.defaultReps?.toString()} />
