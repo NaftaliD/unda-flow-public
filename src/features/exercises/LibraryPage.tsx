@@ -12,7 +12,7 @@ import { LEVELS, filterExercises, type Level, type LibraryFilter } from '@/domai
 import { ExerciseCard } from './ExerciseCard'
 
 type Scope = NonNullable<LibraryFilter['scope']>
-const SCOPES: Scope[] = ['all', 'shared', 'mine']
+const SCOPES: Exclude<Scope, 'all'>[] = ['shared', 'mine']
 
 export function LibraryPage() {
   const { t } = useTranslation()
@@ -44,6 +44,24 @@ export function LibraryPage() {
       ),
     [exercises.data, search, blockId, level, scope, showArchived, available, userId],
   )
+
+  // "All" means no filters at all: it is on only while nothing is narrowing the list.
+  const anyFilter =
+    search.trim() !== '' ||
+    blockId !== '' ||
+    level !== '' ||
+    scope !== 'all' ||
+    showArchived ||
+    available.size > 0
+
+  function resetFilters() {
+    setSearch('')
+    setBlockId('')
+    setLevel('')
+    setScope('all')
+    setShowArchived(false)
+    setAvailable(new Set())
+  }
 
   function toggleEquipment(id: string) {
     const next = new Set(available)
@@ -123,8 +141,11 @@ export function LibraryPage() {
           role="group"
           aria-label={t('library.scope')}
         >
+          <Chip selected={!anyFilter} onClick={resetFilters}>
+            {t('library.scopes.all')}
+          </Chip>
           {SCOPES.map((s) => (
-            <Chip key={s} selected={scope === s} onClick={() => setScope(s)}>
+            <Chip key={s} selected={scope === s} onClick={() => setScope(scope === s ? 'all' : s)}>
               {t(`library.scopes.${s}`)}
             </Chip>
           ))}
