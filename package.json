@@ -17,13 +17,15 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local > src/data/database.types.ts",
-    "db:test": "supabase test db"
+    "db:test": "supabase test db",
+    "db:import": "node --env-file-if-exists=.env.local scripts/import-exercises.ts"
   },
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
     "@fontsource-variable/assistant": "^5.3.0",
+    "@hookform/resolvers": "^7.0.6",
     "@supabase/supabase-js": "^2.119.0",
     "@tailwindcss/vite": "^4.3.5",
     "@tanstack/react-query": "^5.107.1",
@@ -35,10 +37,12 @@
     "lucide-react": "^1.73.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "react-hook-form": "^7.92.0",
     "react-i18next": "^18.0.1",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.7.0",
-    "tailwindcss": "^4.3.5"
+    "tailwindcss": "^4.3.5",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
