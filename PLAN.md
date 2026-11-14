@@ -104,7 +104,8 @@ unda-flow/
 ├─ public/brand/      logo SVGs
 ├─ supabase/
 │  ├─ migrations/
-│  └─ seed/           blocks.sql, equipment.sql, exercises.block.csv + import script
+│  └─ seed/           exercises.block.csv (blocks, methods, equipment are reference data in the library migration)
+├─ scripts/           import-exercises.ts (local, secret key), csv.ts, build-import.ts
 ├─ e2e/
 ├─ wrangler.jsonc
 └─ .github/workflows/ci.yml
@@ -260,7 +261,7 @@ Each increment is a vertical slice: migration + data layer + UI + tests, deploye
 
 ### Increment 1 — Shared library
 - Migrations: `methods`, `blocks`, `equipment`, `exercises`, `exercise_equipment` + RLS.
-- Seed blocks and equipment; CSV import script for exercises.
+- Seed blocks and equipment (inside the migration, so `db push` applies them to the hosted project); local CSV import script for exercises (insert-only, deterministic ids, secret key from the environment) and a `save_exercise` RPC that writes an exercise and its equipment requirements atomically under RLS.
 - F2 and the exercise part of F7 (review queue). `isExerciseAvailable` with unit tests.
 - **Done when:** the seeded library is browsable and filterable, the partner (admin) can verify and correct shared exercises, and any user can add a private one.
 

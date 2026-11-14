@@ -24,11 +24,11 @@ export type LibraryFilter = {
   showArchived?: boolean
 }
 
-export function filterExercises(
-  list: readonly LibraryExercise[],
+export function filterExercises<T extends LibraryExercise>(
+  list: readonly T[],
   filter: LibraryFilter,
   currentUserId: string | undefined,
-): LibraryExercise[] {
+): T[] {
   const search = filter.search?.trim().toLowerCase()
   return list.filter((e) => {
     if (!filter.showArchived && e.isArchived) return false

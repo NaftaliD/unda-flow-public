@@ -26,7 +26,10 @@ set local role authenticated;
 select set_config('request.jwt.claims',
   '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated"}', true);
 
-select is((select count(*)::int from public.exercises), 1, 'Alice sees the shared exercise but not Bob''s private one');
+select is(
+  (select count(*)::int from public.exercises
+    where id in ('10000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-00000000000b')),
+  1, 'Alice sees the shared exercise but not Bob''s private one');
 
 update public.exercises set name = 'hacked' where id = '10000000-0000-0000-0000-000000000001';
 select is(
@@ -34,7 +37,9 @@ select is(
   'Shared Curl', 'Alice cannot edit a shared exercise');
 
 delete from public.exercises where id = '10000000-0000-0000-0000-000000000001';
-select is((select count(*)::int from public.exercises), 1, 'Alice cannot delete a shared exercise');
+select is(
+  (select count(*)::int from public.exercises where id = '10000000-0000-0000-0000-000000000001'),
+  1, 'Alice cannot delete a shared exercise');
 
 select throws_ok(
   $$insert into public.exercises (owner_id, method_id, block_id, name)
