@@ -129,6 +129,54 @@ describe('library', () => {
     expect(screen.getByText('Short Box Tilt')).toBeInTheDocument()
   })
 
+  it('merges the same movement on different apparatus into one entry', async () => {
+    state.exercises = [
+      {
+        ...base,
+        id: 'c1',
+        name: 'Calf Raises',
+        requirements: [{ equipmentId: 'e-ref', altGroup: 0 }],
+      },
+      {
+        ...base,
+        id: 'c2',
+        name: 'Calf Raises',
+        requirements: [{ equipmentId: 'e-mat', altGroup: 0 }],
+      },
+    ]
+    renderAt('/exercises')
+    expect(await screen.findByText('2 versions')).toBeInTheDocument()
+    expect(screen.getAllByText('Calf Raises')).toHaveLength(1)
+    expect(screen.getByText('1 exercise')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Reformer/ })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Mat/ })).toBeInTheDocument()
+
+    // Equipment filtering narrows the versions listed, not just the entries.
+    const group = screen.getByRole('group', { name: 'Equipment available today' })
+    await userEvent.click(within(group).getByRole('button', { name: 'Mat' }))
+    expect(screen.queryByRole('link', { name: /Reformer/ })).not.toBeInTheDocument()
+    expect(screen.getByText('Calf Raises')).toBeInTheDocument()
+  })
+
+  it('shows bonus accessories without letting them hide the exercise', async () => {
+    state.exercises = [
+      {
+        ...base,
+        id: 'b1',
+        name: 'Footwork',
+        requirements: [
+          { equipmentId: 'e-ref', altGroup: 0 },
+          { equipmentId: 'e-box', altGroup: 0, optional: true },
+        ],
+      },
+    ]
+    renderAt('/exercises')
+    expect(await screen.findByText('Bonus: Box')).toBeInTheDocument()
+    const group = screen.getByRole('group', { name: 'Equipment available today' })
+    await userEvent.click(within(group).getByRole('button', { name: 'Reformer' }))
+    expect(screen.getByText('Footwork')).toBeInTheDocument()
+  })
+
   it('filters by available equipment (AND of ORs)', async () => {
     renderAt('/exercises')
     await screen.findByText('Pelvic Curl')

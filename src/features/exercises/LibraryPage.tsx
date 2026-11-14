@@ -8,8 +8,14 @@ import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
 import { useCurrentUser } from '@/data/queries/profile'
 import { useBlocks, useEquipment, useExercises } from '@/data/queries/library'
-import { LEVELS, filterExercises, type Level, type LibraryFilter } from '@/domain/library'
-import { ExerciseCard } from './ExerciseCard'
+import {
+  LEVELS,
+  filterExercises,
+  groupByMovement,
+  type Level,
+  type LibraryFilter,
+} from '@/domain/library'
+import { MovementCard } from './MovementCard'
 
 type Scope = NonNullable<LibraryFilter['scope']>
 const SCOPES: Exclude<Scope, 'all'>[] = ['shared', 'mine']
@@ -44,6 +50,8 @@ export function LibraryPage() {
       ),
     [exercises.data, search, blockId, level, scope, showArchived, available, userId],
   )
+
+  const movements = useMemo(() => groupByMovement(visible), [visible])
 
   // "All" means no filters at all: it is on only while nothing is narrowing the list.
   const anyFilter =
@@ -170,13 +178,13 @@ export function LibraryPage() {
       ) : (
         <>
           <p className="text-sm text-muted-foreground" aria-live="polite">
-            {t('library.count', { count: visible.length })}
+            {t('library.count', { count: movements.length })}
           </p>
           <ul className="flex flex-col gap-3">
-            {visible.map((e) => (
-              <ExerciseCard
-                key={e.id}
-                exercise={e}
+            {movements.map((g) => (
+              <MovementCard
+                key={g.key}
+                group={g}
                 blocks={blocks.data ?? []}
                 equipment={equipment.data ?? []}
                 userId={userId}

@@ -1,4 +1,9 @@
-import { isExerciseAvailable, requirementsToGroups, type Requirement } from './equipment'
+import {
+  isExerciseAvailable,
+  optionalEquipmentIds,
+  requirementsToGroups,
+  type Requirement,
+} from './equipment'
 
 export type Level = 'fundamental' | 'intermediate' | 'advanced'
 export const LEVELS: readonly Level[] = ['fundamental', 'intermediate', 'advanced']
@@ -50,4 +55,31 @@ export function describeRequirements(
   return requirementsToGroups(requirements)
     .map((ids) => ids.map(nameOf).join(' / '))
     .join(' + ')
+}
+
+/** "Ring, Band" for the bonus accessories of an exercise ('' when there are none). */
+export function describeBonus(
+  requirements: readonly Requirement[],
+  nameOf: (equipmentId: string) => string,
+): string {
+  return optionalEquipmentIds(requirements).map(nameOf).join(', ')
+}
+
+export type MovementGroup<T> = { key: string; name: string; variants: T[] }
+
+/**
+ * Merge rows of the same movement (same name within the same block) done on different
+ * apparatus into one entry. First-seen order is kept for groups and for variants.
+ */
+export function groupByMovement<T extends { name: string; blockId: string }>(
+  list: readonly T[],
+): MovementGroup<T>[] {
+  const groups = new Map<string, MovementGroup<T>>()
+  for (const e of list) {
+    const key = `${e.blockId}|${e.name.trim().toLowerCase()}`
+    const group = groups.get(key)
+    if (group) group.variants.push(e)
+    else groups.set(key, { key, name: e.name, variants: [e] })
+  }
+  return [...groups.values()]
 }

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { Chip } from '@/components/ui/chip'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
@@ -155,6 +156,43 @@ export function ExerciseForm({
               hasEmptyGroupError={Boolean(errors.groups)}
             />
           )}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <h2 className="text-sm font-semibold">{t('exercise.bonusTitle')}</h2>
+        <p className="text-sm text-muted-foreground">{t('exercise.bonusHelp')}</p>
+        <Controller
+          control={control}
+          name="optionalIds"
+          render={({ field }) => {
+            const selected = field.value ?? []
+            return (
+              <div
+                role="group"
+                aria-label={t('exercise.bonusTitle')}
+                className="flex flex-wrap gap-2"
+              >
+                {equipment
+                  .filter((e) => e.kind === 'prop')
+                  .map((e) => (
+                    <Chip
+                      key={e.id}
+                      selected={selected.includes(e.id)}
+                      onClick={() =>
+                        field.onChange(
+                          selected.includes(e.id)
+                            ? selected.filter((id) => id !== e.id)
+                            : [...selected, e.id],
+                        )
+                      }
+                    >
+                      {e.name}
+                    </Chip>
+                  ))}
+              </div>
+            )
+          }}
         />
       </div>
 

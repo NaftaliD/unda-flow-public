@@ -71,7 +71,10 @@
     "mine": "Mine",
     "archived": "Archived",
     "needsReview": "Needs review",
-    "noEquipment": "No equipment needed"
+    "noEquipment": "No equipment needed",
+    "bonus": "Bonus: {{items}}",
+    "versions_one": "{{count}} version",
+    "versions_other": "{{count}} versions"
   },
   "exercise": {
     "newTitle": "New exercise",
@@ -110,7 +113,9 @@
       "positive": "Enter a whole number above zero",
       "emptyGroup": "Choose at least one item, or remove the empty requirement."
     },
-    "inUse": "This exercise is used in a lesson, so it cannot be deleted. Archive it instead."
+    "inUse": "This exercise is used in a lesson, so it cannot be deleted. Archive it instead.",
+    "bonusTitle": "Bonus accessories",
+    "bonusHelp": "Optional extras that add variety or challenge but are not needed. They never hide the exercise when you do not have them."
   },
   "review": {
     "title": "Review queue",

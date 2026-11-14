@@ -16,6 +16,7 @@ const EMPTY: ExerciseFormInput = {
   defaultDurationSec: '',
   defaultSprings: '',
   groups: [],
+  optionalIds: [],
 }
 
 /** New private exercise; `?from=<id>` prefills it as a copy ("duplicate as mine"). */

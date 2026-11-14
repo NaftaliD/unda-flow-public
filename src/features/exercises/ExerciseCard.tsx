@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import type { Block, Equipment, Exercise } from '@/data/queries/library'
-import { describeRequirements } from '@/domain/library'
+import { describeBonus, describeRequirements } from '@/domain/library'
 
 type Props = {
   exercise: Exercise
@@ -23,6 +23,10 @@ export function ExerciseCard({ exercise, blocks, equipment, userId, isAdmin, act
       exercise.requirements,
       (id) => equipment.find((e) => e.id === id)?.name ?? '?',
     ) || t('library.noEquipment')
+  const bonusText = describeBonus(
+    exercise.requirements,
+    (id) => equipment.find((e) => e.id === id)?.name ?? '?',
+  )
   const mine = exercise.ownerId !== null && exercise.ownerId === userId
 
   return (
@@ -34,6 +38,11 @@ export function ExerciseCard({ exercise, blocks, equipment, userId, isAdmin, act
       >
         <span className="text-base font-semibold">{exercise.name}</span>
         <span className="text-sm text-muted-foreground">{equipmentText}</span>
+        {bonusText && (
+          <span className="text-sm text-muted-foreground">
+            {t('library.bonus', { items: bonusText })}
+          </span>
+        )}
       </Link>
       <div className="flex flex-wrap gap-1.5">
         {blockName && <Badge tone="outline">{blockName}</Badge>}

@@ -3,6 +3,7 @@ import {
   groupsToRequirements,
   isExerciseAvailable,
   missingEquipment,
+  optionalEquipmentIds,
   parseEquipmentSpec,
   requirementsToGroups,
 } from './equipment'
@@ -90,5 +91,23 @@ describe('parseEquipmentSpec', () => {
 
   it('returns nothing for an empty spec', () => {
     expect(parseEquipmentSpec('')).toEqual([])
+  })
+})
+
+describe('bonus (optional) accessories', () => {
+  const reqs = [
+    { equipmentId: 'reformer', altGroup: 0 },
+    { equipmentId: 'ring', altGroup: 0, optional: true },
+  ]
+  it('never decide availability', () => {
+    expect(isExerciseAvailable(reqs, new Set(['reformer']))).toBe(true)
+    expect(isExerciseAvailable(reqs, new Set(['ring']))).toBe(false)
+  })
+  it('are left out of the required groups and missing list', () => {
+    expect(requirementsToGroups(reqs)).toEqual([['reformer']])
+    expect(missingEquipment(reqs, new Set(['reformer']))).toEqual([])
+  })
+  it('are listed separately', () => {
+    expect(optionalEquipmentIds(reqs)).toEqual(['ring'])
   })
 })

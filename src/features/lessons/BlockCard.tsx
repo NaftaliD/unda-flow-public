@@ -26,12 +26,14 @@ import type { Block, Exercise } from '@/data/queries/library'
 import type { ItemPatch, SlotPatch } from '@/data/mutations/lessons'
 import type { LessonItem, LessonSlot } from '@/data/queries/lessons'
 import { itemWarnings, reorderIds, slotHint } from '@/domain/lesson'
+import { describeBonus } from '@/domain/library'
 
 type Props = {
   slot: LessonSlot
   block: Block | undefined
   exerciseById: ReadonlyMap<string, Exercise>
   available: ReadonlySet<string>
+  equipmentName: (id: string) => string
   /** Other slots an item can be moved to. */
   otherSlots: { id: string; label: string }[]
   onUpdateSlot: (patch: Omit<SlotPatch, 'slotId'>) => void
@@ -187,6 +189,7 @@ function ItemRow({
   slot,
   exerciseById,
   available,
+  equipmentName,
   otherSlots,
   onUpdateItem,
   onMoveItem,
@@ -205,6 +208,7 @@ function ItemRow({
   const exercise = exerciseById.get(item.exerciseId)
   const warnings = exercise ? itemWarnings(exercise, available) : []
   const name = exercise?.name ?? t('lessons.builder.unknownExercise')
+  const bonus = exercise ? describeBonus(exercise.requirements, equipmentName) : ''
 
   const num = (field: 'reps' | 'durationSec', current: number | null) => (value: string) => {
     const n = value.trim() === '' ? null : Number.parseInt(value, 10)
@@ -238,6 +242,11 @@ function ItemRow({
         </button>
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
           <span className="font-semibold">{name}</span>
+          {bonus && (
+            <span className="text-sm text-muted-foreground">
+              {t('library.bonus', { items: bonus })}
+            </span>
+          )}
           {warnings.map((w) => (
             <Badge key={w} tone="accent">
               {t(`lessons.builder.warnings.${w}`)}

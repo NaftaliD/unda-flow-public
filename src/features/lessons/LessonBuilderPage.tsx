@@ -247,6 +247,7 @@ function Builder({ lesson }: { lesson: Lesson }) {
                 block={blockById.get(slot.blockId)}
                 exerciseById={exerciseById}
                 available={available}
+                equipmentName={(id) => equipment.data?.find((e) => e.id === id)?.name ?? '?'}
                 otherSlots={slotRefs.filter((s) => s.id !== slot.id)}
                 onUpdateSlot={(patch) => updateSlot.mutate({ slotId: slot.id, ...patch })}
                 onAdd={() => setPickerSlotId(slot.id)}

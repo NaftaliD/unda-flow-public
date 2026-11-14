@@ -16,6 +16,8 @@ export const exerciseFormSchema = z.object({
   defaultSprings: z.string().optional(),
   /** One inner array of equipment ids per alt group. Empty groups are rejected. */
   groups: z.array(z.array(z.string()).min(1, 'empty-group')),
+  /** Bonus accessories: optional extras that never decide availability. */
+  optionalIds: z.array(z.string()).default([]),
 })
 
 export type ExerciseFormInput = z.input<typeof exerciseFormSchema>
