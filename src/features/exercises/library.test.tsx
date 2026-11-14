@@ -22,8 +22,15 @@ vi.mock('@/data/queries/profile', () => ({
 }))
 
 const blocks: Block[] = [
-  { id: 'b-warm', key: 'warm_up', name: 'Warm-up', goal: null, position: 1 },
-  { id: 'b-abs', key: 'abdominal', name: 'Abdominal work', goal: null, position: 3 },
+  { id: 'b-warm', methodId: 'm1', key: 'warm_up', name: 'Warm-up', goal: null, position: 1 },
+  {
+    id: 'b-abs',
+    methodId: 'm1',
+    key: 'abdominal',
+    name: 'Abdominal work',
+    goal: null,
+    position: 3,
+  },
 ]
 const equipment: Equipment[] = [
   { id: 'e-ref', key: 'reformer', name: 'Reformer', kind: 'apparatus' },
@@ -60,6 +67,11 @@ vi.mock('@/data/mutations/exercises', () => ({
   useSetReviewStatus: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useSetArchived: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useDeleteExercise: () => ({ mutateAsync: vi.fn(), isPending: false }),
+}))
+
+vi.mock('@/data/queries/lessons', () => ({
+  lessonKeys: {},
+  useLessons: () => ({ data: [], isPending: false }),
 }))
 
 import i18n from '@/app/i18n'
@@ -163,7 +175,9 @@ describe('library', () => {
     const router = renderAt('/exercises')
     await screen.findByText('Pelvic Curl')
     await userEvent.click(
-      within(screen.getByRole('navigation', { name: 'Main' })).getByRole('link', { name: 'Home' }),
+      within(screen.getByRole('navigation', { name: 'Main' })).getByRole('link', {
+        name: 'Lessons',
+      }),
     )
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/'))

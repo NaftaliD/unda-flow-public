@@ -251,7 +251,7 @@ Exercises: import `supabase/seed/exercises.block.csv` (supplied with this plan) 
 
 Each increment is a vertical slice: migration + data layer + UI + tests, deployed to production.
 
-### Increment 0 — Walking skeleton
+### Increment 0 — Walking skeleton (done)
 - Scaffold Vite + React + TS, Tailwind, shadcn/ui themed with section 3 tokens, routing, i18n (`en`/`he`, RTL switch), lint, Vitest, Playwright.
 - Supabase project, local dev via Supabase CLI, first migration: `profiles` (with `role`) + RLS + create-on-signup trigger + `is_admin()`.
 - Auth: email magic link only for now, with the auth code structured so Google sign-in can be added later without rework (no Google button until OAuth credentials exist). Protected routes, sign out. App bar with logo placeholder.
@@ -259,7 +259,7 @@ Each increment is a vertical slice: migration + data layer + UI + tests, deploye
 - Keep-alive: `.github/workflows/keep-supabase-alive.yml`, scheduled twice a week (`cron: '17 6 * * 1,4'`) plus `workflow_dispatch`. It sends one GET to the Supabase REST API selecting one row from a tiny public-read `keep_alive` table (created in the first migration with one row, RLS enabled, a policy allowing anonymous `SELECT` only, and `GRANT SELECT` to `anon`), using repo secrets `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (sent as the `apikey` header only; publishable keys are not JWTs). It **fails the job on any non-2xx response** so GitHub emails the repo owner if it stops working.
 - **Done when:** the partner signs in on the production URL, sees a branded empty home screen, can switch English/Hebrew, CI is green, and a manual run of the keep-alive workflow succeeds.
 
-### Increment 1 — Shared library
+### Increment 1 — Shared library (done)
 - Migrations: `methods`, `blocks`, `equipment`, `exercises`, `exercise_equipment` + RLS.
 - Seed blocks and equipment (inside the migration, so `db push` applies them to the hosted project); local CSV import script for exercises (insert-only, deterministic ids, secret key from the environment) and a `save_exercise` RPC that writes an exercise and its equipment requirements atomically under RLS.
 - F2 and the exercise part of F7 (review queue). `isExerciseAvailable` with unit tests.
@@ -267,7 +267,7 @@ Each increment is a vertical slice: migration + data layer + UI + tests, deploye
 
 ### Increment 2 — Lesson builder (first real value)
 - Migrations: `lessons`, `lesson_equipment`, `lesson_slots`, `lesson_items` + RLS + cross-user isolation test.
-- F3 with a hard-coded default: a new lesson gets the 12 slots of section 7. No templates UI, presets, or series yet.
+- F3 with a hard-coded default: a new lesson gets the 12 slots of section 7 (`DEFAULT_BLOCK_SLOTS` in `src/domain/lesson.ts`, temporary until Increment 3 seeds the template). No templates UI, presets, or series yet. `lesson_items.exercise_id` has no ON DELETE action: an exercise used in a lesson can't be deleted, only archived. Atomic RPCs: `create_lesson`, `duplicate_lesson`, `reorder`.
 - Lesson list: drafts / ready / taught, duplicate, delete.
 - F4 PDF export.
 - **Done when:** the partner plans a real lesson, prints it, and teaches from it.

@@ -13,7 +13,10 @@ import { LoginPage } from '@/features/auth/LoginPage'
 import { ExercisePage } from '@/features/exercises/ExercisePage'
 import { LibraryPage } from '@/features/exercises/LibraryPage'
 import { NewExercisePage } from '@/features/exercises/NewExercisePage'
-import { HomePage } from '@/features/home/HomePage'
+import { LessonBuilderPage } from '@/features/lessons/LessonBuilderPage'
+import { LessonListPage } from '@/features/lessons/LessonListPage'
+import { LessonPrintPage } from '@/features/lessons/LessonPrintPage'
+import { NewLessonPage } from '@/features/lessons/NewLessonPage'
 import { AppLayout } from './AppLayout'
 import { NotFound } from './NotFound'
 
@@ -41,7 +44,25 @@ const protectedRoute = createRoute({
 const homeRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/',
-  component: HomePage,
+  component: LessonListPage,
+})
+
+const newLessonRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/lessons/new',
+  component: NewLessonPage,
+})
+
+const lessonRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/lessons/$id',
+  component: LessonBuilderPage,
+})
+
+const lessonPrintRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/lessons/$id/print',
+  component: LessonPrintPage,
 })
 
 const exercisesRoute = createRoute({
@@ -77,6 +98,9 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   protectedRoute.addChildren([
     homeRoute,
+    newLessonRoute,
+    lessonRoute,
+    lessonPrintRoute,
     exercisesRoute,
     newExerciseRoute,
     exerciseRoute,

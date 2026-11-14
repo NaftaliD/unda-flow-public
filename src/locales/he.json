@@ -9,7 +9,8 @@
     "main": "ראשי",
     "library": "ספרייה",
     "review": "בדיקה",
-    "home": "בית"
+    "home": "בית",
+    "lessons": "שיעורים"
   },
   "login": {
     "title": "התחברות",
@@ -109,7 +110,8 @@
       "required": "שדה חובה",
       "positive": "יש להזין מספר שלם גדול מאפס",
       "emptyGroup": "יש לבחור פריט אחד לפחות, או להסיר את הדרישה הריקה."
-    }
+    },
+    "inUse": "התרגיל נמצא בשימוש בשיעור ולכן לא ניתן למחוק אותו. אפשר להעביר אותו לארכיון."
   },
   "review": {
     "title": "תור בדיקה",
@@ -120,5 +122,95 @@
     "remaining_other": "{{count}} תרגילים לבדיקה",
     "verify": "אימות",
     "edit": "עריכה"
+  },
+  "lessons": {
+    "title": "שיעורים",
+    "new": "שיעור חדש",
+    "newTitle": "שיעור חדש",
+    "back": "חזרה לשיעורים",
+    "loading": "טוען…",
+    "notFound": "השיעור לא נמצא.",
+    "saveFailed": "לא הצלחנו לשמור את השינוי, והוא בוטל.",
+    "tabs": "סטטוס שיעור",
+    "emptyTab": "אין עדיין שיעורים כאן.",
+    "tab": {
+      "draft": "טיוטות",
+      "ready": "מוכנים",
+      "taught": "ניתנו"
+    },
+    "status": {
+      "draft": "טיוטה",
+      "ready": "מוכן",
+      "taught": "ניתן"
+    },
+    "duplicate": "שכפול",
+    "delete": "מחיקה",
+    "confirmDelete": "למחוק את “{{title}}”? לא ניתן לבטל את הפעולה.",
+    "minutes_one": "{{count}} דק׳",
+    "minutes_two": "{{count}} דק׳",
+    "minutes_other": "{{count}} דק׳",
+    "form": {
+      "title": "שם השיעור",
+      "titlePlaceholder": "למשל: שיעור רפורמר ביום שני",
+      "date": "תאריך",
+      "level": "רמה",
+      "target": "משך יעד (בדקות)",
+      "equipment": "ציוד זמין היום",
+      "equipmentHint": "התרגילים יסוננו לפי מה שהציוד מאפשר. אפשר לשנות בהמשך.",
+      "create": "יצירת שיעור",
+      "creating": "יוצר…",
+      "createFailed": "לא הצלחנו ליצור את השיעור. אפשר לנסות שוב.",
+      "required": "שדה חובה"
+    },
+    "builder": {
+      "print": "הדפסה / PDF",
+      "status": "סטטוס",
+      "blocks": "בלוקים בשיעור",
+      "total": "מתוכנן: {{time}}",
+      "totalOfTarget": "מתוכנן: {{time}} מתוך {{target}} דק׳",
+      "missingDuration_one": "תרגיל {{count}} ללא משך",
+      "missingDuration_two": "{{count}} תרגילים ללא משך",
+      "missingDuration_other": "{{count}} תרגילים ללא משך",
+      "skip": "דילוג על הבלוק",
+      "include": "החזרת הבלוק",
+      "skipped": "דולג",
+      "addExercise": "הוספת תרגיל",
+      "noExercises": "אין עדיין תרגילים.",
+      "addNotes": "הוספת הערות לבלוק",
+      "blockNotes": "הערות עבור {{label}}",
+      "blockNotesPlaceholder": "הערות לבלוק הזה",
+      "dragSlot": "שינוי סדר הבלוק {{label}}",
+      "dragItem": "שינוי סדר {{name}}",
+      "remove": "הסרת {{name}}",
+      "reps": "חזרות",
+      "duration": "שניות",
+      "springs": "קפיצים",
+      "notes": "הערות",
+      "moveTo": "העברה לבלוק",
+      "unknownExercise": "תרגיל לא מוכר",
+      "warnings": {
+        "unavailable": "נדרש ציוד שלא סומן",
+        "archived": "בארכיון"
+      }
+    },
+    "picker": {
+      "title": "הוספה אל {{block}}",
+      "done": "סיום",
+      "allBlocks": "כל הבלוקים",
+      "allLevels": "כל הרמות",
+      "showUnavailable": "הצגת תרגילים לא זמינים",
+      "none": "לא נמצאו תרגילים מתאימים.",
+      "missing": "חסר: {{items}}",
+      "added": "נוסף"
+    },
+    "print": {
+      "button": "הדפסה / שמירה כ-PDF",
+      "backToBuilder": "חזרה לעורך",
+      "equipment": "ציוד",
+      "planned": "{{time}} מתוכנן",
+      "reps": "{{count}} חזרות",
+      "seconds": "{{count}} שנ׳",
+      "springs": "קפיצים {{value}}"
+    }
   }
 }

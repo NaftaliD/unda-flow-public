@@ -20,3 +20,14 @@ export const exerciseFormSchema = z.object({
 
 export type ExerciseFormInput = z.input<typeof exerciseFormSchema>
 export type ExerciseFormValues = z.output<typeof exerciseFormSchema>
+
+export const lessonFormSchema = z.object({
+  title: z.string().trim().min(1, 'required'),
+  lessonDate: z.string().min(1, 'required'),
+  level: z.enum(['fundamental', 'intermediate', 'advanced']),
+  targetDurationMin: optionalInt,
+  equipmentIds: z.array(z.string()),
+})
+
+export type LessonFormInput = z.input<typeof lessonFormSchema>
+export type LessonFormValues = z.output<typeof lessonFormSchema>

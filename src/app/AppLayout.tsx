@@ -39,7 +39,7 @@ export function AppLayout() {
     <div className="flex min-h-dvh flex-col">
       <header
         dir="ltr"
-        className="flex items-center justify-between bg-primary px-4 py-3 text-primary-foreground"
+        className="flex items-center justify-between bg-primary px-4 py-3 text-primary-foreground print:hidden"
       >
         <div className="flex items-center gap-4">
           <Link
@@ -50,7 +50,7 @@ export function AppLayout() {
             <Logo />
           </Link>
           <nav aria-label={t('nav.main')} className="flex items-center gap-1 text-sm font-semibold">
-            <NavLink to="/">{t('nav.home')}</NavLink>
+            <NavLink to="/">{t('nav.lessons')}</NavLink>
             <NavLink to="/exercises">{t('nav.library')}</NavLink>
             {isAdmin && <NavLink to="/admin/review">{t('nav.review')}</NavLink>}
           </nav>

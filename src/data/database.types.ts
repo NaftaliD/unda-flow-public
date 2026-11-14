@@ -123,6 +123,104 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"lesson_equipment": {
+                  Row: {
+                    "equipment_id": string,"lesson_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "equipment_id": string,"lesson_id": string
+                  }
+                  Update: {
+                    "equipment_id"?: string,"lesson_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "lesson_equipment_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lesson_equipment_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "lessons"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"lesson_items": {
+                  Row: {
+                    "duration_sec": number | null,"exercise_id": string,"id": string,"lesson_slot_id": string,"notes": string | null,"position": number,"reps": number | null,"springs": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "duration_sec"?: number | null,"exercise_id": string,"id"?: string,"lesson_slot_id": string,"notes"?: string | null,"position"?: number,"reps"?: number | null,"springs"?: string | null
+                  }
+                  Update: {
+                    "duration_sec"?: number | null,"exercise_id"?: string,"id"?: string,"lesson_slot_id"?: string,"notes"?: string | null,"position"?: number,"reps"?: number | null,"springs"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "lesson_items_exercise_id_fkey"
+      columns: ["exercise_id"]
+isOneToOne: false
+      referencedRelation: "exercises"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lesson_items_lesson_slot_id_fkey"
+      columns: ["lesson_slot_id"]
+isOneToOne: false
+      referencedRelation: "lesson_slots"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"lesson_slots": {
+                  Row: {
+                    "block_id": string,"id": string,"is_skipped": boolean,"label": string,"lesson_id": string,"notes": string | null,"position": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "block_id": string,"id"?: string,"is_skipped"?: boolean,"label": string,"lesson_id": string,"notes"?: string | null,"position"?: number
+                  }
+                  Update: {
+                    "block_id"?: string,"id"?: string,"is_skipped"?: boolean,"label"?: string,"lesson_id"?: string,"notes"?: string | null,"position"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "lesson_slots_block_id_fkey"
+      columns: ["block_id"]
+isOneToOne: false
+      referencedRelation: "blocks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lesson_slots_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "lessons"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"lessons": {
+                  Row: {
+                    "created_at": string,"id": string,"lesson_date": string,"level": Database["public"]['Enums']["exercise_level"],"method_id": string,"notes": string | null,"owner_id": string,"status": Database["public"]['Enums']["lesson_status"],"target_duration_min": number | null,"template_id": string | null,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"lesson_date"?: string,"level"?: Database["public"]['Enums']["exercise_level"],"method_id": string,"notes"?: string | null,"owner_id"?: string,"status"?: Database["public"]['Enums']["lesson_status"],"target_duration_min"?: number | null,"template_id"?: string | null,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"lesson_date"?: string,"level"?: Database["public"]['Enums']["exercise_level"],"method_id"?: string,"notes"?: string | null,"owner_id"?: string,"status"?: Database["public"]['Enums']["lesson_status"],"target_duration_min"?: number | null,"template_id"?: string | null,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "lessons_method_id_fkey"
+      columns: ["method_id"]
+isOneToOne: false
+      referencedRelation: "methods"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"methods": {
                   Row: {
                     "id": string,"is_active": boolean,"key": string,"name": string
@@ -157,15 +255,24 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "is_admin":
+            "create_lesson":
+{ Args: { "payload": Json }; Returns: string
+                           },
+"duplicate_lesson":
+{ Args: { "p_id": string }; Returns: string
+                           },
+"is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"reorder":
+{ Args: { "p_ids": (string)[],"p_kind": string }; Returns: undefined
                            },
 "save_exercise":
 { Args: { "payload": Json }; Returns: string
                            }
           }
           Enums: {
-            "equipment_kind": "apparatus"|"prop","exercise_level": "fundamental"|"intermediate"|"advanced","review_status": "needs_review"|"verified","user_role": "user"|"admin"
+            "equipment_kind": "apparatus"|"prop","exercise_level": "fundamental"|"intermediate"|"advanced","lesson_status": "draft"|"ready"|"taught","review_status": "needs_review"|"verified","user_role": "user"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -285,7 +392,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "equipment_kind": ["apparatus", "prop"],"exercise_level": ["fundamental", "intermediate", "advanced"],"review_status": ["needs_review", "verified"],"user_role": ["user", "admin"]
+            "equipment_kind": ["apparatus", "prop"],"exercise_level": ["fundamental", "intermediate", "advanced"],"lesson_status": ["draft", "ready", "taught"],"review_status": ["needs_review", "verified"],"user_role": ["user", "admin"]
           }
         }
 } as const

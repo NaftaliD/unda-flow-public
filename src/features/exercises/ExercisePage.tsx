@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from '@tanstack/react-router'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -29,6 +29,7 @@ export function ExercisePage() {
   const setArchived = useSetArchived()
   const remove = useDeleteExercise()
   const verifyOnSave = useRef(false)
+  const [inUse, setInUse] = useState(false)
 
   const exercise = exercises.data?.find((e) => e.id === id)
 
@@ -71,8 +72,13 @@ export function ExercisePage() {
 
   async function onDelete() {
     if (!window.confirm(t('exercise.confirmDelete'))) return
-    await remove.mutateAsync(exercise!.id)
-    await navigate({ to: '/exercises' })
+    try {
+      await remove.mutateAsync(exercise!.id)
+      await navigate({ to: '/exercises' })
+    } catch (e) {
+      // 23503 = foreign key violation: the exercise is used in a lesson, so archive instead.
+      if ((e as { code?: string }).code === '23503') setInUse(true)
+    }
   }
 
   const header = (
@@ -121,6 +127,11 @@ export function ExercisePage() {
       {header}
       {exercise.ownerId === null && (
         <p className="rounded-2xl bg-card p-4 text-sm">{t('exercise.adminSharedNote')}</p>
+      )}
+      {inUse && (
+        <p role="alert" className="rounded-2xl border border-accent p-4 text-sm font-medium">
+          {t('exercise.inUse')}
+        </p>
       )}
       <ExerciseForm
         key={exercise.id}
