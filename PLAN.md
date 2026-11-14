@@ -306,6 +306,7 @@ Each increment is a vertical slice: migration + data layer + UI + tests, deploye
 - Auto-suggest a lesson from template + equipment + level + "not used in the last N lessons".
 - Studios/teams: `organizations` + membership, shared studio libraries (adds `org_id` beside `owner_id`).
 - Sharing a lesson by link; class/client history; contraindication tags.
+- Display name: the greeting currently uses the email prefix (set by the signup trigger). Let users set their real name (`profiles.display_name` is already user-editable); Google sign-in will fill it automatically. Planned alongside Google OAuth.
 
 ## 10. Working conventions for Claude Code
 

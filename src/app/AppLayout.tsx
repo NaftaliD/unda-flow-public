@@ -7,10 +7,17 @@ import { Button } from '@/components/ui/button'
 import { signOut } from '@/data/auth'
 import { useCurrentUser } from '@/data/queries/profile'
 
-function NavLink({ to, children }: { to: '/exercises' | '/admin/review'; children: ReactNode }) {
+function NavLink({
+  to,
+  children,
+}: {
+  to: '/' | '/exercises' | '/admin/review'
+  children: ReactNode
+}) {
   return (
     <Link
       to={to}
+      activeOptions={{ exact: to === '/' }}
       className="rounded-pill px-3 py-1.5 hover:bg-primary-foreground/15 data-[status=active]:bg-primary-foreground/20"
     >
       {children}
@@ -30,10 +37,20 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="flex items-center justify-between bg-primary px-4 py-3 text-primary-foreground">
+      <header
+        dir="ltr"
+        className="flex items-center justify-between bg-primary px-4 py-3 text-primary-foreground"
+      >
         <div className="flex items-center gap-4">
-          <Logo />
+          <Link
+            to="/"
+            aria-label={t('nav.home')}
+            className="rounded-pill focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+          >
+            <Logo />
+          </Link>
           <nav aria-label={t('nav.main')} className="flex items-center gap-1 text-sm font-semibold">
+            <NavLink to="/">{t('nav.home')}</NavLink>
             <NavLink to="/exercises">{t('nav.library')}</NavLink>
             {isAdmin && <NavLink to="/admin/review">{t('nav.review')}</NavLink>}
           </nav>

@@ -131,6 +131,44 @@ describe('library', () => {
     expect(screen.getByText('Short Box Tilt')).toBeInTheDocument()
   })
 
+  it('turns "All" off while any filter is active and resets everything when clicked', async () => {
+    renderAt('/exercises')
+    await screen.findByText('Pelvic Curl')
+    const all = screen.getByRole('button', { name: 'All' })
+    expect(all).toHaveAttribute('aria-pressed', 'true')
+
+    await userEvent.selectOptions(screen.getByLabelText('Block'), 'b-abs')
+    expect(all).toHaveAttribute('aria-pressed', 'false')
+    await userEvent.click(screen.getByRole('button', { name: 'Mine' }))
+    expect(screen.getByRole('button', { name: 'Mine' })).toHaveAttribute('aria-pressed', 'true')
+
+    await userEvent.click(all)
+    expect(all).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByLabelText('Block')).toHaveValue('')
+    expect(screen.getByRole('button', { name: 'Mine' })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByText('3 exercises')).toBeInTheDocument()
+  })
+
+  it('toggles Shared off again by clicking it twice', async () => {
+    renderAt('/exercises')
+    await screen.findByText('Pelvic Curl')
+    const shared = screen.getByRole('button', { name: 'Shared' })
+    await userEvent.click(shared)
+    expect(screen.queryByText('My Own Move')).not.toBeInTheDocument()
+    await userEvent.click(shared)
+    expect(screen.getByText('My Own Move')).toBeInTheDocument()
+  })
+
+  it('has a way home from the library', async () => {
+    const router = renderAt('/exercises')
+    await screen.findByText('Pelvic Curl')
+    await userEvent.click(
+      within(screen.getByRole('navigation', { name: 'Main' })).getByRole('link', { name: 'Home' }),
+    )
+
+    await waitFor(() => expect(router.state.location.pathname).toBe('/'))
+  })
+
   it('shows only my exercises under Mine', async () => {
     renderAt('/exercises')
     await screen.findByText('Pelvic Curl')
