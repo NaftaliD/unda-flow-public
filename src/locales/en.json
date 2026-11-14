@@ -9,7 +9,8 @@
     "main": "Main",
     "library": "Library",
     "review": "Review",
-    "home": "Home"
+    "home": "Home",
+    "lessons": "Lessons"
   },
   "login": {
     "title": "Welcome back",
@@ -108,7 +109,8 @@
       "required": "Required",
       "positive": "Enter a whole number above zero",
       "emptyGroup": "Choose at least one item, or remove the empty requirement."
-    }
+    },
+    "inUse": "This exercise is used in a lesson, so it cannot be deleted. Archive it instead."
   },
   "review": {
     "title": "Review queue",
@@ -118,5 +120,93 @@
     "remaining_other": "{{count}} exercises to review",
     "verify": "Verify",
     "edit": "Edit"
+  },
+  "lessons": {
+    "title": "Lessons",
+    "new": "New lesson",
+    "newTitle": "New lesson",
+    "back": "Back to lessons",
+    "loading": "Loading…",
+    "notFound": "This lesson was not found.",
+    "saveFailed": "Could not save that change. It was undone.",
+    "tabs": "Lesson status",
+    "emptyTab": "No lessons here yet.",
+    "tab": {
+      "draft": "Drafts",
+      "ready": "Ready",
+      "taught": "Taught"
+    },
+    "status": {
+      "draft": "Draft",
+      "ready": "Ready",
+      "taught": "Taught"
+    },
+    "duplicate": "Duplicate",
+    "delete": "Delete",
+    "confirmDelete": "Delete “{{title}}”? This cannot be undone.",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "e.g. Monday reformer class",
+      "date": "Date",
+      "level": "Level",
+      "target": "Target duration (minutes)",
+      "equipment": "Equipment available today",
+      "equipmentHint": "Exercises are filtered to what these allow. You can change it later.",
+      "create": "Create lesson",
+      "creating": "Creating…",
+      "createFailed": "Could not create the lesson. Please try again.",
+      "required": "This field is required"
+    },
+    "builder": {
+      "print": "Print / PDF",
+      "status": "Status",
+      "blocks": "Lesson blocks",
+      "total": "Planned: {{time}}",
+      "totalOfTarget": "Planned: {{time}} of {{target}} min",
+      "missingDuration_one": "{{count}} exercise without a duration",
+      "missingDuration_other": "{{count}} exercises without a duration",
+      "skip": "Skip block",
+      "include": "Include block",
+      "skipped": "Skipped",
+      "addExercise": "Add exercise",
+      "noExercises": "No exercises yet.",
+      "addNotes": "Add block notes",
+      "blockNotes": "Notes for {{label}}",
+      "blockNotesPlaceholder": "Notes for this block",
+      "dragSlot": "Reorder block {{label}}",
+      "dragItem": "Reorder {{name}}",
+      "remove": "Remove {{name}}",
+      "reps": "Reps",
+      "duration": "Seconds",
+      "springs": "Springs",
+      "notes": "Notes",
+      "moveTo": "Move to block",
+      "unknownExercise": "Unknown exercise",
+      "warnings": {
+        "unavailable": "Needs equipment that is not ticked",
+        "archived": "Archived"
+      }
+    },
+    "picker": {
+      "title": "Add to {{block}}",
+      "done": "Done",
+      "allBlocks": "All blocks",
+      "allLevels": "All levels",
+      "showUnavailable": "Show unavailable",
+      "none": "No matching exercises.",
+      "missing": "Missing: {{items}}",
+      "added": "Added"
+    },
+    "print": {
+      "button": "Print / Save as PDF",
+      "backToBuilder": "Back to builder",
+      "equipment": "Equipment",
+      "planned": "{{time}} planned",
+      "reps": "{{count}} reps",
+      "seconds": "{{count}} s",
+      "springs": "springs {{value}}"
+    }
   }
 }

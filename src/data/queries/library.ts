@@ -2,7 +2,14 @@ import { useQuery } from '@tanstack/react-query'
 import type { Level, LibraryExercise } from '@/domain/library'
 import { supabase } from '../supabaseClient'
 
-export type Block = { id: string; key: string; name: string; goal: string | null; position: number }
+export type Block = {
+  id: string
+  methodId: string
+  key: string
+  name: string
+  goal: string | null
+  position: number
+}
 export type Equipment = { id: string; key: string; name: string; kind: 'apparatus' | 'prop' }
 export type Exercise = LibraryExercise & {
   description: string | null
@@ -25,12 +32,13 @@ export function useBlocks() {
     queryFn: async (): Promise<Block[]> => {
       const { data, error } = await supabase
         .from('blocks')
-        .select('id, key, name, goal, default_position')
+        .select('id, method_id, key, name, goal, default_position')
         .order('default_position')
         .order('name')
       if (error) throw error
       return data.map((b) => ({
         id: b.id,
+        methodId: b.method_id,
         key: b.key,
         name: b.name,
         goal: b.goal,

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Increment 0 (walking skeleton) is live. Increment 1 (shared library) is built on branch `inc-1-library`: `methods/blocks/equipment/exercises/exercise_equipment` migration with RLS and grants, `save_exercise` RPC, domain rules (`src/domain`), library/review UI, and the CSV import script. `supabase/seed/exercises.block.csv` has 117 exercises (columns `name, block_key, equipment, level, series`); the `series` column is not imported until Increment 3. Blocks, methods and equipment are reference data inside the migration, not in `seed.sql`.
+Increments 0 (walking skeleton) and 1 (shared library) are live. Increment 2 (lesson builder) is built on branch `inc-2-lessons`: `lessons/lesson_equipment/lesson_slots/lesson_items` migration with RLS and grants plus the `create_lesson`, `duplicate_lesson` and `reorder` RPCs, domain rules in `src/domain/lesson.ts`, the lesson list (home page), builder (dnd-kit reordering, exercise picker) and print view. A new lesson gets the 12 hard-coded slots in `DEFAULT_BLOCK_SLOTS`; Increment 3 replaces them with a seeded template. `lesson_items.exercise_id` has no ON DELETE action, so an exercise used in a lesson cannot be deleted (the UI says to archive it). `supabase/seed/exercises.block.csv` has 117 exercises (columns `name, block_key, equipment, level, series`); the `series` column is not imported until Increment 3. Blocks, methods and equipment are reference data inside the library migration, not in `seed.sql`.
 
 ## Commands
 

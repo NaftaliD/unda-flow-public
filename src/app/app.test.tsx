@@ -17,6 +17,10 @@ vi.mock('@/data/queries/profile', () => ({
   useCurrentUser: () => ({ userId: 'u1', isAdmin: false }),
   fetchIsAdmin: () => Promise.resolve(false),
 }))
+vi.mock('@/data/queries/lessons', () => ({
+  lessonKeys: {},
+  useLessons: () => ({ data: [], isPending: false }),
+}))
 
 import i18n from './i18n'
 import { Providers } from './providers'
