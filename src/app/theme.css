@@ -1,0 +1,78 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/assistant';
+
+/*
+ * Unda brand tokens (PLAN.md section 3). This is the ONLY file allowed to contain raw hex values;
+ * components use the semantic tokens below via Tailwind (bg-background, text-primary, ...).
+ * Text pairs are checked against WCAG AA in theme.test.ts. Terracotta and sage are for fills,
+ * icons and large accents only, never small text on cream.
+ */
+:root {
+  --cream: #f8f2e9;
+  --warm-cream: #eadfd3;
+  --sage: #a7b097;
+  --olive: #596554;
+  --terracotta: #c76f56;
+  --ink: #2f3329; /* approximate, sampled from the logo; confirm with the designer */
+  --ink-muted: #565c4d;
+
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card: var(--warm-cream);
+  --card-foreground: var(--ink);
+  --primary: var(--olive);
+  --primary-foreground: var(--cream);
+  --secondary: var(--sage);
+  --secondary-foreground: var(--ink);
+  --accent: var(--terracotta);
+  --muted: var(--warm-cream);
+  --muted-foreground: var(--ink-muted);
+  --border: var(--sage);
+  --ring: var(--terracotta);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --font-sans: 'Assistant Variable', ui-sans-serif, system-ui, sans-serif;
+  --radius-pill: 9999px;
+}
+
+@layer base {
+  html {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+  body {
+    min-height: 100dvh;
+  }
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+}
+
+@layer utilities {
+  /* Section labels echo the brand sheet. Uppercase only makes sense for Latin script. */
+  .label-caps:lang(en) {
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+  }
+  .label-caps {
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+}

@@ -1,0 +1,10 @@
+dist
+node_modules
+package-lock.json
+playwright-report
+test-results
+supabase
+PLAN.md
+CLAUDE.md
+src/data/database.types.ts
+wrangler.jsonc
