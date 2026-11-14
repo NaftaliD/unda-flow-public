@@ -17,6 +17,9 @@ npx vitest run src/app/theme.test.ts -t "ink on cream"   # single file / test na
 npm run build          # tsc -b && vite build
 npm run e2e            # Playwright smoke test; builds and serves on :4173
 npx playwright test e2e/smoke.spec.ts                    # single e2e spec
+# Real magic-link flow via Mailpit (needs `npm run db:start`; skipped in CI). Use the URL and
+# publishable key that db:start prints. Local auth limits emails per hour, so don't loop it.
+E2E_LOCAL_SUPABASE=1 VITE_SUPABASE_URL=... VITE_SUPABASE_PUBLISHABLE_KEY=... npm run e2e
 npm run format         # prettier --write .
 ```
 
