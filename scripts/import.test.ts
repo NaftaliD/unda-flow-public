@@ -80,6 +80,34 @@ describe('buildImport', () => {
     ).toHaveLength(2)
   })
 
+  it('turns rows sharing a series value into a series, in CSV order', () => {
+    const { exercises, series, seriesItems } = buildImport(
+      `${header}A,warm_up,mat,fundamental,Warm set
+X,foot_work,reformer,fundamental,
+B,warm_up,reformer,fundamental,Warm set
+`,
+      lookups,
+    )
+    expect(series).toEqual([
+      { id: uuidV5('series|Warm set'), owner_id: null, block_id: 'b-warm', name: 'Warm set' },
+    ])
+    expect(seriesItems).toEqual([
+      { series_id: series[0]?.id, exercise_id: exercises[0]?.id, position: 0 },
+      { series_id: series[0]?.id, exercise_id: exercises[2]?.id, position: 1 },
+    ])
+  })
+
+  it('rejects a series that mixes blocks', () => {
+    expect(() =>
+      buildImport(
+        `${header}A,warm_up,mat,fundamental,Mixed
+B,foot_work,reformer,fundamental,Mixed
+`,
+        lookups,
+      ),
+    ).toThrow(/series "Mixed" mixes blocks/)
+  })
+
   const allBlocks = new Map(
     [
       'warm_up',
@@ -103,8 +131,9 @@ describe('buildImport', () => {
   it('accepts the committed sample seed file', () => {
     const csv = readFileSync(resolve(process.cwd(), 'supabase/seed/exercises.sample.csv'), 'utf8')
     const rows = csv.trim().split(/\r?\n/).length - 1
-    const { exercises } = buildImport(csv, full)
+    const { exercises, series } = buildImport(csv, full)
     expect(exercises).toHaveLength(rows)
+    expect(series.map((x) => x.name).sort()).toEqual(['Arms sample', 'Reformer foot work'])
     // the same movement on three apparatus is three rows (grouped only in the library view)
     expect(exercises.filter((e) => e.name === 'Calf Raises')).toHaveLength(3)
   })

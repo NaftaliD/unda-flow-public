@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Block, Equipment, Exercise } from '@/data/queries/library'
 import type { Lesson, LessonSummary } from '@/data/queries/lessons'
+import type { Series } from '@/data/queries/series'
 import type { Template } from '@/data/queries/templates'
 
 const state = vi.hoisted(() => ({
@@ -11,6 +12,8 @@ const state = vi.hoisted(() => ({
   lesson: null as unknown,
   exercises: [] as unknown[],
   templates: [] as unknown[],
+  series: [] as unknown[],
+  addSeries: vi.fn(),
   create: vi.fn(),
   addItem: vi.fn(),
   deleteSlot: vi.fn(),
@@ -106,6 +109,16 @@ vi.mock('@/data/mutations/templates', () => ({
   useDeleteTemplate: state.stub,
   useSaveTemplate: state.stub,
 }))
+vi.mock('@/data/queries/series', () => ({
+  seriesKeys: {},
+  useSeries: () => ({ data: state.series, isPending: false }),
+}))
+vi.mock('@/data/mutations/series', () => ({
+  useAddSeriesToSlot: () => ({ ...state.stub(), mutate: state.addSeries }),
+  useDuplicateSeries: state.stub,
+  useDeleteSeries: state.stub,
+  useSaveSeries: state.stub,
+}))
 vi.mock('@/data/mutations/blocks', () => ({
   useSaveBlock: state.stub,
   useDeleteBlock: state.stub,
@@ -196,6 +209,30 @@ describe('lessons', () => {
   beforeEach(async () => {
     state.addItem.mockReset()
     state.deleteSlot.mockReset()
+    state.addSeries.mockReset()
+    state.series = [
+      {
+        id: 'sr-ok',
+        ownerId: null,
+        blockId: 'b-warm',
+        name: 'Easy warm-up',
+        exerciseIds: ['x-curl', 'x-roll'],
+      },
+      {
+        id: 'sr-ring',
+        ownerId: 'u1',
+        blockId: 'b-warm',
+        name: 'Ring warm-up',
+        exerciseIds: ['x-curl', 'x-ring'],
+      },
+      {
+        id: 'sr-arm',
+        ownerId: null,
+        blockId: 'b-arm',
+        name: 'Arms sample',
+        exerciseIds: ['x-arm'],
+      },
+    ] satisfies Series[]
     state.create.mockReset().mockResolvedValue('new1')
     state.templates = [
       tpl({ id: 't-own', ownerId: 'u1', name: 'My short class' }),
@@ -345,6 +382,36 @@ describe('lessons', () => {
     const own = screen.getByText('My short class').closest('li')!
     expect(within(own).getByRole('link', { name: 'Edit' })).toBeInTheDocument()
     expect(within(own).getByRole('button', { name: 'Delete' })).toBeInTheDocument()
+  })
+
+  it("add series lists the block's series, greys one the equipment cannot support, and adds it", async () => {
+    renderAt('/lessons/l1')
+    await screen.findByText('Pelvic Curl')
+    const warmCard = screen.getByText('Warm-up', { selector: 'h3' }).closest('li')!
+    await userEvent.click(within(warmCard).getByRole('button', { name: 'Add series' }))
+
+    const dialog = await screen.findByRole(
+      'dialog',
+      { name: 'Add a series to Warm-up' },
+      { timeout: 2000 },
+    )
+    expect(within(dialog).getByText('Easy warm-up')).toBeInTheDocument()
+    expect(within(dialog).queryByText('Arms sample')).not.toBeInTheDocument()
+    const ring = within(dialog).getByText('Ring warm-up').closest('button')!
+    expect(within(ring).getByText('Missing: Ring')).toBeInTheDocument()
+
+    await userEvent.click(within(dialog).getByText('Easy warm-up'))
+    expect(state.addSeries).toHaveBeenCalledWith({ slotId: 's1', seriesId: 'sr-ok' })
+  })
+
+  it('series page: a normal user can view and duplicate a shared series, not edit or delete it', async () => {
+    renderAt('/series')
+    const shared = (await screen.findByText('Easy warm-up')).closest('li')!
+    expect(within(shared).getByRole('link', { name: 'View' })).toBeInTheDocument()
+    expect(within(shared).getByRole('button', { name: 'Duplicate as mine' })).toBeInTheDocument()
+    expect(within(shared).queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument()
+    const own = screen.getByText('Ring warm-up').closest('li')!
+    expect(within(own).getByRole('link', { name: 'Edit' })).toBeInTheDocument()
   })
 
   it('print view leaves out skipped blocks', async () => {

@@ -33,16 +33,19 @@ import {
   useUpdateLesson,
   useUpdateSlot,
 } from '@/data/mutations/lessons'
+import { useAddSeriesToSlot } from '@/data/mutations/series'
 import { useSaveLessonAsTemplate } from '@/data/mutations/templates'
 import { useBlocks, useEquipment, useExercises } from '@/data/queries/library'
 import { useLesson, type Lesson, type LessonStatus } from '@/data/queries/lessons'
 import { useCurrentUser } from '@/data/queries/profile'
+import { useSeries } from '@/data/queries/series'
 import { formatMinutes, lessonDuration, reorderIds } from '@/domain/lesson'
 import { LEVELS } from '@/domain/library'
 import { BlockCard } from './BlockCard'
 import { AddBlockDialog, SaveTemplateDialog } from './BuilderDialogs'
 import { EquipmentChips } from './EquipmentChips'
 import { ExercisePicker } from './ExercisePicker'
+import { SeriesPicker } from './SeriesPicker'
 
 const STATUSES: LessonStatus[] = ['draft', 'ready', 'taught']
 
@@ -91,6 +94,9 @@ function Builder({ lesson }: { lesson: Lesson }) {
   const moveItem = useMoveItem(lesson.id)
   const deleteItem = useDeleteItem(lesson.id)
   const [pickerSlotId, setPickerSlotId] = useState<string | null>(null)
+  const [seriesSlotId, setSeriesSlotId] = useState<string | null>(null)
+  const series = useSeries()
+  const addSeries = useAddSeriesToSlot(lesson.id)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -115,6 +121,7 @@ function Builder({ lesson }: { lesson: Lesson }) {
   )
 
   const pickerSlot = lesson.slots.find((s) => s.id === pickerSlotId)
+  const seriesSlot = lesson.slots.find((s) => s.id === seriesSlotId)
   const slotRefs = lesson.slots.map((s) => ({ id: s.id, label: s.label }))
 
   function onSlotDragEnd(e: DragEndEvent) {
@@ -267,6 +274,7 @@ function Builder({ lesson }: { lesson: Lesson }) {
                 otherSlots={slotRefs.filter((s) => s.id !== slot.id)}
                 onUpdateSlot={(patch) => updateSlot.mutate({ slotId: slot.id, ...patch })}
                 onAdd={() => setPickerSlotId(slot.id)}
+                onAddSeries={() => setSeriesSlotId(slot.id)}
                 onRemoveSlot={() => deleteSlot.mutate(slot.id)}
                 onReorderItems={(ids) => reorderItems.mutate({ slotId: slot.id, ids })}
                 onUpdateItem={(patch) => updateItem.mutate(patch)}
@@ -310,6 +318,17 @@ function Builder({ lesson }: { lesson: Lesson }) {
             },
           )
         }
+      />
+
+      <SeriesPicker
+        open={seriesSlot !== undefined}
+        onClose={() => setSeriesSlotId(null)}
+        blockName={seriesSlot ? (blockById.get(seriesSlot.blockId)?.name ?? '') : ''}
+        series={(series.data ?? []).filter((s) => s.blockId === seriesSlot?.blockId)}
+        exerciseById={exerciseById}
+        equipment={equipment.data ?? []}
+        available={available}
+        onPick={(s) => seriesSlot && addSeries.mutate({ slotId: seriesSlot.id, seriesId: s.id })}
       />
 
       <ExercisePicker

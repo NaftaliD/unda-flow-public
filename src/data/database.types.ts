@@ -255,6 +255,52 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"series": {
+                  Row: {
+                    "block_id": string,"created_at": string,"id": string,"name": string,"owner_id": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "block_id": string,"created_at"?: string,"id"?: string,"name": string,"owner_id"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "block_id"?: string,"created_at"?: string,"id"?: string,"name"?: string,"owner_id"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "series_block_id_fkey"
+      columns: ["block_id"]
+isOneToOne: false
+      referencedRelation: "blocks"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"series_items": {
+                  Row: {
+                    "exercise_id": string,"position": number,"series_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "exercise_id": string,"position"?: number,"series_id": string
+                  }
+                  Update: {
+                    "exercise_id"?: string,"position"?: number,"series_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "series_items_exercise_id_fkey"
+      columns: ["exercise_id"]
+isOneToOne: false
+      referencedRelation: "exercises"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "series_items_series_id_fkey"
+      columns: ["series_id"]
+isOneToOne: false
+      referencedRelation: "series"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"template_slots": {
                   Row: {
                     "block_id": string,"hint": string | null,"id": string,"is_optional": boolean,"label": string,"min_exercises": number | null,"position": number,"template_id": string
@@ -307,7 +353,10 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "create_lesson":
+            "add_series_to_slot":
+{ Args: { "p_series_id": string,"p_slot_id": string }; Returns: number
+                           },
+"create_lesson":
 { Args: { "payload": Json }; Returns: string
                            },
 "duplicate_lesson":
@@ -324,6 +373,9 @@ isOneToOne: false
                            },
 "save_lesson_as_template":
 { Args: { "p_lesson_id": string,"p_name": string }; Returns: string
+                           },
+"save_series":
+{ Args: { "payload": Json }; Returns: string
                            },
 "save_template":
 { Args: { "payload": Json }; Returns: string

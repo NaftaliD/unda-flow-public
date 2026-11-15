@@ -17,6 +17,8 @@ import { LessonBuilderPage } from '@/features/lessons/LessonBuilderPage'
 import { LessonListPage } from '@/features/lessons/LessonListPage'
 import { LessonPrintPage } from '@/features/lessons/LessonPrintPage'
 import { NewLessonPage } from '@/features/lessons/NewLessonPage'
+import { SeriesEditorPage } from '@/features/series/SeriesEditorPage'
+import { SeriesListPage } from '@/features/series/SeriesListPage'
 import { TemplateEditorPage } from '@/features/templates/TemplateEditorPage'
 import { TemplateListPage } from '@/features/templates/TemplateListPage'
 import { AppLayout } from './AppLayout'
@@ -85,6 +87,24 @@ const templateRoute = createRoute({
   component: TemplateEditorPage,
 })
 
+const seriesRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/series',
+  component: SeriesListPage,
+})
+
+const newSeriesRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/series/new',
+  component: SeriesEditorPage,
+})
+
+const seriesDetailRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/series/$id',
+  component: SeriesEditorPage,
+})
+
 const exercisesRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/exercises',
@@ -124,6 +144,9 @@ const routeTree = rootRoute.addChildren([
     templatesRoute,
     newTemplateRoute,
     templateRoute,
+    seriesRoute,
+    newSeriesRoute,
+    seriesDetailRoute,
     exercisesRoute,
     newExerciseRoute,
     exerciseRoute,

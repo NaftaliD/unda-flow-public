@@ -11,7 +11,8 @@
     "review": "Review",
     "home": "Home",
     "lessons": "Lessons",
-    "templates": "Templates"
+    "templates": "Templates",
+    "series": "Series"
   },
   "login": {
     "title": "Welcome back",
@@ -288,5 +289,41 @@
     },
     "edit": "Edit",
     "view": "View"
+  },
+  "series": {
+    "title": "Series",
+    "intro": "A series is a ready-made set of exercises for one block, added to a lesson in one click.",
+    "new": "New series",
+    "newTitle": "New series",
+    "back": "Back to series",
+    "notFound": "This series was not found.",
+    "mineHeading": "My series",
+    "sharedHeading": "Shared series",
+    "emptyMine": "You have no series of your own yet. Duplicate a shared one or create your own.",
+    "emptyShared": "There are no shared series yet.",
+    "exerciseCount_one": "{{count}} exercise",
+    "exerciseCount_other": "{{count}} exercises",
+    "confirmDelete": "Delete this series? Lessons that already used it are not affected.",
+    "readOnly": "This is a shared series. Duplicate it to edit your own copy.",
+    "adminEdit": "You can edit this shared series as an admin. Existing lessons are not affected.",
+    "addSeries": "Add series",
+    "added_one": "Added {{count}} exercise.",
+    "added_other": "Added {{count}} exercises.",
+    "picker": {
+      "title": "Add a series to {{block}}",
+      "none": "There are no series for this block yet. You can create one under Series."
+    },
+    "form": {
+      "name": "Name",
+      "block": "Block",
+      "exercises": "Exercises, in order",
+      "noExercises": "No exercises yet.",
+      "addExercise": "Add exercise",
+      "moveUp": "Move {{name}} up",
+      "moveDown": "Move {{name}} down",
+      "remove": "Remove {{name}}",
+      "save": "Save series",
+      "saveFailed": "Could not save the series."
+    }
   }
 }

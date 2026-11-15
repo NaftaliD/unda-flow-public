@@ -39,6 +39,7 @@ type Props = {
   otherSlots: { id: string; label: string }[]
   onUpdateSlot: (patch: Omit<SlotPatch, 'slotId'>) => void
   onAdd: () => void
+  onAddSeries: () => void
   onRemoveSlot: () => void
   onReorderItems: (ids: string[]) => void
   onUpdateItem: (patch: ItemPatch) => void
@@ -50,7 +51,7 @@ const dragHandle =
   'inline-flex size-8 shrink-0 cursor-grab items-center justify-center rounded-pill text-muted-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring touch-none'
 
 export function BlockCard(props: Props) {
-  const { slot, block, onUpdateSlot, onAdd, onRemoveSlot, onReorderItems } = props
+  const { slot, block, onUpdateSlot, onAdd, onAddSeries, onRemoveSlot, onReorderItems } = props
   const { t } = useTranslation()
   const {
     attributes,
@@ -167,6 +168,9 @@ export function BlockCard(props: Props) {
           <div className="flex flex-wrap items-center gap-3">
             <Button size="sm" onClick={onAdd}>
               {t('lessons.builder.addExercise')}
+            </Button>
+            <Button size="sm" variant="outline" onClick={onAddSeries}>
+              {t('series.addSeries')}
             </Button>
           </div>
           <SlotNotes slot={slot} onSave={(notes) => onUpdateSlot({ notes })} />

@@ -2,11 +2,11 @@ name,block_key,equipment,level,series
 Pelvic Curl,warm_up,mat|reformer|cadillac,fundamental,
 Chest Lift,warm_up,mat|reformer|cadillac,fundamental,
 Spine Twist Supine,warm_up,mat|reformer|cadillac,fundamental,
-Calf Raises,foot_work,reformer,fundamental,
+Calf Raises,foot_work,reformer,fundamental,Reformer foot work
 Calf Raises,foot_work,chair,fundamental,
 Calf Raises,foot_work,cadillac,fundamental,
-Heels,foot_work,reformer,fundamental,
-Arches,foot_work,reformer,fundamental,
+Heels,foot_work,reformer,fundamental,Reformer foot work
+Arches,foot_work,reformer,fundamental,Reformer foot work
 Hundred Prep,abdominal,mat|reformer,fundamental,
 Short Box Round Back,abdominal,reformer+box,intermediate,
 Frog,hip_work,reformer,fundamental,
@@ -20,7 +20,7 @@ Long Spine,fbi,reformer,advanced,
 Teaser Prep,fbi,mat|reformer,intermediate,
 Side Splits,leg_work,reformer,intermediate,
 Side Bend,lateral_rotation,reformer,intermediate,
-Arm Circles,arm_work,reformer,fundamental,
-Rowing Prep,arm_work,reformer,fundamental,
-Biceps Curl,arm_work,reformer,fundamental,
+Arm Circles,arm_work,reformer,fundamental,Arms sample
+Rowing Prep,arm_work,reformer,fundamental,Arms sample
+Biceps Curl,arm_work,reformer,fundamental,Arms sample
 Swan Prep,back_extension,mat|reformer,fundamental,

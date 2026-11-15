@@ -11,6 +11,8 @@ export type ImportExercise = {
   level: string
   review_status: 'needs_review'
 }
+export type ImportSeries = { id: string; owner_id: null; block_id: string; name: string }
+export type ImportSeriesItem = { series_id: string; exercise_id: string; position: number }
 export type ImportRequirement = { exercise_id: string; equipment_id: string; alt_group: number }
 
 const LEVELS = new Set(['fundamental', 'intermediate', 'advanced'])
@@ -40,6 +42,7 @@ export function buildImport(csvText: string, lookups: Lookups) {
   const exercises: ImportExercise[] = []
   const requirements: ImportRequirement[] = []
   const seen = new Set<string>()
+  const seriesByName = new Map<string, { blockId: string; exerciseIds: string[] }>()
 
   rows.forEach((row, i) => {
     const line = i + 2
@@ -47,6 +50,7 @@ export function buildImport(csvText: string, lookups: Lookups) {
     const blockKey = (row.block_key ?? '').trim()
     const level = (row.level ?? '').trim()
     const spec = (row.equipment ?? '').trim()
+    const seriesName = (row.series ?? '').trim()
 
     if (!name) errors.push(`line ${line}: empty name`)
     const blockId = lookups.blocksByKey.get(blockKey)
@@ -65,6 +69,14 @@ export function buildImport(csvText: string, lookups: Lookups) {
     seen.add(id)
 
     if (!name || !blockId || !LEVELS.has(level)) return
+    if (seriesName) {
+      const entry = seriesByName.get(seriesName) ?? { blockId, exerciseIds: [] }
+      if (entry.blockId !== blockId) {
+        errors.push(`line ${line}: series "${seriesName}" mixes blocks`)
+      }
+      entry.exerciseIds.push(id)
+      seriesByName.set(seriesName, entry)
+    }
     exercises.push({
       id,
       owner_id: null,
@@ -83,5 +95,15 @@ export function buildImport(csvText: string, lookups: Lookups) {
   })
 
   if (errors.length > 0) throw new Error(`CSV validation failed:\n${errors.join('\n')}`)
-  return { exercises, requirements }
+
+  const series: ImportSeries[] = []
+  const seriesItems: ImportSeriesItem[] = []
+  for (const [name, { blockId, exerciseIds }] of seriesByName) {
+    const id = uuidV5(`series|${name}`)
+    series.push({ id, owner_id: null, block_id: blockId, name })
+    exerciseIds.forEach((exercise_id, position) =>
+      seriesItems.push({ series_id: id, exercise_id, position }),
+    )
+  }
+  return { exercises, requirements, series, seriesItems }
 }
