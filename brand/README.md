@@ -11,16 +11,26 @@ These files are the brand's property and are **not covered by the code licence**
 | `UNDA_Brand_Identity_Board.svg` | Overview board: primary (vertical), secondary (horizontal), submark, stamp and logo-in-circle variants on the four brand backgrounds, plus the colour palette. |
 | `UNDA_Submark_Logo_Grid.svg`    | The circled "U" submark and the stamp variant on each background.                                                                                              |
 
-**Important:** despite the `.svg` extension, each file is a single raster PNG embedded in an SVG wrapper. They are presentation boards, not production logos: the artwork sits on opaque coloured backgrounds, is not scalable, and must not be used as the app logo or favicon.
+**Note:** despite the `.svg` extension, each file is a single raster PNG embedded in an SVG wrapper (the artwork was AI-generated, so there are no original vectors). They are presentation boards, not production logos.
 
-## Still needed from the designer
+## Logos used by the app (`public/brand/`)
 
-Original **vector** SVGs (transparent background), per PLAN.md section 3 and `public/brand/README.md`:
+`brand/extract_logos.py` keys each logo variant out of its own coloured background on the boards and writes transparent PNGs (needs Pillow and NumPy; a dev-time tool, not part of the build):
 
-- horizontal logo (app bar and login screen), plus a light-on-dark variant for the olive app bar
-- circled "U" submark (favicon and PWA icon)
+| File                                                             | Use                                                          |
+| ---------------------------------------------------------------- | ------------------------------------------------------------ |
+| `logo-compact-light.png`                                         | App bar (olive background). Tagline dropped for small sizes. |
+| `logo-horizontal-dark.png` / `-light.png`                        | Login screen and print header (full lockup with tagline).    |
+| `logo-compact-dark.png`, `submark-light.png`, `submark-dark.png` | Spare variants for later (install icons, teach view).        |
+| `favicon-48.png`, `apple-touch-icon.png`                         | Dark submark flattened on cream.                             |
 
-Never redraw, trace or approximate the logo in code. Until the vectors arrive, `src/components/Logo.tsx` stays a text placeholder.
+**Each tone must stay on its own background:** `light` artwork (cream) only on olive/dark surfaces, `dark` artwork only on cream surfaces and print. Keyed this way the result is clean; mixing them leaves halos.
+
+Limits of raster logos: native height is about 70 to 95 px, so keep display heights at or below roughly half of that for sharp screens (the app uses 28 to 96 px CSS height), and print is slightly soft. A 512 px install icon would need upscaling; ask for a larger or vector version before Increment 4's install work, or regenerate the submark at higher resolution.
+
+## If the designer later supplies vectors
+
+Replace the PNGs, keep the file names or update `src/components/Logo.tsx` (its API stays), and delete `extract_logos.py`.
 
 ## Colours stated on the board
 

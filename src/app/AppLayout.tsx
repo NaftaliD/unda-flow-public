@@ -47,7 +47,7 @@ export function AppLayout() {
             aria-label={t('nav.home')}
             className="rounded-pill focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
           >
-            <Logo />
+            <Logo kind="compact" tone="light" className="h-7 sm:h-9" />
           </Link>
           <nav aria-label={t('nav.main')} className="flex items-center gap-1 text-sm font-semibold">
             <NavLink to="/">{t('nav.lessons')}</NavLink>
@@ -57,7 +57,12 @@ export function AppLayout() {
         </div>
         <div className="flex items-center gap-1">
           <LanguageSwitcher />
-          <Button variant="ghost" size="sm" onClick={() => void onSignOut()}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="whitespace-nowrap"
+            onClick={() => void onSignOut()}
+          >
             {t('nav.signOut')}
           </Button>
         </div>

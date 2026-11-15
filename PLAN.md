@@ -44,7 +44,7 @@ Rules:
 - Body text: `ink` on cream, or cream on olive. Terracotta and sage do **not** have enough contrast for small text on cream; use them for accents, icons, large text, and fills only. Check every text/background pair against WCAG AA.
 - Typography: a clean sans that covers Latin and Hebrew (e.g. Assistant or Heebo) for UI; section labels in uppercase with wide letter-spacing (Latin only) to echo the brand sheet. Generous whitespace, thin rules, rounded-full outline shapes like the submark.
 - Logo: use the designer's **original vector files** (SVG) in `public/brand/` — horizontal logo in the app bar and login screen, the circled "U" submark as favicon/PWA icon. Never redraw or approximate the logo in code. Until SVGs are supplied, use a text placeholder, not the JPEGs.
-- Received so far: two raster brand boards (SVG wrappers around PNGs), stored in `brand/reference/` for reference. They are not usable as logos, so the original vectors are still outstanding (needed by Increment 4).
+- The brand artwork is AI-generated raster (two boards, stored in `brand/reference/`); there are no original vectors. `brand/extract_logos.py` keys transparent PNG logos out of them into `public/brand/`, used by `src/components/Logo.tsx` (the "original SVG only" rule above is relaxed for this reason). Larger or vector versions are still desirable for the Increment 4 install icons.
 - The terracotta wave may be reused as a subtle divider/empty-state motif.
 - Light theme (cream) is the default; an olive dark theme is optional polish in Increment 4.
 
