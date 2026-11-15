@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -8,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
 import { useCreateLesson } from '@/data/mutations/lessons'
 import { useBlocks, useEquipment } from '@/data/queries/library'
-import { buildDefaultSlots } from '@/domain/lesson'
+import { useTemplates } from '@/data/queries/templates'
 import { LEVELS } from '@/domain/library'
 import { lessonFormSchema, type LessonFormInput, type LessonFormValues } from '@/domain/schemas'
 import { EquipmentChips } from './EquipmentChips'
@@ -24,7 +25,10 @@ export function NewLessonPage() {
   const navigate = useNavigate()
   const blocks = useBlocks()
   const equipment = useEquipment()
+  const templates = useTemplates()
   const create = useCreateLesson()
+  // undefined = not chosen yet: default to the first shared template. '' = blank lesson.
+  const [chosenTemplate, setChosenTemplate] = useState<string | undefined>(undefined)
   const {
     register,
     control,
@@ -41,16 +45,18 @@ export function NewLessonPage() {
     },
   })
 
-  if (blocks.isPending || equipment.isPending) {
+  if (blocks.isPending || equipment.isPending || templates.isPending) {
     return <p className="p-6 text-sm text-muted-foreground">{t('lessons.loading')}</p>
   }
 
+  const templateList = templates.data ?? []
+  const templateId = chosenTemplate ?? templateList.find((x) => x.ownerId === null)?.id ?? ''
+  const template = templateList.find((x) => x.id === templateId)
+
   async function onSubmit(values: LessonFormValues) {
     try {
-      // The 12-slot default is hard-coded until templates arrive (Increment 3).
-      const slots = buildDefaultSlots(blocks.data ?? [])
-      const methodId = blocks.data?.find((b) => b.id === slots[0]!.blockId)?.methodId ?? ''
-      const id = await create.mutateAsync({ ...values, methodId, slots })
+      const methodId = template?.methodId ?? blocks.data?.[0]?.methodId ?? ''
+      const id = await create.mutateAsync({ ...values, methodId, templateId: template?.id ?? null })
       await navigate({ to: '/lessons/$id', params: { id } })
     } catch {
       /* surfaced via create.isError */
@@ -110,6 +116,22 @@ export function NewLessonPage() {
               {...register('targetDurationMin')}
             />
           </div>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="template">{t('lessons.form.template')}</Label>
+          <Select
+            id="template"
+            value={templateId}
+            onChange={(e) => setChosenTemplate(e.target.value)}
+          >
+            {templateList.map((x) => (
+              <option key={x.id} value={x.id}>
+                {x.name}
+              </option>
+            ))}
+            <option value="">{t('lessons.form.templateBlank')}</option>
+          </Select>
+          <p className="text-sm text-muted-foreground">{t('lessons.form.templateHint')}</p>
         </div>
         <div className="flex flex-col gap-2">
           <Label>{t('lessons.form.equipment')}</Label>

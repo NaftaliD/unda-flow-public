@@ -4,12 +4,16 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Block, Equipment, Exercise } from '@/data/queries/library'
 import type { Lesson, LessonSummary } from '@/data/queries/lessons'
+import type { Template } from '@/data/queries/templates'
 
 const state = vi.hoisted(() => ({
   lessons: [] as unknown[],
   lesson: null as unknown,
   exercises: [] as unknown[],
+  templates: [] as unknown[],
+  create: vi.fn(),
   addItem: vi.fn(),
+  deleteSlot: vi.fn(),
   updateSlot: vi.fn(),
   stub: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, isError: false }),
 }))
@@ -27,8 +31,24 @@ vi.mock('@/data/queries/profile', () => ({
 }))
 
 const blocks: Block[] = [
-  { id: 'b-warm', methodId: 'm1', key: 'warm_up', name: 'Warm-up', goal: null, position: 1 },
-  { id: 'b-arm', methodId: 'm1', key: 'arm_work', name: 'Arm work', goal: null, position: 10 },
+  {
+    id: 'b-warm',
+    ownerId: null,
+    methodId: 'm1',
+    key: 'warm_up',
+    name: 'Warm-up',
+    goal: null,
+    position: 1,
+  },
+  {
+    id: 'b-arm',
+    ownerId: null,
+    methodId: 'm1',
+    key: 'arm_work',
+    name: 'Arm work',
+    goal: null,
+    position: 10,
+  },
 ]
 const equipment: Equipment[] = [
   { id: 'e-ref', key: 'reformer', name: 'Reformer', kind: 'apparatus' },
@@ -61,7 +81,7 @@ vi.mock('@/data/queries/lessons', () => ({
   useLesson: () => ({ data: state.lesson, isPending: false }),
 }))
 vi.mock('@/data/mutations/lessons', () => ({
-  useCreateLesson: state.stub,
+  useCreateLesson: () => ({ ...state.stub(), mutateAsync: state.create }),
   useDuplicateLesson: state.stub,
   useDeleteLesson: state.stub,
   useUpdateLesson: state.stub,
@@ -73,6 +93,22 @@ vi.mock('@/data/mutations/lessons', () => ({
   useUpdateItem: state.stub,
   useMoveItem: state.stub,
   useDeleteItem: state.stub,
+  useAddSlot: state.stub,
+  useDeleteSlot: () => ({ ...state.stub(), mutate: state.deleteSlot }),
+}))
+vi.mock('@/data/queries/templates', () => ({
+  templateKeys: {},
+  useTemplates: () => ({ data: state.templates, isPending: false }),
+}))
+vi.mock('@/data/mutations/templates', () => ({
+  useSaveLessonAsTemplate: state.stub,
+  useDuplicateTemplate: state.stub,
+  useDeleteTemplate: state.stub,
+  useSaveTemplate: state.stub,
+}))
+vi.mock('@/data/mutations/blocks', () => ({
+  useSaveBlock: state.stub,
+  useDeleteBlock: state.stub,
 }))
 
 import i18n from '@/app/i18n'
@@ -109,6 +145,15 @@ const item = (id: string, slotId: string, exerciseId: string, durationSec: numbe
   notes: null,
 })
 
+const tpl = (over: Partial<Template> & { id: string; name: string }): Template => ({
+  ownerId: null,
+  methodId: 'm1',
+  description: null,
+  targetDurationMin: null,
+  slots: [],
+  ...over,
+})
+
 function makeLesson(): Lesson {
   return {
     ...summary({ id: 'l1', title: 'Monday class', level: 'intermediate', targetDurationMin: 55 }),
@@ -123,6 +168,9 @@ function makeLesson(): Lesson {
         label: 'Warm-up',
         isSkipped: false,
         notes: null,
+        hint: 'Use a series if you can.',
+        isOptional: true,
+        minExercises: 3,
         items: [
           { ...item('i1', 's1', 'x-curl', 120), position: 0 },
           { ...item('i2', 's1', 'x-ring', null), position: 1 },
@@ -135,6 +183,9 @@ function makeLesson(): Lesson {
         label: 'Arm work',
         isSkipped: true,
         notes: null,
+        hint: null,
+        isOptional: false,
+        minExercises: null,
         items: [item('i3', 's2', 'x-arm', 600)],
       },
     ],
@@ -144,6 +195,12 @@ function makeLesson(): Lesson {
 describe('lessons', () => {
   beforeEach(async () => {
     state.addItem.mockReset()
+    state.deleteSlot.mockReset()
+    state.create.mockReset().mockResolvedValue('new1')
+    state.templates = [
+      tpl({ id: 't-own', ownerId: 'u1', name: 'My short class' }),
+      tpl({ id: 't-shared', ownerId: null, name: 'Apparatus class' }),
+    ]
     state.updateSlot.mockReset()
     state.lessons = []
     state.lesson = makeLesson()
@@ -236,6 +293,58 @@ describe('lessons', () => {
     const warmCard = screen.getByText('Warm-up', { selector: 'h3' }).closest('li')!
     await userEvent.click(within(warmCard).getByRole('button', { name: 'Skip block' }))
     expect(state.updateSlot).toHaveBeenCalledWith({ slotId: 's1', isSkipped: true })
+  })
+
+  it('shows the template hints on a block, with the optional badge and the usual minimum', async () => {
+    renderAt('/lessons/l1')
+    await screen.findByText('Pelvic Curl')
+    const warmCard = screen.getByText('Warm-up', { selector: 'h3' }).closest('li')!
+    expect(within(warmCard).getByText('Use a series if you can.')).toBeInTheDocument()
+    expect(within(warmCard).getByText('Optional')).toBeInTheDocument()
+    expect(within(warmCard).getByText('Usually 3+ exercises')).toBeInTheDocument()
+  })
+
+  it('removes a block, asking first when it has exercises', async () => {
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true)
+    renderAt('/lessons/l1')
+    await screen.findByText('Pelvic Curl')
+    const warmCard = screen.getByText('Warm-up', { selector: 'h3' }).closest('li')!
+    await userEvent.click(within(warmCard).getByRole('button', { name: 'Remove block Warm-up' }))
+    expect(confirm).toHaveBeenCalled()
+    expect(state.deleteSlot).toHaveBeenCalledWith('s1')
+    confirm.mockRestore()
+  })
+
+  it('new lesson defaults to the shared template', async () => {
+    renderAt('/lessons/new')
+    const select = await screen.findByLabelText('Template')
+    expect(select).toHaveValue('t-shared')
+
+    await userEvent.type(screen.getByLabelText('Title'), 'Tuesday')
+    await userEvent.click(screen.getByRole('button', { name: 'Create lesson' }))
+    expect(state.create).toHaveBeenLastCalledWith(
+      expect.objectContaining({ title: 'Tuesday', templateId: 't-shared', methodId: 'm1' }),
+    )
+  })
+
+  it('new lesson can start blank', async () => {
+    renderAt('/lessons/new')
+    await userEvent.selectOptions(await screen.findByLabelText('Template'), '')
+    await userEvent.type(screen.getByLabelText('Title'), 'Blank one')
+    await userEvent.click(screen.getByRole('button', { name: 'Create lesson' }))
+    expect(state.create).toHaveBeenLastCalledWith(expect.objectContaining({ templateId: null }))
+  })
+
+  it('templates page: a normal user can view and duplicate a shared template, not edit it', async () => {
+    renderAt('/templates')
+    const shared = (await screen.findByText('Apparatus class')).closest('li')!
+    expect(within(shared).getByRole('link', { name: 'View' })).toBeInTheDocument()
+    expect(within(shared).getByRole('button', { name: 'Duplicate as mine' })).toBeInTheDocument()
+    expect(within(shared).queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument()
+
+    const own = screen.getByText('My short class').closest('li')!
+    expect(within(own).getByRole('link', { name: 'Edit' })).toBeInTheDocument()
+    expect(within(own).getByRole('button', { name: 'Delete' })).toBeInTheDocument()
   })
 
   it('print view leaves out skipped blocks', async () => {

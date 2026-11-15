@@ -1,31 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
-  buildDefaultSlots,
-  DEFAULT_BLOCK_SLOTS,
   formatMinutes,
   itemWarnings,
   lessonDuration,
   moveInList,
   pickerEntries,
   reorderIds,
-  slotHint,
 } from './lesson'
 import type { LibraryExercise } from './library'
-
-const BLOCK_KEYS = [
-  'warm_up',
-  'foot_work',
-  'abdominal',
-  'hip_work',
-  'stretch',
-  'spinal_articulation',
-  'fbi',
-  'leg_work',
-  'lateral_rotation',
-  'arm_work',
-  'back_extension',
-]
-const blocks = BLOCK_KEYS.map((key) => ({ id: `id-${key}`, key }))
 
 function ex(over: Partial<LibraryExercise> & { id: string }): LibraryExercise {
   return {
@@ -39,42 +21,6 @@ function ex(over: Partial<LibraryExercise> & { id: string }): LibraryExercise {
     ...over,
   }
 }
-
-describe('default slots', () => {
-  it('has the 12 slots of the block-method template, in order', () => {
-    expect(DEFAULT_BLOCK_SLOTS.map((s) => s.label)).toEqual([
-      'Warm-up',
-      'Foot work',
-      'Abdominal',
-      'Hip work',
-      'Stretch',
-      'Articulation',
-      'FBI 1',
-      'Extra leg',
-      'Lateral / rotation',
-      'FBI 2',
-      'Arm work',
-      'Back extension',
-    ])
-  })
-
-  it('resolves keys to block ids, with FBI twice', () => {
-    const slots = buildDefaultSlots(blocks)
-    expect(slots).toHaveLength(12)
-    expect(slots[6]).toEqual({ blockId: 'id-fbi', label: 'FBI 1' })
-    expect(slots[9]).toEqual({ blockId: 'id-fbi', label: 'FBI 2' })
-  })
-
-  it('throws when a block is missing', () => {
-    expect(() => buildDefaultSlots(blocks.filter((b) => b.key !== 'arm_work'))).toThrow(/arm_work/)
-  })
-
-  it('finds hints by block and label', () => {
-    expect(slotHint('arm_work', 'Arm work')).toMatch(/3/)
-    expect(slotHint('warm_up', 'Warm-up')).toBeUndefined()
-    expect(slotHint('arm_work', 'Renamed')).toBeUndefined()
-  })
-})
 
 describe('lessonDuration', () => {
   it('sums item durations, falls back to defaults, counts the unknown', () => {

@@ -11,7 +11,7 @@ function NavLink({
   to,
   children,
 }: {
-  to: '/' | '/exercises' | '/admin/review'
+  to: '/' | '/exercises' | '/templates' | '/admin/review'
   children: ReactNode
 }) {
   return (
@@ -52,6 +52,7 @@ export function AppLayout() {
           <nav aria-label={t('nav.main')} className="flex items-center gap-1 text-sm font-semibold">
             <NavLink to="/">{t('nav.lessons')}</NavLink>
             <NavLink to="/exercises">{t('nav.library')}</NavLink>
+            <NavLink to="/templates">{t('nav.templates')}</NavLink>
             {isAdmin && <NavLink to="/admin/review">{t('nav.review')}</NavLink>}
           </nav>
         </div>

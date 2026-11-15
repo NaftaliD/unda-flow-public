@@ -25,7 +25,8 @@ import { Textarea } from '@/components/ui/textarea'
 import type { Block, Exercise } from '@/data/queries/library'
 import type { ItemPatch, SlotPatch } from '@/data/mutations/lessons'
 import type { LessonItem, LessonSlot } from '@/data/queries/lessons'
-import { itemWarnings, reorderIds, slotHint } from '@/domain/lesson'
+import { itemWarnings, reorderIds } from '@/domain/lesson'
+import { slotHintInfo } from '@/domain/template'
 import { describeBonus } from '@/domain/library'
 
 type Props = {
@@ -38,6 +39,7 @@ type Props = {
   otherSlots: { id: string; label: string }[]
   onUpdateSlot: (patch: Omit<SlotPatch, 'slotId'>) => void
   onAdd: () => void
+  onRemoveSlot: () => void
   onReorderItems: (ids: string[]) => void
   onUpdateItem: (patch: ItemPatch) => void
   onMoveItem: (itemId: string, toSlotId: string) => void
@@ -48,7 +50,7 @@ const dragHandle =
   'inline-flex size-8 shrink-0 cursor-grab items-center justify-center rounded-pill text-muted-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring touch-none'
 
 export function BlockCard(props: Props) {
-  const { slot, block, onUpdateSlot, onAdd, onReorderItems } = props
+  const { slot, block, onUpdateSlot, onAdd, onRemoveSlot, onReorderItems } = props
   const { t } = useTranslation()
   const {
     attributes,
@@ -63,7 +65,7 @@ export function BlockCard(props: Props) {
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
-  const hint = slotHint(block?.key, slot.label)
+  const info = slotHintInfo(slot, slot.items.length)
 
   function onItemDragEnd(e: DragEndEvent) {
     if (!e.over || e.active.id === e.over.id) return
@@ -100,15 +102,23 @@ export function BlockCard(props: Props) {
           <h3 className="flex flex-wrap items-center gap-2 text-base font-semibold">
             {slot.label}
             {slot.isSkipped && <Badge tone="outline">{t('lessons.builder.skipped')}</Badge>}
+            {info.optional && !slot.isSkipped && (
+              <Badge tone="outline">{t('lessons.builder.optional')}</Badge>
+            )}
           </h3>
           {block && block.name !== slot.label && (
             <p dir="auto" className="text-sm text-muted-foreground">
               {block.name}
             </p>
           )}
-          {hint && (
+          {info.hint && (
             <p dir="auto" className="text-sm text-muted-foreground">
-              {hint}
+              {info.hint}
+            </p>
+          )}
+          {info.belowMin !== null && (
+            <p className="text-sm text-muted-foreground">
+              {t('lessons.builder.usually', { count: info.belowMin })}
             </p>
           )}
         </div>
@@ -118,6 +128,17 @@ export function BlockCard(props: Props) {
           onClick={() => onUpdateSlot({ isSkipped: !slot.isSkipped })}
         >
           {slot.isSkipped ? t('lessons.builder.include') : t('lessons.builder.skip')}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          aria-label={t('lessons.builder.removeBlock', { label: slot.label })}
+          onClick={() => {
+            if (slot.items.length === 0 || window.confirm(t('lessons.builder.removeBlockConfirm')))
+              onRemoveSlot()
+          }}
+        >
+          <X className="size-4" aria-hidden />
         </Button>
       </div>
 

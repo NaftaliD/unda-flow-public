@@ -151,15 +151,16 @@ equipment_preset_items  preset_id, equipment_id
 
 templates           id, owner_id?, method_id, name, description, target_duration_min
 template_slots      id, template_id, block_id, position, label, is_optional,
-                    min_exercises, notes
+                    min_exercises, hint
                     -- the same block may appear twice (FBI 1 / FBI 2), distinguished by label
 
 lessons             id, owner_id, method_id, template_id?, title, lesson_date, level,
                     target_duration_min, notes, status ('draft'|'ready'|'taught'),
                     created_at, updated_at
 lesson_equipment    lesson_id, equipment_id
-lesson_slots        id, lesson_id, block_id, position, label, is_skipped, notes
-                    -- copied from the template at creation, then freely editable
+lesson_slots        id, lesson_id, block_id, position, label, is_skipped, notes,
+                    hint, is_optional, min_exercises
+                    -- copied from the template at creation (hint columns included), then freely editable
 lesson_items        id, lesson_slot_id, exercise_id, position,
                     reps?, duration_sec?, springs?, notes?
 ```
@@ -276,6 +277,7 @@ Each increment is a vertical slice: migration + data layer + UI + tests, deploye
 - **Done when:** the partner plans a real lesson, prints it, and teaches from it.
 
 ### Increment 3 — Templates, series, presets
+- **Status:** 3a (templates + custom blocks) built; 3b (series) and 3c (presets) to do. 3a: the 12-block default is now the seeded shared template (fixed id `5f0b7a52-3c8e-4d1a-9b64-2e7c1a9d0b01`); `create_lesson` takes `template_id` (blank lesson when omitted); the soft-hint columns live on `lesson_slots`; builder can add/remove blocks and "Save as template"; `/templates` lists shared + own with an editor (admins edit shared; others duplicate) and a "My blocks" panel; RPCs `save_template`, `save_lesson_as_template`, `reorder('template_slots')`. `DEFAULT_BLOCK_SLOTS` is gone. The mat-class template is still **not** defined (instructor's content).
 - Migrations: `templates`, `template_slots`, `series`, `series_items`, `equipment_presets`, `equipment_preset_items`; move the 12-block default into a seeded shared template.
 - F5, F6; template step and "Add series" in F3; presets in the equipment step; admin editing of shared templates and series.
 - **Done when:** a new lesson from a template + preset takes under a minute to set up.

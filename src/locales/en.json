@@ -10,7 +10,8 @@
     "library": "Library",
     "review": "Review",
     "home": "Home",
-    "lessons": "Lessons"
+    "lessons": "Lessons",
+    "templates": "Templates"
   },
   "login": {
     "title": "Welcome back",
@@ -162,7 +163,10 @@
       "create": "Create lesson",
       "creating": "Creating…",
       "createFailed": "Could not create the lesson. Please try again.",
-      "required": "This field is required"
+      "required": "This field is required",
+      "template": "Template",
+      "templateBlank": "Blank lesson (add blocks yourself)",
+      "templateHint": "The template sets the blocks of the lesson. You can still add, remove or reorder them."
     },
     "builder": {
       "print": "Print / PDF",
@@ -192,7 +196,23 @@
       "warnings": {
         "unavailable": "Needs equipment that is not ticked",
         "archived": "Archived"
-      }
+      },
+      "addBlock": "Add block",
+      "addBlockTitle": "Add a block",
+      "blockType": "Block",
+      "blockLabel": "Label",
+      "blockAdd": "Add",
+      "removeBlock": "Remove block {{label}}",
+      "removeBlockConfirm": "Remove this block and the exercises in it?",
+      "optional": "Optional",
+      "usually": "Usually {{count}}+ exercises",
+      "noBlocks": "This lesson has no blocks yet. Add one to start.",
+      "saveAsTemplate": "Save as template",
+      "templateName": "Template name",
+      "templateSaved": "Saved as a template.",
+      "templateSaveFailed": "Could not save the template.",
+      "cancel": "Cancel",
+      "save": "Save"
     },
     "picker": {
       "title": "Add to {{block}}",
@@ -213,5 +233,60 @@
       "seconds": "{{count}} s",
       "springs": "springs {{value}}"
     }
+  },
+  "templates": {
+    "title": "Templates",
+    "intro": "A template is the list of blocks a new lesson starts with.",
+    "new": "New template",
+    "newTitle": "New template",
+    "back": "Back to templates",
+    "loading": "Loading…",
+    "notFound": "This template was not found.",
+    "shared": "Shared",
+    "mine": "Mine",
+    "sharedHeading": "Shared templates",
+    "mineHeading": "My templates",
+    "emptyMine": "You have no templates of your own yet. Duplicate a shared one, or save a lesson as a template.",
+    "slotCount_one": "{{count}} block",
+    "slotCount_other": "{{count}} blocks",
+    "duplicate": "Duplicate as mine",
+    "delete": "Delete",
+    "confirmDelete": "Delete this template? Lessons already made from it are not affected.",
+    "readOnly": "This is a shared template. Duplicate it to edit your own copy.",
+    "adminEdit": "You can edit this shared template as an admin. Existing lessons are not affected.",
+    "publish": "Publish to the shared library",
+    "form": {
+      "name": "Name",
+      "description": "Description",
+      "target": "Target duration (minutes)",
+      "blocks": "Blocks",
+      "block": "Block",
+      "label": "Label",
+      "optional": "Optional",
+      "minExercises": "Usually at least",
+      "hint": "Hint shown in the builder",
+      "addSlot": "Add block",
+      "removeSlot": "Remove block {{label}}",
+      "dragSlot": "Reorder {{label}}",
+      "noSlots": "No blocks yet.",
+      "required": "This field is required",
+      "save": "Save template",
+      "saving": "Saving…",
+      "saved": "Saved.",
+      "saveFailed": "Could not save the template."
+    },
+    "blocks": {
+      "title": "My blocks",
+      "intro": "Your own block types. They appear in templates, lessons and the library.",
+      "name": "Name",
+      "goal": "What it is for (optional)",
+      "add": "Add block",
+      "delete": "Delete",
+      "inUse": "This block is still used by an exercise, lesson or template.",
+      "empty": "You have no custom blocks yet.",
+      "saveFailed": "Could not save the block."
+    },
+    "edit": "Edit",
+    "view": "View"
   }
 }

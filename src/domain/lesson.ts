@@ -1,50 +1,6 @@
 import { isExerciseAvailable, type Requirement } from './equipment'
 import { filterExercises, LEVELS, type Level, type LibraryExercise } from './library'
 
-export type SlotTemplate = { blockKey: string; label: string; hint?: string }
-
-/**
- * TEMPORARY hard-coded default (PLAN.md section 7, "Apparatus class - 12 blocks").
- * Increment 3 replaces this with a seeded shared template. Hints are shown in the builder only.
- */
-export const DEFAULT_BLOCK_SLOTS: readonly SlotTemplate[] = [
-  { blockKey: 'warm_up', label: 'Warm-up' },
-  { blockKey: 'foot_work', label: 'Foot work', hint: 'Suggest adding a whole series.' },
-  { blockKey: 'abdominal', label: 'Abdominal', hint: '1–2 exercises.' },
-  { blockKey: 'hip_work', label: 'Hip work' },
-  { blockKey: 'stretch', label: 'Stretch', hint: 'May swap with Articulation for flow.' },
-  {
-    blockKey: 'spinal_articulation',
-    label: 'Articulation',
-    hint: 'May swap with Stretch for flow.',
-  },
-  { blockKey: 'fbi', label: 'FBI 1' },
-  { blockKey: 'leg_work', label: 'Extra leg', hint: 'Often dropped or merged in large groups.' },
-  { blockKey: 'lateral_rotation', label: 'Lateral / rotation' },
-  {
-    blockKey: 'fbi',
-    label: 'FBI 2',
-    hint: 'Usually harder than FBI 1; large groups do only one.',
-  },
-  { blockKey: 'arm_work', label: 'Arm work', hint: 'A series of at least 3 exercises.' },
-  { blockKey: 'back_extension', label: 'Back extension' },
-]
-
-/** Resolve the default slots to block ids. Throws if a block key is not in `blocks`. */
-export function buildDefaultSlots(
-  blocks: readonly { id: string; key: string }[],
-): { blockId: string; label: string }[] {
-  return DEFAULT_BLOCK_SLOTS.map((s) => {
-    const block = blocks.find((b) => b.key === s.blockKey)
-    if (!block) throw new Error(`Missing block: ${s.blockKey}`)
-    return { blockId: block.id, label: s.label }
-  })
-}
-
-export function slotHint(blockKey: string | undefined, label: string): string | undefined {
-  return DEFAULT_BLOCK_SLOTS.find((s) => s.blockKey === blockKey && s.label === label)?.hint
-}
-
 export type DurationItem = { durationSec: number | null; defaultDurationSec: number | null }
 
 /** Sum of item durations (falling back to the exercise default); items with neither are counted. */

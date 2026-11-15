@@ -22,6 +22,9 @@ export type LessonSlot = {
   label: string
   isSkipped: boolean
   notes: string | null
+  hint: string | null
+  isOptional: boolean
+  minExercises: number | null
   items: LessonItem[]
 }
 
@@ -78,7 +81,7 @@ export function useLesson(id: string) {
       const { data, error } = await supabase
         .from('lessons')
         .select(
-          'id, method_id, title, lesson_date, level, target_duration_min, notes, status, updated_at, lesson_equipment(equipment_id), lesson_slots(id, block_id, position, label, is_skipped, notes, lesson_items(id, lesson_slot_id, exercise_id, position, reps, duration_sec, springs, notes))',
+          'id, method_id, title, lesson_date, level, target_duration_min, notes, status, updated_at, lesson_equipment(equipment_id), lesson_slots(id, block_id, position, label, is_skipped, notes, hint, is_optional, min_exercises, lesson_items(id, lesson_slot_id, exercise_id, position, reps, duration_sec, springs, notes))',
         )
         .eq('id', id)
         .maybeSingle()
@@ -103,6 +106,9 @@ export function useLesson(id: string) {
             label: s.label,
             isSkipped: s.is_skipped,
             notes: s.notes,
+            hint: s.hint,
+            isOptional: s.is_optional,
+            minExercises: s.min_exercises,
             items: s.lesson_items
               .map((i) => ({
                 id: i.id,

@@ -13,7 +13,8 @@ import { supabase } from '../supabaseClient'
 
 export type NewLessonInput = LessonFormValues & {
   methodId: string
-  slots: { blockId: string; label: string }[]
+  /** null = a blank lesson (no slots). */
+  templateId: string | null
 }
 
 export function useCreateLesson() {
@@ -28,7 +29,7 @@ export function useCreateLesson() {
           level: input.level,
           target_duration_min: input.targetDurationMin ?? null,
           equipment_ids: input.equipmentIds,
-          slots: input.slots.map((s) => ({ block_id: s.blockId, label: s.label })),
+          template_id: input.templateId,
         },
       })
       if (error) throw error
@@ -368,5 +369,59 @@ export function useDeleteItem(lessonId: string) {
       ...l,
       slots: l.slots.map((s) => ({ ...s, items: s.items.filter((i) => i.id !== itemId) })),
     }),
+  )
+}
+
+/** Appends a block to the lesson (for blank lessons and extra blocks). */
+export function useAddSlot(lessonId: string) {
+  return useLessonEdit<{ id: string; blockId: string; label: string }>(
+    lessonId,
+    async (n) => {
+      const { data, error } = await supabase
+        .from('lesson_slots')
+        .select('position')
+        .eq('lesson_id', lessonId)
+        .order('position', { ascending: false })
+        .limit(1)
+      if (error) throw error
+      const { error: e } = await supabase.from('lesson_slots').insert({
+        id: n.id,
+        lesson_id: lessonId,
+        block_id: n.blockId,
+        label: n.label,
+        position: (data[0]?.position ?? -1) + 1,
+      })
+      if (e) throw e
+    },
+    (l, n) => ({
+      ...l,
+      slots: [
+        ...l.slots,
+        {
+          id: n.id,
+          blockId: n.blockId,
+          position: l.slots.length,
+          label: n.label,
+          isSkipped: false,
+          notes: null,
+          hint: null,
+          isOptional: false,
+          minExercises: null,
+          items: [],
+        },
+      ],
+    }),
+  )
+}
+
+/** Removes a block together with the exercises in it. */
+export function useDeleteSlot(lessonId: string) {
+  return useLessonEdit<string>(
+    lessonId,
+    async (slotId) => {
+      const { error } = await supabase.from('lesson_slots').delete().eq('id', slotId)
+      if (error) throw error
+    },
+    (l, slotId) => ({ ...l, slots: l.slots.filter((s) => s.id !== slotId) }),
   )
 }

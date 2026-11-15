@@ -177,14 +177,14 @@ isOneToOne: false
                   ]
                 },"lesson_slots": {
                   Row: {
-                    "block_id": string,"id": string,"is_skipped": boolean,"label": string,"lesson_id": string,"notes": string | null,"position": number
+                    "block_id": string,"hint": string | null,"id": string,"is_optional": boolean,"is_skipped": boolean,"label": string,"lesson_id": string,"min_exercises": number | null,"notes": string | null,"position": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "block_id": string,"id"?: string,"is_skipped"?: boolean,"label": string,"lesson_id": string,"notes"?: string | null,"position"?: number
+                    "block_id": string,"hint"?: string | null,"id"?: string,"is_optional"?: boolean,"is_skipped"?: boolean,"label": string,"lesson_id": string,"min_exercises"?: number | null,"notes"?: string | null,"position"?: number
                   }
                   Update: {
-                    "block_id"?: string,"id"?: string,"is_skipped"?: boolean,"label"?: string,"lesson_id"?: string,"notes"?: string | null,"position"?: number
+                    "block_id"?: string,"hint"?: string | null,"id"?: string,"is_optional"?: boolean,"is_skipped"?: boolean,"label"?: string,"lesson_id"?: string,"min_exercises"?: number | null,"notes"?: string | null,"position"?: number
                   }
                   Relationships: [
                     {
@@ -219,6 +219,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "methods"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lessons_template_id_fkey"
+      columns: ["template_id"]
+isOneToOne: false
+      referencedRelation: "templates"
+      referencedColumns: ["id"]
     }
                   ]
                 },"methods": {
@@ -249,6 +255,52 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"template_slots": {
+                  Row: {
+                    "block_id": string,"hint": string | null,"id": string,"is_optional": boolean,"label": string,"min_exercises": number | null,"position": number,"template_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "block_id": string,"hint"?: string | null,"id"?: string,"is_optional"?: boolean,"label": string,"min_exercises"?: number | null,"position"?: number,"template_id": string
+                  }
+                  Update: {
+                    "block_id"?: string,"hint"?: string | null,"id"?: string,"is_optional"?: boolean,"label"?: string,"min_exercises"?: number | null,"position"?: number,"template_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "template_slots_block_id_fkey"
+      columns: ["block_id"]
+isOneToOne: false
+      referencedRelation: "blocks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "template_slots_template_id_fkey"
+      columns: ["template_id"]
+isOneToOne: false
+      referencedRelation: "templates"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"templates": {
+                  Row: {
+                    "created_at": string,"description": string | null,"id": string,"method_id": string,"name": string,"owner_id": string | null,"target_duration_min": number | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"method_id": string,"name": string,"owner_id"?: string | null,"target_duration_min"?: number | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"method_id"?: string,"name"?: string,"owner_id"?: string | null,"target_duration_min"?: number | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "templates_method_id_fkey"
+      columns: ["method_id"]
+isOneToOne: false
+      referencedRelation: "methods"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Views: {
@@ -268,6 +320,12 @@ isOneToOne: false
 { Args: { "p_ids": (string)[],"p_kind": string }; Returns: undefined
                            },
 "save_exercise":
+{ Args: { "payload": Json }; Returns: string
+                           },
+"save_lesson_as_template":
+{ Args: { "p_lesson_id": string,"p_name": string }; Returns: string
+                           },
+"save_template":
 { Args: { "payload": Json }; Returns: string
                            }
           }

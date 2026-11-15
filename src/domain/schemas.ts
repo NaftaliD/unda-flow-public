@@ -33,3 +33,21 @@ export const lessonFormSchema = z.object({
 
 export type LessonFormInput = z.input<typeof lessonFormSchema>
 export type LessonFormValues = z.output<typeof lessonFormSchema>
+
+export const templateFormSchema = z.object({
+  name: z.string().trim().min(1, 'required'),
+  description: z.string().trim(),
+  targetDurationMin: optionalInt,
+  slots: z.array(
+    z.object({
+      blockId: z.string().min(1),
+      label: z.string().trim().min(1, 'required'),
+      isOptional: z.boolean(),
+      minExercises: optionalInt,
+      hint: z.string().trim(),
+    }),
+  ),
+})
+
+export type TemplateFormInput = z.input<typeof templateFormSchema>
+export type TemplateFormValues = z.output<typeof templateFormSchema>

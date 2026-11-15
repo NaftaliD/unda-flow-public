@@ -22,9 +22,18 @@ vi.mock('@/data/queries/profile', () => ({
 }))
 
 const blocks: Block[] = [
-  { id: 'b-warm', methodId: 'm1', key: 'warm_up', name: 'Warm-up', goal: null, position: 1 },
+  {
+    id: 'b-warm',
+    ownerId: null,
+    methodId: 'm1',
+    key: 'warm_up',
+    name: 'Warm-up',
+    goal: null,
+    position: 1,
+  },
   {
     id: 'b-abs',
+    ownerId: null,
     methodId: 'm1',
     key: 'abdominal',
     name: 'Abdominal work',

@@ -15,12 +15,16 @@ import {
 import { Link, useParams } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
 import {
   useAddItem,
+  useAddSlot,
   useDeleteItem,
+  useDeleteSlot,
   useMoveItem,
   useReorderItems,
   useReorderSlots,
@@ -29,12 +33,14 @@ import {
   useUpdateLesson,
   useUpdateSlot,
 } from '@/data/mutations/lessons'
+import { useSaveLessonAsTemplate } from '@/data/mutations/templates'
 import { useBlocks, useEquipment, useExercises } from '@/data/queries/library'
 import { useLesson, type Lesson, type LessonStatus } from '@/data/queries/lessons'
 import { useCurrentUser } from '@/data/queries/profile'
 import { formatMinutes, lessonDuration, reorderIds } from '@/domain/lesson'
 import { LEVELS } from '@/domain/library'
 import { BlockCard } from './BlockCard'
+import { AddBlockDialog, SaveTemplateDialog } from './BuilderDialogs'
 import { EquipmentChips } from './EquipmentChips'
 import { ExercisePicker } from './ExercisePicker'
 
@@ -73,6 +79,11 @@ function Builder({ lesson }: { lesson: Lesson }) {
   const update = useUpdateLesson(lesson.id)
   const setEquipment = useSetLessonEquipment(lesson.id)
   const updateSlot = useUpdateSlot(lesson.id)
+  const addSlot = useAddSlot(lesson.id)
+  const deleteSlot = useDeleteSlot(lesson.id)
+  const saveTemplate = useSaveLessonAsTemplate()
+  const [addBlockOpen, setAddBlockOpen] = useState(false)
+  const [templateOpen, setTemplateOpen] = useState(false)
   const reorderSlots = useReorderSlots(lesson.id)
   const reorderItems = useReorderItems(lesson.id)
   const addItem = useAddItem(lesson.id)
@@ -128,13 +139,18 @@ function Builder({ lesson }: { lesson: Lesson }) {
         <Link to="/" className="text-sm font-semibold underline">
           {t('lessons.back')}
         </Link>
-        <Link
-          to="/lessons/$id/print"
-          params={{ id: lesson.id }}
-          className="inline-flex h-10 items-center rounded-pill bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-        >
-          {t('lessons.builder.print')}
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" onClick={() => setTemplateOpen(true)}>
+            {t('lessons.builder.saveAsTemplate')}
+          </Button>
+          <Link
+            to="/lessons/$id/print"
+            params={{ id: lesson.id }}
+            className="inline-flex h-10 items-center rounded-pill bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            {t('lessons.builder.print')}
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 rounded-3xl bg-card p-4 text-card-foreground">
@@ -251,6 +267,7 @@ function Builder({ lesson }: { lesson: Lesson }) {
                 otherSlots={slotRefs.filter((s) => s.id !== slot.id)}
                 onUpdateSlot={(patch) => updateSlot.mutate({ slotId: slot.id, ...patch })}
                 onAdd={() => setPickerSlotId(slot.id)}
+                onRemoveSlot={() => deleteSlot.mutate(slot.id)}
                 onReorderItems={(ids) => reorderItems.mutate({ slotId: slot.id, ids })}
                 onUpdateItem={(patch) => updateItem.mutate(patch)}
                 onMoveItem={(itemId, toSlotId) => moveItem.mutate({ itemId, toSlotId })}
@@ -260,6 +277,40 @@ function Builder({ lesson }: { lesson: Lesson }) {
           </ol>
         </SortableContext>
       </DndContext>
+
+      {lesson.slots.length === 0 && (
+        <p className="text-sm text-muted-foreground">{t('lessons.builder.noBlocks')}</p>
+      )}
+      <div>
+        <Button variant="outline" onClick={() => setAddBlockOpen(true)}>
+          {t('lessons.builder.addBlock')}
+        </Button>
+      </div>
+
+      <AddBlockDialog
+        open={addBlockOpen}
+        onClose={() => setAddBlockOpen(false)}
+        blocks={blocks.data ?? []}
+        onAdd={(blockId, label) => addSlot.mutate({ id: crypto.randomUUID(), blockId, label })}
+      />
+      <SaveTemplateDialog
+        open={templateOpen}
+        onClose={() => setTemplateOpen(false)}
+        defaultName={lesson.title}
+        pending={saveTemplate.isPending}
+        onSave={(name) =>
+          saveTemplate.mutate(
+            { lessonId: lesson.id, name },
+            {
+              onSuccess: () => {
+                setTemplateOpen(false)
+                toast.success(t('lessons.builder.templateSaved'))
+              },
+              onError: () => toast.error(t('lessons.builder.templateSaveFailed')),
+            },
+          )
+        }
+      />
 
       <ExercisePicker
         open={pickerSlot !== undefined}

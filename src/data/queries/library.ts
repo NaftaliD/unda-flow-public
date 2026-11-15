@@ -4,6 +4,8 @@ import { supabase } from '../supabaseClient'
 
 export type Block = {
   id: string
+  /** null = shared library block. */
+  ownerId: string | null
   methodId: string
   key: string
   name: string
@@ -32,12 +34,13 @@ export function useBlocks() {
     queryFn: async (): Promise<Block[]> => {
       const { data, error } = await supabase
         .from('blocks')
-        .select('id, method_id, key, name, goal, default_position')
+        .select('id, owner_id, method_id, key, name, goal, default_position')
         .order('default_position')
         .order('name')
       if (error) throw error
       return data.map((b) => ({
         id: b.id,
+        ownerId: b.owner_id,
         methodId: b.method_id,
         key: b.key,
         name: b.name,
