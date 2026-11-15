@@ -1,5 +1,5 @@
 # Brand assets
 
-Waiting for the designer's original vector files (SVG): horizontal logo and the circled "U" submark.
-Until they arrive the app uses a text placeholder (`src/components/Logo.tsx`) and a temporary favicon.
-Never redraw the logo in code or use the JPEGs.
+Transparent PNG logos and icons used by the app. They were keyed out of two AI-generated raster brand boards by `brand/extract_logos.py` (see `/brand/README.md` for the use rules: each tone only on its own background).
+
+No original vector files exist. All rights reserved, not covered by the code licence.

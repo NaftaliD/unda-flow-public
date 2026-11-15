@@ -32,3 +32,6 @@ supabase/.temp
 supabase/.branches
 *.tsbuildinfo
 .wrangler
+
+# Private data: the real exercise list. Never commit (see PLAN.md, D6).
+supabase/seed/private/

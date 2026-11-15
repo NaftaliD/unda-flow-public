@@ -1,17 +1,22 @@
 /**
- * Imports supabase/seed/exercises.block.csv as shared exercises (needs_review).
+ * Imports an exercise CSV as shared exercises (needs_review). Defaults to the small sample file
+ * supabase/seed/exercises.sample.csv; the real list lives outside git (supabase/seed/private/).
  * Run locally with the SECRET key; it never belongs in the client, CI secrets or Cloudflare.
  *
  *   SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_... npm run db:import
+ *   npm run db:import -- supabase/seed/private/exercises.block.csv     (or EXERCISE_CSV=path)
  *
  * Insert-only: refuses to run when shared exercises already exist (so admin corrections are
  * never overwritten and deleted rows are not resurrected), unless --force, which skips
  * rows whose deterministic id already exists.
  */
 import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { buildImport } from './build-import.ts'
 
 const force = process.argv.includes('--force')
+const csvArg = process.argv.slice(2).find((a) => !a.startsWith('--'))
+const csvPath = resolve(csvArg ?? process.env.EXERCISE_CSV ?? 'supabase/seed/exercises.sample.csv')
 const baseUrl = (process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? '').replace(/\/$/, '')
 const secretKey = process.env.SUPABASE_SECRET_KEY ?? ''
 
@@ -51,7 +56,7 @@ if (existing.length > 0 && !force) {
   fail('Shared exercises already exist. Nothing imported. Use --force to add only missing rows.')
 }
 
-const csv = readFileSync(new URL('../supabase/seed/exercises.block.csv', import.meta.url), 'utf8')
+const csv = readFileSync(csvPath, 'utf8')
 const { exercises, requirements } = buildImport(csv, {
   methodId: method.id,
   blocksByKey: new Map(blocks.map((b) => [b.key, b.id])),

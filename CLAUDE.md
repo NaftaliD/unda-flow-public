@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Increments 0 (walking skeleton) and 1 (shared library) are live. Increment 2 (lesson builder) is built on branch `inc-2-lessons`: `lessons/lesson_equipment/lesson_slots/lesson_items` migration with RLS and grants plus the `create_lesson`, `duplicate_lesson` and `reorder` RPCs, domain rules in `src/domain/lesson.ts`, the lesson list (home page), builder (dnd-kit reordering, exercise picker) and print view. A new lesson gets the 12 hard-coded slots in `DEFAULT_BLOCK_SLOTS`; Increment 3 replaces them with a seeded template. `lesson_items.exercise_id` has no ON DELETE action, so an exercise used in a lesson cannot be deleted (the UI says to archive it). `supabase/seed/exercises.block.csv` has 117 exercises (columns `name, block_key, equipment, level, series`); the `series` column is not imported until Increment 3. Blocks, methods and equipment are reference data inside the library migration, not in `seed.sql`.
+Increments 0 (skeleton), 1 (shared library) and 2 (lesson builder) are live on main, plus grouped library entries and bonus accessories. Lessons: `lessons/lesson_equipment/lesson_slots/lesson_items` with RLS and the `create_lesson`, `duplicate_lesson` and `reorder` RPCs; domain rules in `src/domain/lesson.ts`; list (home page), builder (dnd-kit, picker) and print view. A new lesson gets the 12 hard-coded slots in `DEFAULT_BLOCK_SLOTS`; Increment 3 replaces them with a seeded template. `lesson_items.exercise_id` has no ON DELETE action, so an exercise used in a lesson cannot be deleted (archive it). The real exercise list (117 rows) is private data and is **not in git**: it lives in git-ignored `supabase/seed/private/exercises.block.csv`. The committed `supabase/seed/exercises.sample.csv` (25 invented-for-dev rows) is what CI and local dev import. Columns: `name, block_key, equipment, level, series`; `series` is not imported until Increment 3. Blocks, methods and equipment are reference data inside the library migration, not in `seed.sql`. The repo is licensed PolyForm Noncommercial 1.0.0 (`LICENSE`); the Unda name, logo and brand are not covered (see README).
 
 ## Commands
 
@@ -35,7 +35,8 @@ npm run db:test        # pgTAP tests in supabase/tests/database/
 # Needs SUPABASE_URL + SUPABASE_SECRET_KEY (sb_secret_...) in the env or .env.local.
 # Local values: `npx supabase status -o json`. For the hosted project paste the key in the
 # terminal for that one command; never commit it or put it in CI/Cloudflare.
-npm run db:import
+npm run db:import                                              # sample file (CI/dev)
+npm run db:import -- supabase/seed/private/exercises.block.csv  # the real list (staging/prod, local only)
 ```
 
 The local e2e specs (`e2e/*.local.spec.ts`) also need the seed imported, and `admin.local.spec.ts` promotes a user with `docker exec supabase_db_unda-flow psql`.

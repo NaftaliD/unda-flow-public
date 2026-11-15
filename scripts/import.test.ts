@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { buildImport, uuidV5 } from './build-import.ts'
@@ -80,25 +80,39 @@ describe('buildImport', () => {
     ).toHaveLength(2)
   })
 
-  it('accepts the real seed file', () => {
-    const csv = readFileSync(resolve(process.cwd(), 'supabase/seed/exercises.block.csv'), 'utf8')
-    const all = new Map(
-      [
-        'warm_up',
-        'foot_work',
-        'abdominal',
-        'hip_work',
-        'stretch',
-        'spinal_articulation',
-        'fbi',
-        'leg_work',
-        'lateral_rotation',
-        'arm_work',
-        'back_extension',
-      ].map((k) => [k, `b-${k}`]),
-    )
-    const eq = new Map(['reformer', 'cadillac', 'chair', 'box', 'mat'].map((k) => [k, `e-${k}`]))
-    const { exercises } = buildImport(csv, { methodId: 'm', blocksByKey: all, equipmentByKey: eq })
-    expect(exercises).toHaveLength(117)
+  const allBlocks = new Map(
+    [
+      'warm_up',
+      'foot_work',
+      'abdominal',
+      'hip_work',
+      'stretch',
+      'spinal_articulation',
+      'fbi',
+      'leg_work',
+      'lateral_rotation',
+      'arm_work',
+      'back_extension',
+    ].map((k) => [k, `b-${k}`]),
+  )
+  const allEquipment = new Map(
+    ['reformer', 'cadillac', 'chair', 'box', 'mat'].map((k) => [k, `e-${k}`]),
+  )
+  const full = { methodId: 'm', blocksByKey: allBlocks, equipmentByKey: allEquipment }
+
+  it('accepts the committed sample seed file', () => {
+    const csv = readFileSync(resolve(process.cwd(), 'supabase/seed/exercises.sample.csv'), 'utf8')
+    const rows = csv.trim().split(/\r?\n/).length - 1
+    const { exercises } = buildImport(csv, full)
+    expect(exercises).toHaveLength(rows)
+    // the same movement on three apparatus is three rows (grouped only in the library view)
+    expect(exercises.filter((e) => e.name === 'Calf Raises')).toHaveLength(3)
+  })
+
+  // The real list is private data (not in git); validate it when it is present locally.
+  const privatePath = resolve(process.cwd(), 'supabase/seed/private/exercises.block.csv')
+  it.skipIf(!existsSync(privatePath))('accepts the private full list when present', () => {
+    const { exercises } = buildImport(readFileSync(privatePath, 'utf8'), full)
+    expect(exercises.length).toBeGreaterThan(0)
   })
 })

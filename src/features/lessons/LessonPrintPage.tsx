@@ -59,7 +59,7 @@ export function LessonPrintPage() {
       <header className="flex flex-col gap-1 border-b border-border pb-3">
         <div className="flex items-baseline justify-between gap-3">
           <h1 className="text-2xl font-semibold">{l.title}</h1>
-          <Logo className="text-base text-muted-foreground" />
+          <Logo kind="full" tone="dark" className="h-14" />
         </div>
         <p className="text-sm">
           {date} · {t(`levels.${l.level}`)}

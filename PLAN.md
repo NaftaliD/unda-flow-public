@@ -44,6 +44,7 @@ Rules:
 - Body text: `ink` on cream, or cream on olive. Terracotta and sage do **not** have enough contrast for small text on cream; use them for accents, icons, large text, and fills only. Check every text/background pair against WCAG AA.
 - Typography: a clean sans that covers Latin and Hebrew (e.g. Assistant or Heebo) for UI; section labels in uppercase with wide letter-spacing (Latin only) to echo the brand sheet. Generous whitespace, thin rules, rounded-full outline shapes like the submark.
 - Logo: use the designer's **original vector files** (SVG) in `public/brand/` — horizontal logo in the app bar and login screen, the circled "U" submark as favicon/PWA icon. Never redraw or approximate the logo in code. Until SVGs are supplied, use a text placeholder, not the JPEGs.
+- The brand artwork is AI-generated raster (two boards, stored in `brand/reference/`); there are no original vectors. `brand/extract_logos.py` keys transparent PNG logos out of them into `public/brand/`, used by `src/components/Logo.tsx` (the "original SVG only" rule above is relaxed for this reason). Larger or vector versions are still desirable for the Increment 4 install icons.
 - The terracotta wave may be reused as a subtle divider/empty-state motif.
 - Light theme (cream) is the default; an olive dark theme is optional polish in Increment 4.
 
@@ -104,7 +105,7 @@ unda-flow/
 ├─ public/brand/      logo SVGs
 ├─ supabase/
 │  ├─ migrations/
-│  └─ seed/           exercises.block.csv (blocks, methods, equipment are reference data in the library migration)
+│  └─ seed/           exercises.sample.csv (committed sample); the real list is git-ignored in seed/private/ (blocks, methods, equipment are reference data in the library migration)
 ├─ scripts/           import-exercises.ts (local, secret key), csv.ts, build-import.ts
 ├─ e2e/
 ├─ wrangler.jsonc
@@ -225,7 +226,7 @@ Shared template **"Apparatus class — 12 blocks"** (`template_slots`, in this o
 
 A mat-class template (fewer blocks) is **to be defined by the instructor**; do not invent it.
 
-Exercises: import `supabase/seed/exercises.block.csv` (supplied with this plan) as shared content with `review_status = 'needs_review'`. Columns: `name, block_key, equipment, level, series`. In `equipment`, `|` separates alternatives and `+` separates required groups (e.g. `reformer+box`, `mat|reformer|cadillac`). Rows sharing a `series` value become a `series` in CSV order. The instructor verifies each row in the admin screen; unverified rows are usable but flagged to admins.
+Exercises: the real list (`exercises.block.csv`, supplied with this plan) is **private data, not in git** (kept in git-ignored `supabase/seed/private/`; a small sample file is committed for CI). Import it with `npm run db:import -- <path>` as shared content with `review_status = 'needs_review'`. Columns: `name, block_key, equipment, level, series`. In `equipment`, `|` separates alternatives and `+` separates required groups (e.g. `reformer+box`, `mat|reformer|cadillac`). Rows sharing a `series` value become a `series` in CSV order. The instructor verifies each row in the admin screen; unverified rows are usable but flagged to admins.
 
 ## 8. User flows
 
@@ -308,6 +309,9 @@ Each increment is a vertical slice: migration + data layer + UI + tests, deploye
 - Auto-suggest a lesson from template + equipment + level + "not used in the last N lessons".
 - Studios/teams: `organizations` + membership, shared studio libraries (adds `org_id` beside `owner_id`).
 - Sharing a lesson by link; class/client history; contraindication tags.
+- **Backups:** the free Supabase plan has no point-in-time recovery. Add a scheduled `pg_dump` (GitHub Actions or a local script) to private storage, and test a restore. Also the place to keep the private exercise CSV.
+- **Staging and production:** Cloudflare preview builds share the production Supabase project, so they are not a safe place to test migrations. Before the first real release: a second Supabase project (`unda-flow-stg`), a second Worker built from a `staging` branch with its own `VITE_SUPABASE_*`, a keep-alive for it, and the flow PR -> `staging` -> `db push` to stg -> verify -> `main` -> `db push` to prod.
+- **Go public (portfolio, planned after Increment 4):** licence is PolyForm Noncommercial 1.0.0 with the brand carve-out in the README. Checklist: (1) strip `supabase/seed/exercises.block.csv` from all git history with `git filter-repo` right before the switch (force-push; the repo is private until then), (2) run a secret scan (gitleaks) over the history, (3) write the architecture README, (4) trim personal notes from PLAN.md/CLAUDE.md if wanted, (5) confirm no private data under `supabase/seed/private/` is tracked. The logo SVGs may stay in the repo: the licence does not cover them.
 - Display name: the greeting currently uses the email prefix (set by the signup trigger). Let users set their real name (`profiles.display_name` is already user-editable); Google sign-in will fill it automatically. Planned alongside Google OAuth.
 
 ## 10. Working conventions for Claude Code
