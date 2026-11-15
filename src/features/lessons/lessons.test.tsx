@@ -13,6 +13,8 @@ const state = vi.hoisted(() => ({
   exercises: [] as unknown[],
   templates: [] as unknown[],
   series: [] as unknown[],
+  presets: [] as unknown[],
+  savePreset: vi.fn(),
   addSeries: vi.fn(),
   create: vi.fn(),
   addItem: vi.fn(),
@@ -119,6 +121,14 @@ vi.mock('@/data/mutations/series', () => ({
   useDeleteSeries: state.stub,
   useSaveSeries: state.stub,
 }))
+vi.mock('@/data/queries/presets', () => ({
+  presetKeys: {},
+  usePresets: () => ({ data: state.presets, isPending: false }),
+}))
+vi.mock('@/data/mutations/presets', () => ({
+  useSavePreset: () => ({ ...state.stub(), mutateAsync: state.savePreset }),
+  useDeletePreset: state.stub,
+}))
 vi.mock('@/data/mutations/blocks', () => ({
   useSaveBlock: state.stub,
   useDeleteBlock: state.stub,
@@ -210,6 +220,11 @@ describe('lessons', () => {
     state.addItem.mockReset()
     state.deleteSlot.mockReset()
     state.addSeries.mockReset()
+    state.savePreset.mockReset().mockResolvedValue('p1')
+    state.presets = [
+      { id: 'p-studio', name: 'Studio', equipmentIds: ['e-ref', 'e-ring'] },
+      { id: 'p-home', name: 'Home', equipmentIds: ['e-ring'] },
+    ]
     state.series = [
       {
         id: 'sr-ok',
@@ -412,6 +427,37 @@ describe('lessons', () => {
     expect(within(shared).queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument()
     const own = screen.getByText('Ring warm-up').closest('li')!
     expect(within(own).getByRole('link', { name: 'Edit' })).toBeInTheDocument()
+  })
+
+  it('loading a preset replaces the equipment selection', async () => {
+    renderAt('/lessons/new')
+    const group = await screen.findByRole('group', { name: 'Equipment available today' })
+    await userEvent.click(within(group).getByRole('button', { name: 'Reformer' }))
+    expect(within(group).getByRole('button', { name: 'Reformer' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+
+    await userEvent.selectOptions(screen.getByLabelText('Load a preset'), 'Home')
+    expect(within(group).getByRole('button', { name: 'Reformer' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    )
+    expect(within(group).getByRole('button', { name: 'Ring' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  })
+
+  it('saves the current selection as a preset', async () => {
+    renderAt('/lessons/new')
+    const group = await screen.findByRole('group', { name: 'Equipment available today' })
+    expect(screen.getByRole('button', { name: 'Save as preset' })).toBeDisabled()
+    await userEvent.click(within(group).getByRole('button', { name: 'Reformer' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Save as preset' }))
+    await userEvent.type(screen.getByLabelText('Preset name'), 'My studio')
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+    expect(state.savePreset).toHaveBeenCalledWith({ name: 'My studio', equipmentIds: ['e-ref'] })
   })
 
   it('print view leaves out skipped blocks', async () => {

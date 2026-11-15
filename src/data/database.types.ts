@@ -57,6 +57,46 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"equipment_preset_items": {
+                  Row: {
+                    "equipment_id": string,"preset_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "equipment_id": string,"preset_id": string
+                  }
+                  Update: {
+                    "equipment_id"?: string,"preset_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "equipment_preset_items_equipment_id_fkey"
+      columns: ["equipment_id"]
+isOneToOne: false
+      referencedRelation: "equipment"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "equipment_preset_items_preset_id_fkey"
+      columns: ["preset_id"]
+isOneToOne: false
+      referencedRelation: "equipment_presets"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"equipment_presets": {
+                  Row: {
+                    "created_at": string,"id": string,"name": string,"owner_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"name": string,"owner_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"name"?: string,"owner_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"exercise_equipment": {
                   Row: {
                     "alt_group": number,"equipment_id": string,"exercise_id": string,"is_optional": boolean
@@ -373,6 +413,9 @@ isOneToOne: false
                            },
 "save_lesson_as_template":
 { Args: { "p_lesson_id": string,"p_name": string }; Returns: string
+                           },
+"save_preset":
+{ Args: { "payload": Json }; Returns: string
                            },
 "save_series":
 { Args: { "payload": Json }; Returns: string

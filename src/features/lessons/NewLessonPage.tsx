@@ -12,6 +12,7 @@ import { useBlocks, useEquipment } from '@/data/queries/library'
 import { useTemplates } from '@/data/queries/templates'
 import { LEVELS } from '@/domain/library'
 import { lessonFormSchema, type LessonFormInput, type LessonFormValues } from '@/domain/schemas'
+import { PresetBar } from '../presets/PresetBar'
 import { EquipmentChips } from './EquipmentChips'
 
 function today(): string {
@@ -140,12 +141,15 @@ export function NewLessonPage() {
             control={control}
             name="equipmentIds"
             render={({ field }) => (
-              <EquipmentChips
-                equipment={equipment.data ?? []}
-                selected={field.value}
-                onChange={field.onChange}
-                label={t('lessons.form.equipment')}
-              />
+              <>
+                <PresetBar selected={field.value} onLoad={field.onChange} />
+                <EquipmentChips
+                  equipment={equipment.data ?? []}
+                  selected={field.value}
+                  onChange={field.onChange}
+                  label={t('lessons.form.equipment')}
+                />
+              </>
             )}
           />
         </div>

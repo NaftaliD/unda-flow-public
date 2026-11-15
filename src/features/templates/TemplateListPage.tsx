@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useDeleteTemplate, useDuplicateTemplate } from '@/data/mutations/templates'
 import { useCurrentUser } from '@/data/queries/profile'
 import { useTemplates, type Template } from '@/data/queries/templates'
+import { PresetsPanel } from '../presets/PresetsPanel'
 import { BlocksPanel } from './BlocksPanel'
 
 export function TemplateListPage() {
@@ -116,6 +117,7 @@ export function TemplateListPage() {
         </>
       )}
 
+      <PresetsPanel />
       <BlocksPanel />
     </section>
   )

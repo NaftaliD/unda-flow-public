@@ -41,6 +41,7 @@ import { useCurrentUser } from '@/data/queries/profile'
 import { useSeries } from '@/data/queries/series'
 import { formatMinutes, lessonDuration, reorderIds } from '@/domain/lesson'
 import { LEVELS } from '@/domain/library'
+import { PresetBar } from '../presets/PresetBar'
 import { BlockCard } from './BlockCard'
 import { AddBlockDialog, SaveTemplateDialog } from './BuilderDialogs'
 import { EquipmentChips } from './EquipmentChips'
@@ -234,6 +235,7 @@ function Builder({ lesson }: { lesson: Lesson }) {
         </div>
         <div className="flex flex-col gap-2">
           <Label>{t('lessons.form.equipment')}</Label>
+          <PresetBar selected={lesson.equipmentIds} onLoad={(ids) => setEquipment.mutate(ids)} />
           <EquipmentChips
             equipment={equipment.data ?? []}
             selected={lesson.equipmentIds}

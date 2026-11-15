@@ -325,5 +325,22 @@
       "save": "Save series",
       "saveFailed": "Could not save the series."
     }
+  },
+  "presets": {
+    "title": "My equipment presets",
+    "intro": "A preset is a saved set of equipment, such as your studio or a home setup. Load it into a lesson with one click.",
+    "empty": "You have no presets yet. Tick your equipment in a lesson and choose “Save as preset”.",
+    "noEquipment": "No equipment",
+    "load": "Load a preset",
+    "saveAs": "Save as preset",
+    "name": "Preset name",
+    "namePlaceholder": "e.g. Studio",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saved": "Saved the preset “{{name}}”.",
+    "saveFailed": "Could not save the preset.",
+    "rename": "Rename {{name}}",
+    "delete": "Delete {{name}}",
+    "confirmDelete": "Delete the preset “{{name}}”? Lessons are not affected."
   }
 }
