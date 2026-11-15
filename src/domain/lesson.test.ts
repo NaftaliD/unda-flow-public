@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  formatDuration,
   formatMinutes,
   itemWarnings,
   lessonDuration,
@@ -115,5 +116,13 @@ describe('formatMinutes', () => {
     expect(formatMinutes(0)).toBe('0m')
     expect(formatMinutes(720)).toBe('12m')
     expect(formatMinutes(3900)).toBe('1h 05m')
+  })
+})
+
+describe('formatDuration', () => {
+  it('shows seconds, minutes, or both', () => {
+    expect(formatDuration(45)).toBe('45s')
+    expect(formatDuration(120)).toBe('2m')
+    expect(formatDuration(90)).toBe('1m 30s')
   })
 })

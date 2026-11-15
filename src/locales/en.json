@@ -12,7 +12,9 @@
     "home": "Home",
     "lessons": "Lessons",
     "templates": "Templates",
-    "series": "Series"
+    "series": "Series",
+    "more": "More",
+    "tabs": "Sections"
   },
   "login": {
     "title": "Welcome back",
@@ -76,7 +78,9 @@
     "noEquipment": "No equipment needed",
     "bonus": "Bonus: {{items}}",
     "versions_one": "{{count}} version",
-    "versions_other": "{{count}} versions"
+    "versions_other": "{{count}} versions",
+    "filters": "Filters",
+    "filtersActive": "Filters (on)"
   },
   "exercise": {
     "newTitle": "New exercise",
@@ -213,7 +217,15 @@
       "templateSaved": "Saved as a template.",
       "templateSaveFailed": "Could not save the template.",
       "cancel": "Cancel",
-      "save": "Save"
+      "save": "Save",
+      "itemCount_one": "{{count}} exercise",
+      "itemCount_other": "{{count}} exercises",
+      "repsCount_one": "{{count}} rep",
+      "repsCount_other": "{{count}} reps",
+      "tapToEdit": "Tap to add reps, time and springs",
+      "editDetails": "Edit details",
+      "hideDetails": "Hide details",
+      "noEquipment": "No equipment ticked"
     },
     "picker": {
       "title": "Add to {{block}}",
@@ -342,5 +354,11 @@
     "rename": "Rename {{name}}",
     "delete": "Delete {{name}}",
     "confirmDelete": "Delete the preset “{{name}}”? Lessons are not affected."
+  },
+  "more": {
+    "title": "More",
+    "templatesBody": "Templates, equipment presets and your own blocks",
+    "seriesBody": "Ready-made sets of exercises for a block",
+    "reviewBody": "Check imported exercises"
   }
 }

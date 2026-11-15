@@ -16,6 +16,7 @@ import { NewExercisePage } from '@/features/exercises/NewExercisePage'
 import { LessonBuilderPage } from '@/features/lessons/LessonBuilderPage'
 import { LessonListPage } from '@/features/lessons/LessonListPage'
 import { LessonPrintPage } from '@/features/lessons/LessonPrintPage'
+import { MorePage } from '@/features/more/MorePage'
 import { NewLessonPage } from '@/features/lessons/NewLessonPage'
 import { SeriesEditorPage } from '@/features/series/SeriesEditorPage'
 import { SeriesListPage } from '@/features/series/SeriesListPage'
@@ -67,6 +68,12 @@ const lessonPrintRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/lessons/$id/print',
   component: LessonPrintPage,
+})
+
+const moreRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/more',
+  component: MorePage,
 })
 
 const templatesRoute = createRoute({
@@ -141,6 +148,7 @@ const routeTree = rootRoute.addChildren([
     newLessonRoute,
     lessonRoute,
     lessonPrintRoute,
+    moreRoute,
     templatesRoute,
     newTemplateRoute,
     templateRoute,

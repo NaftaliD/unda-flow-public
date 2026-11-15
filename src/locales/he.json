@@ -12,7 +12,9 @@
     "home": "בית",
     "lessons": "שיעורים",
     "templates": "תבניות",
-    "series": "סדרות"
+    "series": "סדרות",
+    "more": "עוד",
+    "tabs": "מקטעים"
   },
   "login": {
     "title": "התחברות",
@@ -78,7 +80,9 @@
     "bonus": "תוספת אפשרית: {{items}}",
     "versions_one": "גרסה {{count}}",
     "versions_two": "{{count}} גרסאות",
-    "versions_other": "{{count}} גרסאות"
+    "versions_other": "{{count}} גרסאות",
+    "filters": "סינון",
+    "filtersActive": "סינון (פעיל)"
   },
   "exercise": {
     "newTitle": "תרגיל חדש",
@@ -218,7 +222,17 @@
       "templateSaved": "נשמר כתבנית.",
       "templateSaveFailed": "לא ניתן לשמור את התבנית.",
       "cancel": "ביטול",
-      "save": "שמירה"
+      "save": "שמירה",
+      "itemCount_one": "תרגיל {{count}}",
+      "itemCount_two": "{{count}} תרגילים",
+      "itemCount_other": "{{count}} תרגילים",
+      "repsCount_one": "חזרה {{count}}",
+      "repsCount_two": "{{count}} חזרות",
+      "repsCount_other": "{{count}} חזרות",
+      "tapToEdit": "לחיצה להוספת חזרות, זמן וקפיצים",
+      "editDetails": "עריכת פרטים",
+      "hideDetails": "הסתרת פרטים",
+      "noEquipment": "לא סומן ציוד"
     },
     "picker": {
       "title": "הוספה אל {{block}}",
@@ -350,5 +364,11 @@
     "rename": "שינוי שם: {{name}}",
     "delete": "מחיקת {{name}}",
     "confirmDelete": "למחוק את הערכה ״{{name}}״? שיעורים לא ישתנו."
+  },
+  "more": {
+    "title": "עוד",
+    "templatesBody": "תבניות, ערכות ציוד ובלוקים משלכם",
+    "seriesBody": "סטים מוכנים של תרגילים לבלוק",
+    "reviewBody": "בדיקת תרגילים שיובאו"
   }
 }

@@ -35,6 +35,8 @@ test('plan a lesson, edit it, print it, and duplicate it', async ({ page, reques
 
   const row = footWork.getByRole('listitem').filter({ hasText: exerciseName }).first()
   await expect(row).toBeVisible()
+  // Rows are collapsed; open this one to edit its details.
+  await row.getByRole('button', { expanded: false }).click()
   const saved = page.waitForResponse(
     (r) => r.request().method() === 'PATCH' && r.url().includes('/rest/v1/lesson_items'),
   )
@@ -51,6 +53,8 @@ test('plan a lesson, edit it, print it, and duplicate it', async ({ page, reques
     .getByRole('listitem')
     .filter({ hasText: exerciseName })
     .first()
+  await expect(row2).toContainText('12 reps')
+  await row2.getByRole('button', { expanded: false }).click()
   await expect(row2.getByLabel('Reps')).toHaveValue('12')
 
   // Skip a block, then print: the skipped block is absent, the exercise is there.

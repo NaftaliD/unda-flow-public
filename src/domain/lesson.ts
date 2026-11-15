@@ -85,3 +85,11 @@ export function formatMinutes(totalSec: number): string {
   const h = Math.floor(minutes / 60)
   return `${h}h ${String(minutes % 60).padStart(2, '0')}m`
 }
+
+/** Format an exercise duration: "45s", "2m", "1m 30s". */
+export function formatDuration(totalSec: number): string {
+  if (totalSec < 60) return `${totalSec}s`
+  const m = Math.floor(totalSec / 60)
+  const sec = totalSec % 60
+  return sec === 0 ? `${m}m` : `${m}m ${sec}s`
+}

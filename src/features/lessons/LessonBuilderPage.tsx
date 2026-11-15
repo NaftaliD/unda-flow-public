@@ -87,6 +87,7 @@ function Builder({ lesson }: { lesson: Lesson }) {
   const deleteSlot = useDeleteSlot(lesson.id)
   const saveTemplate = useSaveLessonAsTemplate()
   const [addBlockOpen, setAddBlockOpen] = useState(false)
+  const [detailsOpen, setDetailsOpen] = useState(false)
   const [templateOpen, setTemplateOpen] = useState(false)
   const reorderSlots = useReorderSlots(lesson.id)
   const reorderItems = useReorderItems(lesson.id)
@@ -109,6 +110,9 @@ function Builder({ lesson }: { lesson: Lesson }) {
     [exercises.data],
   )
   const available = useMemo(() => new Set(lesson.equipmentIds), [lesson.equipmentIds])
+  const equipmentNames = (equipment.data ?? [])
+    .filter((e) => available.has(e.id))
+    .map((e) => e.name)
   const blockById = useMemo(() => new Map((blocks.data ?? []).map((b) => [b.id, b])), [blocks.data])
 
   const { totalSec, missingCount } = lessonDuration(
@@ -142,7 +146,7 @@ function Builder({ lesson }: { lesson: Lesson }) {
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-3xl flex-col gap-5 p-6">
+    <section className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4 sm:gap-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Link to="/" className="text-sm font-semibold underline">
           {t('lessons.back')}
@@ -161,7 +165,7 @@ function Builder({ lesson }: { lesson: Lesson }) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 rounded-3xl bg-card p-4 text-card-foreground">
+      <div className="flex flex-col gap-3 rounded-3xl bg-card p-3 text-card-foreground sm:gap-4 sm:p-4">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="lesson-title">{t('lessons.form.title')}</Label>
           <Input
@@ -175,74 +179,20 @@ function Builder({ lesson }: { lesson: Lesson }) {
             }}
           />
         </div>
-        <div className="grid gap-4 sm:grid-cols-4">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-date">{t('lessons.form.date')}</Label>
-            <Input
-              id="lesson-date"
-              type="date"
-              key={lesson.lessonDate}
-              defaultValue={lesson.lessonDate}
-              onBlur={(e) => {
-                if (e.target.value && e.target.value !== lesson.lessonDate)
-                  update.mutate({ lessonDate: e.target.value })
-              }}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-level">{t('lessons.form.level')}</Label>
-            <Select
-              id="lesson-level"
-              value={lesson.level}
-              onChange={(e) => update.mutate({ level: e.target.value as Lesson['level'] })}
-            >
-              {LEVELS.map((l) => (
-                <option key={l} value={l}>
-                  {t(`levels.${l}`)}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-target">{t('lessons.form.target')}</Label>
-            <Input
-              id="lesson-target"
-              type="number"
-              inputMode="numeric"
-              min={1}
-              key={lesson.targetDurationMin ?? ''}
-              defaultValue={lesson.targetDurationMin ?? ''}
-              onBlur={(e) => {
-                const n = intOrNull(e.target.value)
-                if (n !== lesson.targetDurationMin) update.mutate({ targetDurationMin: n })
-              }}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-status">{t('lessons.builder.status')}</Label>
-            <Select
-              id="lesson-status"
-              value={lesson.status}
-              onChange={(e) => update.mutate({ status: e.target.value as LessonStatus })}
-            >
-              {STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {t(`lessons.status.${s}`)}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label>{t('lessons.form.equipment')}</Label>
-          <PresetBar selected={lesson.equipmentIds} onLoad={(ids) => setEquipment.mutate(ids)} />
-          <EquipmentChips
-            equipment={equipment.data ?? []}
-            selected={lesson.equipmentIds}
-            onChange={(ids) => setEquipment.mutate(ids)}
-            label={t('lessons.form.equipment')}
-          />
-        </div>
+        <p className="text-sm text-muted-foreground">
+          {[
+            t(`levels.${lesson.level}`),
+            lesson.targetDurationMin
+              ? t('lessons.minutes', { count: lesson.targetDurationMin })
+              : null,
+            t(`lessons.status.${lesson.status}`),
+            equipmentNames.length > 0
+              ? equipmentNames.join(', ')
+              : t('lessons.builder.noEquipment'),
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+        </p>
         <p className="text-sm" aria-live="polite">
           {lesson.targetDurationMin
             ? t('lessons.builder.totalOfTarget', {
@@ -257,6 +207,91 @@ function Builder({ lesson }: { lesson: Lesson }) {
             </span>
           )}
         </p>
+        <Button
+          variant="outline"
+          size="sm"
+          className="self-start"
+          aria-expanded={detailsOpen}
+          aria-controls="lesson-details"
+          onClick={() => setDetailsOpen(!detailsOpen)}
+        >
+          {detailsOpen ? t('lessons.builder.hideDetails') : t('lessons.builder.editDetails')}
+        </Button>
+        {detailsOpen && (
+          <div id="lesson-details" className="flex flex-col gap-4">
+            <div className="grid gap-4 sm:grid-cols-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="lesson-date">{t('lessons.form.date')}</Label>
+                <Input
+                  id="lesson-date"
+                  type="date"
+                  key={lesson.lessonDate}
+                  defaultValue={lesson.lessonDate}
+                  onBlur={(e) => {
+                    if (e.target.value && e.target.value !== lesson.lessonDate)
+                      update.mutate({ lessonDate: e.target.value })
+                  }}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="lesson-level">{t('lessons.form.level')}</Label>
+                <Select
+                  id="lesson-level"
+                  value={lesson.level}
+                  onChange={(e) => update.mutate({ level: e.target.value as Lesson['level'] })}
+                >
+                  {LEVELS.map((l) => (
+                    <option key={l} value={l}>
+                      {t(`levels.${l}`)}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="lesson-target">{t('lessons.form.target')}</Label>
+                <Input
+                  id="lesson-target"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  key={lesson.targetDurationMin ?? ''}
+                  defaultValue={lesson.targetDurationMin ?? ''}
+                  onBlur={(e) => {
+                    const n = intOrNull(e.target.value)
+                    if (n !== lesson.targetDurationMin) update.mutate({ targetDurationMin: n })
+                  }}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="lesson-status">{t('lessons.builder.status')}</Label>
+                <Select
+                  id="lesson-status"
+                  value={lesson.status}
+                  onChange={(e) => update.mutate({ status: e.target.value as LessonStatus })}
+                >
+                  {STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {t(`lessons.status.${s}`)}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label>{t('lessons.form.equipment')}</Label>
+              <PresetBar
+                selected={lesson.equipmentIds}
+                onLoad={(ids) => setEquipment.mutate(ids)}
+              />
+              <EquipmentChips
+                equipment={equipment.data ?? []}
+                selected={lesson.equipmentIds}
+                onChange={(ids) => setEquipment.mutate(ids)}
+                label={t('lessons.form.equipment')}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onSlotDragEnd}>

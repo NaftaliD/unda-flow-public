@@ -43,6 +43,9 @@ test('save an equipment preset once, then set up a lesson from a template and th
 
   const blocks = page.getByRole('list', { name: 'Lesson blocks' }).locator('> li')
   await expect(blocks).toHaveCount(12)
+  // The equipment is summarised in the header; open the details to see the chips.
+  await expect(page.getByText(/Reformer, Box/).first()).toBeVisible()
+  await page.getByRole('button', { name: 'Edit details' }).click()
   await expect(
     page
       .getByRole('group', { name: 'Equipment available today' })

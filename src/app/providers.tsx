@@ -10,7 +10,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <I18nextProvider i18n={i18n}>
       <QueryClientProvider client={queryClient}>
         {children}
-        <Toaster />
+        <Toaster position="bottom-center" mobileOffset={{ bottom: 76, left: 16, right: 16 }} />
       </QueryClientProvider>
     </I18nextProvider>
   )

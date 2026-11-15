@@ -14,7 +14,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, X } from 'lucide-react'
+import { ChevronDown, Eye, EyeOff, GripVertical, X } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -25,7 +25,7 @@ import { Textarea } from '@/components/ui/textarea'
 import type { Block, Exercise } from '@/data/queries/library'
 import type { ItemPatch, SlotPatch } from '@/data/mutations/lessons'
 import type { LessonItem, LessonSlot } from '@/data/queries/lessons'
-import { itemWarnings, reorderIds } from '@/domain/lesson'
+import { formatDuration, itemWarnings, reorderIds } from '@/domain/lesson'
 import { slotHintInfo } from '@/domain/template'
 import { describeBonus } from '@/domain/library'
 
@@ -51,7 +51,7 @@ const dragHandle =
   'inline-flex size-8 shrink-0 cursor-grab items-center justify-center rounded-pill text-muted-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring touch-none'
 
 export function BlockCard(props: Props) {
-  const { slot, block, onUpdateSlot, onAdd, onAddSeries, onRemoveSlot, onReorderItems } = props
+  const { slot, onUpdateSlot, onAdd, onAddSeries, onRemoveSlot, onReorderItems } = props
   const { t } = useTranslation()
   const {
     attributes,
@@ -79,6 +79,8 @@ export function BlockCard(props: Props) {
     )
   }
 
+  const [notesOpen, setNotesOpen] = useState(Boolean(slot.notes))
+
   return (
     <li
       ref={setNodeRef}
@@ -86,7 +88,7 @@ export function BlockCard(props: Props) {
         transform: CSS.Transform.toString(transform),
         transition: transition,
       }}
-      className={`flex flex-col gap-3 rounded-3xl bg-card p-4 text-card-foreground ${isDragging ? 'relative z-10 shadow-lg' : ''} ${slot.isSkipped ? 'opacity-60' : ''}`}
+      className={`flex flex-col gap-3 rounded-3xl bg-card p-3 text-card-foreground sm:p-4 ${isDragging ? 'relative z-10 shadow-lg' : ''} ${slot.isSkipped ? 'opacity-60' : ''}`}
     >
       <div className="flex items-start gap-2">
         <button
@@ -107,9 +109,9 @@ export function BlockCard(props: Props) {
               <Badge tone="outline">{t('lessons.builder.optional')}</Badge>
             )}
           </h3>
-          {block && block.name !== slot.label && (
-            <p dir="auto" className="text-sm text-muted-foreground">
-              {block.name}
+          {slot.items.length > 0 && !slot.isSkipped && (
+            <p className="text-sm text-muted-foreground">
+              {t('lessons.builder.itemCount', { count: slot.items.length })}
             </p>
           )}
           {info.hint && (
@@ -128,7 +130,14 @@ export function BlockCard(props: Props) {
           size="sm"
           onClick={() => onUpdateSlot({ isSkipped: !slot.isSkipped })}
         >
-          {slot.isSkipped ? t('lessons.builder.include') : t('lessons.builder.skip')}
+          {slot.isSkipped ? (
+            <Eye className="size-4 sm:hidden" aria-hidden />
+          ) : (
+            <EyeOff className="size-4 sm:hidden" aria-hidden />
+          )}
+          <span className="sr-only sm:not-sr-only">
+            {slot.isSkipped ? t('lessons.builder.include') : t('lessons.builder.skip')}
+          </span>
         </Button>
         <Button
           variant="outline"
@@ -145,9 +154,7 @@ export function BlockCard(props: Props) {
 
       {!slot.isSkipped && (
         <>
-          {slot.items.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t('lessons.builder.noExercises')}</p>
-          ) : (
+          {slot.items.length > 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -165,15 +172,24 @@ export function BlockCard(props: Props) {
               </SortableContext>
             </DndContext>
           )}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <Button size="sm" onClick={onAdd}>
               {t('lessons.builder.addExercise')}
             </Button>
             <Button size="sm" variant="outline" onClick={onAddSeries}>
               {t('series.addSeries')}
             </Button>
+            {!notesOpen && (
+              <button
+                type="button"
+                className="px-1 text-sm font-semibold underline"
+                onClick={() => setNotesOpen(true)}
+              >
+                {t('lessons.builder.addNotes')}
+              </button>
+            )}
           </div>
-          <SlotNotes slot={slot} onSave={(notes) => onUpdateSlot({ notes })} />
+          {notesOpen && <SlotNotes slot={slot} onSave={(notes) => onUpdateSlot({ notes })} />}
         </>
       )}
     </li>
@@ -182,18 +198,6 @@ export function BlockCard(props: Props) {
 
 function SlotNotes({ slot, onSave }: { slot: LessonSlot; onSave: (notes: string | null) => void }) {
   const { t } = useTranslation()
-  const [open, setOpen] = useState(Boolean(slot.notes))
-  if (!open) {
-    return (
-      <button
-        type="button"
-        className="self-start text-sm font-semibold underline"
-        onClick={() => setOpen(true)}
-      >
-        {t('lessons.builder.addNotes')}
-      </button>
-    )
-  }
   return (
     <Textarea
       key={slot.notes ?? ''}
@@ -234,6 +238,16 @@ function ItemRow({
   const warnings = exercise ? itemWarnings(exercise, available) : []
   const name = exercise?.name ?? t('lessons.builder.unknownExercise')
   const bonus = exercise ? describeBonus(exercise.requirements, equipmentName) : ''
+  const [open, setOpen] = useState(false)
+  const detailsId = `item-details-${item.id}`
+  const seconds = item.durationSec ?? exercise?.defaultDurationSec ?? null
+  const summary = [
+    item.reps !== null ? t('lessons.builder.repsCount', { count: item.reps }) : null,
+    seconds !== null ? formatDuration(seconds) : null,
+    item.springs,
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   const num = (field: 'reps' | 'durationSec', current: number | null) => (value: string) => {
     const n = value.trim() === '' ? null : Number.parseInt(value, 10)
@@ -252,9 +266,9 @@ function ItemRow({
         transform: CSS.Transform.toString(transform),
         transition: transition,
       }}
-      className={`flex flex-col gap-2 rounded-2xl border border-border bg-background p-3 ${isDragging ? 'relative z-10 shadow-lg' : ''}`}
+      className={`flex flex-col gap-2 rounded-2xl border border-border bg-background p-2 sm:p-3 ${isDragging ? 'relative z-10 shadow-lg' : ''}`}
     >
-      <div className="flex items-start gap-2">
+      <div className="flex items-center gap-2">
         <button
           type="button"
           ref={setActivatorNodeRef}
@@ -265,19 +279,36 @@ function ItemRow({
         >
           <GripVertical className="size-4" aria-hidden />
         </button>
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-          <span className="font-semibold">{name}</span>
-          {bonus && (
-            <span className="text-sm text-muted-foreground">
-              {t('library.bonus', { items: bonus })}
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={detailsId}
+          onClick={() => setOpen(!open)}
+          className="flex min-w-0 flex-1 items-center gap-2 rounded-xl p-1 text-start hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold">{name}</span>
+              {warnings.map((w) => (
+                <Badge key={w} tone="accent">
+                  {t(`lessons.builder.warnings.${w}`)}
+                </Badge>
+              ))}
             </span>
-          )}
-          {warnings.map((w) => (
-            <Badge key={w} tone="accent">
-              {t(`lessons.builder.warnings.${w}`)}
-            </Badge>
-          ))}
-        </div>
+            <span className="text-sm text-muted-foreground">
+              {summary || t('lessons.builder.tapToEdit')}
+            </span>
+            {bonus && (
+              <span className="text-sm text-muted-foreground">
+                {t('library.bonus', { items: bonus })}
+              </span>
+            )}
+          </span>
+          <ChevronDown
+            className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`}
+            aria-hidden
+          />
+        </button>
         <Button
           variant="outline"
           size="sm"
@@ -287,58 +318,62 @@ function ItemRow({
           <X className="size-4" aria-hidden />
         </Button>
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <LabeledInput label={t('lessons.builder.reps')}>
+      {open && (
+        <div id={detailsId} className="flex flex-col gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <LabeledInput label={t('lessons.builder.reps')}>
+              <Input
+                key={item.reps ?? ''}
+                type="number"
+                inputMode="numeric"
+                min={1}
+                defaultValue={item.reps ?? ''}
+                onBlur={(e) => num('reps', item.reps)(e.target.value)}
+              />
+            </LabeledInput>
+            <LabeledInput label={t('lessons.builder.duration')}>
+              <Input
+                key={item.durationSec ?? ''}
+                type="number"
+                inputMode="numeric"
+                min={1}
+                defaultValue={item.durationSec ?? ''}
+                onBlur={(e) => num('durationSec', item.durationSec)(e.target.value)}
+              />
+            </LabeledInput>
+            <LabeledInput label={t('lessons.builder.springs')}>
+              <Input
+                key={item.springs ?? ''}
+                defaultValue={item.springs ?? ''}
+                onBlur={(e) => text('springs', item.springs)(e.target.value)}
+              />
+            </LabeledInput>
+            <LabeledInput label={t('lessons.builder.moveTo')}>
+              <Select
+                value=""
+                aria-label={t('lessons.builder.moveTo')}
+                onChange={(e) => e.target.value && onMoveItem(item.id, e.target.value)}
+              >
+                <option value="">—</option>
+                {otherSlots
+                  .filter((s) => s.id !== slot.id)
+                  .map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label}
+                    </option>
+                  ))}
+              </Select>
+            </LabeledInput>
+          </div>
           <Input
-            key={item.reps ?? ''}
-            type="number"
-            inputMode="numeric"
-            min={1}
-            defaultValue={item.reps ?? ''}
-            onBlur={(e) => num('reps', item.reps)(e.target.value)}
+            key={item.notes ?? ''}
+            aria-label={t('lessons.builder.notes')}
+            placeholder={t('lessons.builder.notes')}
+            defaultValue={item.notes ?? ''}
+            onBlur={(e) => text('notes', item.notes)(e.target.value)}
           />
-        </LabeledInput>
-        <LabeledInput label={t('lessons.builder.duration')}>
-          <Input
-            key={item.durationSec ?? ''}
-            type="number"
-            inputMode="numeric"
-            min={1}
-            defaultValue={item.durationSec ?? ''}
-            onBlur={(e) => num('durationSec', item.durationSec)(e.target.value)}
-          />
-        </LabeledInput>
-        <LabeledInput label={t('lessons.builder.springs')}>
-          <Input
-            key={item.springs ?? ''}
-            defaultValue={item.springs ?? ''}
-            onBlur={(e) => text('springs', item.springs)(e.target.value)}
-          />
-        </LabeledInput>
-        <LabeledInput label={t('lessons.builder.moveTo')}>
-          <Select
-            value=""
-            aria-label={t('lessons.builder.moveTo')}
-            onChange={(e) => e.target.value && onMoveItem(item.id, e.target.value)}
-          >
-            <option value="">—</option>
-            {otherSlots
-              .filter((s) => s.id !== slot.id)
-              .map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.label}
-                </option>
-              ))}
-          </Select>
-        </LabeledInput>
-      </div>
-      <Input
-        key={item.notes ?? ''}
-        aria-label={t('lessons.builder.notes')}
-        placeholder={t('lessons.builder.notes')}
-        defaultValue={item.notes ?? ''}
-        onBlur={(e) => text('notes', item.notes)(e.target.value)}
-      />
+        </div>
+      )}
     </li>
   )
 }

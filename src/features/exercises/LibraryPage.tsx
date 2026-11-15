@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { WaveDivider } from '@/components/WaveDivider'
+import { Button } from '@/components/ui/button'
 import { Chip } from '@/components/ui/chip'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -32,6 +33,7 @@ export function LibraryPage() {
   const [level, setLevel] = useState<Level | ''>('')
   const [scope, setScope] = useState<Scope>('all')
   const [showArchived, setShowArchived] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [available, setAvailable] = useState<ReadonlySet<string>>(new Set())
 
   const visible = useMemo(
@@ -78,7 +80,7 @@ export function LibraryPage() {
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6">
+    <section className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4 sm:gap-6 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">{t('library.title')}</h1>
         <Link
@@ -89,7 +91,7 @@ export function LibraryPage() {
         </Link>
       </div>
 
-      <div className="flex flex-col gap-4 rounded-3xl border border-border p-4">
+      <div className="flex flex-col gap-3 rounded-3xl border border-border p-4 sm:gap-4">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="lib-search">{t('library.search')}</Label>
           <Input
@@ -101,65 +103,89 @@ export function LibraryPage() {
           />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lib-block">{t('library.block')}</Label>
-            <Select id="lib-block" value={blockId} onChange={(e) => setBlockId(e.target.value)}>
-              <option value="">{t('library.allBlocks')}</option>
-              {blocks.data?.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lib-level">{t('library.level')}</Label>
-            <Select
-              id="lib-level"
-              value={level}
-              onChange={(e) => setLevel(e.target.value as Level | '')}
-            >
-              <option value="">{t('library.allLevels')}</option>
-              {LEVELS.map((l) => (
-                <option key={l} value={l}>
-                  {t(`levels.${l}`)}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2" role="group" aria-labelledby="lib-equipment">
-          <span id="lib-equipment" className="text-sm font-semibold">
-            {t('library.equipmentTitle')}
-          </span>
-          <p className="text-sm text-muted-foreground">{t('library.equipmentHint')}</p>
-          <div className="flex flex-wrap gap-2">
-            {equipment.data?.map((e) => (
-              <Chip key={e.id} selected={available.has(e.id)} onClick={() => toggleEquipment(e.id)}>
-                {e.name}
-              </Chip>
-            ))}
-          </div>
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="self-start sm:hidden"
+          aria-expanded={filtersOpen}
+          aria-controls="lib-filters"
+          onClick={() => setFiltersOpen(!filtersOpen)}
+        >
+          {anyFilter ? t('library.filtersActive') : t('library.filters')}
+        </Button>
 
         <div
-          className="flex flex-wrap items-center gap-2"
-          role="group"
-          aria-label={t('library.scope')}
+          id="lib-filters"
+          className={`${filtersOpen ? 'flex' : 'hidden'} flex-col gap-4 sm:flex`}
         >
-          <Chip selected={!anyFilter} onClick={resetFilters}>
-            {t('library.scopes.all')}
-          </Chip>
-          {SCOPES.map((s) => (
-            <Chip key={s} selected={scope === s} onClick={() => setScope(scope === s ? 'all' : s)}>
-              {t(`library.scopes.${s}`)}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="lib-block">{t('library.block')}</Label>
+              <Select id="lib-block" value={blockId} onChange={(e) => setBlockId(e.target.value)}>
+                <option value="">{t('library.allBlocks')}</option>
+                {blocks.data?.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="lib-level">{t('library.level')}</Label>
+              <Select
+                id="lib-level"
+                value={level}
+                onChange={(e) => setLevel(e.target.value as Level | '')}
+              >
+                <option value="">{t('library.allLevels')}</option>
+                {LEVELS.map((l) => (
+                  <option key={l} value={l}>
+                    {t(`levels.${l}`)}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2" role="group" aria-labelledby="lib-equipment">
+            <span id="lib-equipment" className="text-sm font-semibold">
+              {t('library.equipmentTitle')}
+            </span>
+            <p className="text-sm text-muted-foreground">{t('library.equipmentHint')}</p>
+            <div className="flex flex-wrap gap-2">
+              {equipment.data?.map((e) => (
+                <Chip
+                  key={e.id}
+                  selected={available.has(e.id)}
+                  onClick={() => toggleEquipment(e.id)}
+                >
+                  {e.name}
+                </Chip>
+              ))}
+            </div>
+          </div>
+
+          <div
+            className="flex flex-wrap items-center gap-2"
+            role="group"
+            aria-label={t('library.scope')}
+          >
+            <Chip selected={!anyFilter} onClick={resetFilters}>
+              {t('library.scopes.all')}
             </Chip>
-          ))}
-          <Chip selected={showArchived} onClick={() => setShowArchived(!showArchived)}>
-            {t('library.showArchived')}
-          </Chip>
+            {SCOPES.map((s) => (
+              <Chip
+                key={s}
+                selected={scope === s}
+                onClick={() => setScope(scope === s ? 'all' : s)}
+              >
+                {t(`library.scopes.${s}`)}
+              </Chip>
+            ))}
+            <Chip selected={showArchived} onClick={() => setShowArchived(!showArchived)}>
+              {t('library.showArchived')}
+            </Chip>
+          </div>
         </div>
       </div>
 

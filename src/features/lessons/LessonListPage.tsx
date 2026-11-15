@@ -17,7 +17,10 @@ export function LessonListPage() {
   const navigate = useNavigate()
   const session = useSession()
   const { data: profile } = useProfile(session?.user.id)
-  const name = profile?.display_name
+  // The signup trigger sets display_name to the email prefix; that is not a name to greet.
+  const emailName = session?.user.email?.split('@')[0]
+  const name =
+    profile?.display_name && profile.display_name !== emailName ? profile.display_name : null
   const lessons = useLessons()
   const duplicate = useDuplicateLesson()
   const remove = useDeleteLesson()
@@ -42,7 +45,7 @@ export function LessonListPage() {
     <section className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">
-          {name ? t('home.greeting', { name }) : t('home.greetingAnonymous')}
+          {name ? t('home.greeting', { name }) : t('lessons.title')}
         </h1>
         <Link
           to="/lessons/new"

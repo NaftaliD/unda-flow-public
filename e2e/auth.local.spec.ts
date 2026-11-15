@@ -6,16 +6,14 @@ import { signInViaMailpit } from './helpers.ts'
 // (the values are printed by `npm run db:start`). Skipped unless E2E_LOCAL_SUPABASE is set.
 test.skip(!process.env.E2E_LOCAL_SUPABASE, 'needs local Supabase (npm run db:start)')
 
-test('magic link signs in, shows the profile greeting, and signs out', async ({
-  page,
-  request,
-}) => {
+test('magic link signs in, lands on the class list, and signs out', async ({ page, request }) => {
   const local = `e2e-${Date.now()}`
   await signInViaMailpit(page, request, `${local}@example.com`)
 
-  // The greeting uses profiles.display_name, which the signup trigger sets to the email prefix,
-  // so this also proves the trigger and the "select own profile" RLS policy work end to end.
-  await expect(page.getByRole('heading', { name: `Hello, ${local}` })).toBeVisible()
+  // No greeting: the signup trigger's display name is just the email prefix, so the page title
+  // is shown instead (the profile trigger and RLS are covered by the pgTAP tests).
+  await expect(page.getByRole('heading', { name: 'Lessons' })).toBeVisible()
+  await expect(page.getByText(`Hello, ${local}`)).toHaveCount(0)
   await expect(page.getByText('No lessons yet')).toBeVisible()
 
   await page.getByRole('button', { name: 'Sign out' }).click()
