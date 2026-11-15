@@ -29,14 +29,13 @@ select public.create_lesson(jsonb_build_object(
   'level', 'intermediate',
   'target_duration_min', 55,
   'equipment_ids', (select jsonb_agg(id) from public.equipment where owner_id is null and key in ('reformer', 'box')),
-  'slots', (select jsonb_agg(jsonb_build_object('block_id', id, 'label', name) order by default_position)
-            from public.blocks where owner_id is null)
+  'from_lesson_id', '5f0b7a52-3c8e-4d1a-9b64-2e7c1a9d0b01'
 ));
 
 select is((select count(*)::int from public.lessons where id = (select id from made)), 1,
   'Alice created a lesson');
-select is((select count(*)::int from public.lesson_slots where lesson_id = (select id from made)), 11,
-  'create_lesson wrote one slot per block given');
+select is((select count(*)::int from public.lesson_slots where lesson_id = (select id from made)), 12,
+  'create_lesson copied the example class''s blocks');
 select is((select count(*)::int from public.lesson_equipment where lesson_id = (select id from made)), 2,
   'create_lesson wrote the equipment rows');
 select is((select owner_id from public.lessons where id = (select id from made)),
@@ -59,7 +58,7 @@ select public.reorder('slots', (select array_agg(id order by position desc) from
   where lesson_id = (select id from made)));
 select is(
   (select label from public.lesson_slots where lesson_id = (select id from made) order by position limit 1),
-  (select name from public.blocks where owner_id is null order by default_position desc limit 1),
+  'Back extension',
   'reorder rewrote slot positions');
 
 -- duplicate copies slots, items and equipment as a draft
@@ -94,13 +93,16 @@ select set_config('request.jwt.claims',
   '{"sub":"00000000-0000-0000-0000-0000000000b1","role":"authenticated"}', true);
 
 select is(
-  (select count(*)::int from public.lessons) + (select count(*)::int from public.lesson_slots)
-    + (select count(*)::int from public.lesson_items) + (select count(*)::int from public.lesson_equipment),
+  (select count(*)::int from public.lessons where owner_id is not null)
+    + (select count(*)::int from public.lesson_slots where lesson_id in (select id from public.lessons where owner_id is not null))
+    + (select count(*)::int from public.lesson_items where lesson_slot_id in
+        (select s.id from public.lesson_slots s join public.lessons l on l.id = s.lesson_id where l.owner_id is not null))
+    + (select count(*)::int from public.lesson_equipment where lesson_id in (select id from public.lessons where owner_id is not null)),
   0, 'Bob sees none of Alice''s lesson data');
 
 update public.lessons set title = 'hacked';
 delete from public.lesson_slots;
-select is((select count(*)::int from public.lessons), 0, 'Bob cannot touch Alice''s lessons');
+select is((select count(*)::int from public.lessons where owner_id is not null), 0, 'Bob cannot touch Alice''s lessons');
 
 select throws_ok(
   format($$ select public.duplicate_lesson(%L) $$, (select id from made)),

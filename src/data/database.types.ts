@@ -243,14 +243,14 @@ isOneToOne: false
                   ]
                 },"lessons": {
                   Row: {
-                    "created_at": string,"id": string,"lesson_date": string,"level": Database["public"]['Enums']["exercise_level"],"method_id": string,"notes": string | null,"owner_id": string,"status": Database["public"]['Enums']["lesson_status"],"target_duration_min": number | null,"template_id": string | null,"title": string,"updated_at": string
+                    "created_at": string,"id": string,"lesson_date": string | null,"level": Database["public"]['Enums']["exercise_level"],"method_id": string,"notes": string | null,"owner_id": string | null,"source_lesson_id": string | null,"status": Database["public"]['Enums']["lesson_status"],"target_duration_min": number | null,"title": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id"?: string,"lesson_date"?: string,"level"?: Database["public"]['Enums']["exercise_level"],"method_id": string,"notes"?: string | null,"owner_id"?: string,"status"?: Database["public"]['Enums']["lesson_status"],"target_duration_min"?: number | null,"template_id"?: string | null,"title": string,"updated_at"?: string
+                    "created_at"?: string,"id"?: string,"lesson_date"?: string | null,"level"?: Database["public"]['Enums']["exercise_level"],"method_id": string,"notes"?: string | null,"owner_id"?: string | null,"source_lesson_id"?: string | null,"status"?: Database["public"]['Enums']["lesson_status"],"target_duration_min"?: number | null,"title": string,"updated_at"?: string
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"lesson_date"?: string,"level"?: Database["public"]['Enums']["exercise_level"],"method_id"?: string,"notes"?: string | null,"owner_id"?: string,"status"?: Database["public"]['Enums']["lesson_status"],"target_duration_min"?: number | null,"template_id"?: string | null,"title"?: string,"updated_at"?: string
+                    "created_at"?: string,"id"?: string,"lesson_date"?: string | null,"level"?: Database["public"]['Enums']["exercise_level"],"method_id"?: string,"notes"?: string | null,"owner_id"?: string | null,"source_lesson_id"?: string | null,"status"?: Database["public"]['Enums']["lesson_status"],"target_duration_min"?: number | null,"title"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -260,10 +260,10 @@ isOneToOne: false
       referencedRelation: "methods"
       referencedColumns: ["id"]
     },{
-      foreignKeyName: "lessons_template_id_fkey"
-      columns: ["template_id"]
+      foreignKeyName: "lessons_source_lesson_id_fkey"
+      columns: ["source_lesson_id"]
 isOneToOne: false
-      referencedRelation: "templates"
+      referencedRelation: "lessons"
       referencedColumns: ["id"]
     }
                   ]
@@ -341,52 +341,6 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
-                },"template_slots": {
-                  Row: {
-                    "block_id": string,"hint": string | null,"id": string,"is_optional": boolean,"label": string,"min_exercises": number | null,"position": number,"template_id": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "block_id": string,"hint"?: string | null,"id"?: string,"is_optional"?: boolean,"label": string,"min_exercises"?: number | null,"position"?: number,"template_id": string
-                  }
-                  Update: {
-                    "block_id"?: string,"hint"?: string | null,"id"?: string,"is_optional"?: boolean,"label"?: string,"min_exercises"?: number | null,"position"?: number,"template_id"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "template_slots_block_id_fkey"
-      columns: ["block_id"]
-isOneToOne: false
-      referencedRelation: "blocks"
-      referencedColumns: ["id"]
-    },{
-      foreignKeyName: "template_slots_template_id_fkey"
-      columns: ["template_id"]
-isOneToOne: false
-      referencedRelation: "templates"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"templates": {
-                  Row: {
-                    "created_at": string,"description": string | null,"id": string,"method_id": string,"name": string,"owner_id": string | null,"target_duration_min": number | null,"updated_at": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "created_at"?: string,"description"?: string | null,"id"?: string,"method_id": string,"name": string,"owner_id"?: string | null,"target_duration_min"?: number | null,"updated_at"?: string
-                  }
-                  Update: {
-                    "created_at"?: string,"description"?: string | null,"id"?: string,"method_id"?: string,"name"?: string,"owner_id"?: string | null,"target_duration_min"?: number | null,"updated_at"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "templates_method_id_fkey"
-      columns: ["method_id"]
-isOneToOne: false
-      referencedRelation: "methods"
-      referencedColumns: ["id"]
-    }
-                  ]
                 }
           }
           Views: {
@@ -395,6 +349,12 @@ isOneToOne: false
           Functions: {
             "add_series_to_slot":
 { Args: { "p_series_id": string,"p_slot_id": string }; Returns: number
+                           },
+"can_write_lesson":
+{ Args: { "p_id": string }; Returns: boolean
+                           },
+"can_write_slot":
+{ Args: { "p_id": string }; Returns: boolean
                            },
 "create_lesson":
 { Args: { "payload": Json }; Returns: string
@@ -405,22 +365,19 @@ isOneToOne: false
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"publish_class":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
 "reorder":
 { Args: { "p_ids": (string)[],"p_kind": string }; Returns: undefined
                            },
 "save_exercise":
 { Args: { "payload": Json }; Returns: string
                            },
-"save_lesson_as_template":
-{ Args: { "p_lesson_id": string,"p_name": string }; Returns: string
-                           },
 "save_preset":
 { Args: { "payload": Json }; Returns: string
                            },
 "save_series":
-{ Args: { "payload": Json }; Returns: string
-                           },
-"save_template":
 { Args: { "payload": Json }; Returns: string
                            }
           }

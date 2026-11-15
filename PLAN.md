@@ -149,27 +149,22 @@ series_items        series_id, exercise_id, position         -- added to a lesso
 equipment_presets   id, owner_id, name                       -- "Studio", "Home mat class"
 equipment_preset_items  preset_id, equipment_id
 
-templates           id, owner_id?, method_id, name, description, target_duration_min
-template_slots      id, template_id, block_id, position, label, is_optional,
-                    min_exercises, hint
-                    -- the same block may appear twice (FBI 1 / FBI 2), distinguished by label
-
-lessons             id, owner_id, method_id, template_id?, title, lesson_date, level,
+lessons             id, owner_id?, method_id, source_lesson_id?, title, lesson_date?, level,
                     target_duration_min, notes, status ('draft'|'ready'|'taught'),
                     created_at, updated_at
 lesson_equipment    lesson_id, equipment_id
 lesson_slots        id, lesson_id, block_id, position, label, is_skipped, notes,
                     hint, is_optional, min_exercises
-                    -- copied from the template at creation (hint columns included), then freely editable
+                    -- copied from the source class at creation (hint columns included), then freely editable
 lesson_items        id, lesson_slot_id, exercise_id, position,
                     reps?, duration_sec?, springs?, notes?
 ```
 
-A lesson **copies** its structure from a template, so editing a template never changes past lessons.
+There is no separate template entity. A **class** (`lessons` row) with `owner_id IS NULL` is a shared **example class** (readable by everyone, writable by admins); creating a class copies a source class (blocks, exercises, level, length, equipment), so editing the original never changes the copy. `lesson_date` is optional (it is a planner, not a calendar). `create_lesson(payload)` takes `from_lesson_id`; `publish_class` turns an admin's class into an example.
 
 ### RLS (in the same migration that creates each table)
 
-- Shared + own (`blocks`, `equipment`, `exercises`, `series`, `templates`):
+- Shared + own (`blocks`, `equipment`, `exercises`, `series`, `lessons`):
   `SELECT` where `owner_id IS NULL OR owner_id = auth.uid()`;
   write where `owner_id = auth.uid()`, **or** `owner_id IS NULL` and the caller is an admin (`is_admin()` security-definer function reading `profiles.role`).
 - Own-only (`lessons`, `equipment_presets`, `profiles`): all operations on own rows. Users cannot change their own `role`.
@@ -237,19 +232,19 @@ Exercises: the real list (`exercises.block.csv`, supplied with this plan) is **p
 
 **F3 — Build a lesson (core flow).**
 1. "New lesson" → title, date, level, target duration.
-2. Choose a template (or blank) → slots are copied into the lesson.
+2. Choose a starting point: an example class, one of your own, or blank → the class is copied.
 3. Choose today's equipment: tick boxes, or load a preset.
 4. Builder: blocks in order; each has "Add exercise" opening a picker pre-filtered to that block + available equipment + level, plus "Add series". A toggle shows unavailable exercises greyed out with the missing equipment named.
-5. Drag to reorder items and blocks; skip a block; inline edit reps/springs/notes; running total duration vs. target; soft hints from the template.
+5. Drag to reorder items and blocks; skip a block; inline edit reps/springs/notes; running total duration vs. target; soft hints copied from the starting class.
 6. Autosave on every change (optimistic). Mark as "ready".
 
 **F4 — Export.** "Export PDF" opens a print-optimised view (one or two pages, block headers, exercises with reps/springs/notes, small logo) → browser print / save as PDF.
 
-**F5 — Reuse.** Duplicate a lesson; save a lesson's structure as a private template.
+**F5 — Reuse.** Any class is a starting point for a new one ("Use this class"); duplicate a lesson; admins can publish a class as a shared example.
 
-**F6 — Templates and custom blocks.** Create/edit a private template: ordered slots with label, optional flag, minimum count. Create custom blocks.
+**F6 — Custom blocks and presets.** Create custom blocks and equipment presets (under More).
 
-**F7 — Curate (admin only).** Edit shared blocks, exercises, series, templates; review queue of `needs_review` exercises with verify / fix / delete.
+**F7 — Curate (admin only).** Edit shared blocks, exercises, series, example classes; review queue of `needs_review` exercises with verify / fix / delete.
 
 ## 9. Increments
 
@@ -283,6 +278,7 @@ Each increment is a vertical slice: migration + data layer + UI + tests, deploye
 - **Done when:** a new lesson from a template + preset takes under a minute to set up.
 
 ### Increment 4a — Usability and flows
+- **Progress:** 4a-1 (phone shell and builder density) is merged. 4a-2 (classes) is built: templates are gone, example classes are shared classes (`owner_id IS NULL`), "New class" starts from a starting-point screen (example classes, your own, or blank), the date is optional, and the UI says "class".
 The features are in; this increment makes what exists good to use. Feature work stops after it.
 - **Phone shell and builder density:** compact header and bottom tab bar, no horizontal overflow, collapsed exercise rows, one-line empty blocks.
 - **One concept, classes:** templates are removed as a separate thing; a template is just an example class, and creating a class starts by picking one (shared example classes, your own, or blank). The date is optional; class length is a first-class setting.

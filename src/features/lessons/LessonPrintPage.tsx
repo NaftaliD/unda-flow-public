@@ -43,9 +43,11 @@ export function LessonPrintPage() {
         defaultDurationSec: exerciseById.get(i.exerciseId)?.defaultDurationSec ?? null,
       })),
   )
-  const date = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'long' }).format(
-    new Date(`${l.lessonDate}T00:00:00`),
-  )
+  const date = l.lessonDate
+    ? new Intl.DateTimeFormat(i18n.language, { dateStyle: 'long' }).format(
+        new Date(`${l.lessonDate}T00:00:00`),
+      )
+    : null
 
   return (
     <article className="mx-auto flex w-full max-w-3xl flex-col gap-5 p-6 print:max-w-none print:gap-3 print:p-0 print:text-[11pt]">
@@ -62,7 +64,7 @@ export function LessonPrintPage() {
           <Logo kind="full" tone="dark" className="h-14" />
         </div>
         <p className="text-sm">
-          {date} · {t(`levels.${l.level}`)}
+          {[date, t(`levels.${l.level}`)].filter(Boolean).join(' · ')}
           {l.targetDurationMin ? ` · ${t('lessons.minutes', { count: l.targetDurationMin })}` : ''}
           {totalSec > 0
             ? ` · ${t('lessons.print.planned', { time: formatMinutes(totalSec) })}`

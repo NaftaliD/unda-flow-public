@@ -12,7 +12,7 @@ function NavLink({
   to,
   children,
 }: {
-  to: '/' | '/exercises' | '/templates' | '/series' | '/admin/review'
+  to: '/' | '/exercises' | '/series' | '/more' | '/admin/review'
   children: ReactNode
 }) {
   return (
@@ -50,7 +50,7 @@ function TabLink({
 }
 
 /** Where the "More" tab is the active section (everything that is not Classes or Library). */
-const MORE_PREFIXES = ['/more', '/templates', '/series', '/admin']
+const MORE_PREFIXES = ['/more', '/series', '/admin']
 
 export function AppLayout() {
   const { t } = useTranslation()
@@ -86,8 +86,8 @@ export function AppLayout() {
           >
             <NavLink to="/">{t('nav.lessons')}</NavLink>
             <NavLink to="/exercises">{t('nav.library')}</NavLink>
-            <NavLink to="/templates">{t('nav.templates')}</NavLink>
             <NavLink to="/series">{t('nav.series')}</NavLink>
+            <NavLink to="/more">{t('nav.more')}</NavLink>
             {isAdmin && <NavLink to="/admin/review">{t('nav.review')}</NavLink>}
           </nav>
         </div>

@@ -52,7 +52,7 @@ describe('app', () => {
   it('shows the home screen when signed in', async () => {
     getSession.mockResolvedValue({ user: { id: 'u1' } })
     const router = renderAt('/')
-    await screen.findByText(/no lessons yet/i)
+    await screen.findByText(/no classes yet/i)
     expect(router.state.location.pathname).toBe('/')
   })
 

@@ -1,17 +1,17 @@
 import { expect, test } from '@playwright/test'
-import { signInViaMailpit } from './helpers.ts'
+import { signInViaMailpit, startNewClass } from './helpers.ts'
 
 // Needs the local Supabase stack with the seed imported (see library.local.spec.ts).
 test.skip(!process.env.E2E_LOCAL_SUPABASE, 'needs local Supabase (npm run db:start)')
 
-test('save an equipment preset once, then set up a lesson from a template and the preset', async ({
+test('save an equipment preset once, then set up a class from an example and the preset', async ({
   page,
   request,
 }) => {
   await signInViaMailpit(page, request, `e2e-preset-${Date.now()}@example.com`)
 
   // First lesson: tick the equipment and save it as a preset.
-  await page.getByRole('link', { name: 'New lesson' }).click()
+  await startNewClass(page)
   await page.getByLabel('Title').fill('First')
   const equipment = page.getByRole('group', { name: 'Equipment available today' })
   await equipment.getByRole('button', { name: 'Reformer' }).click()
@@ -20,13 +20,13 @@ test('save an equipment preset once, then set up a lesson from a template and th
   await page.getByLabel('Preset name').fill('Studio')
   await page.getByRole('button', { name: 'Save', exact: true }).click()
   await expect(page.getByText('Saved the preset “Studio”.')).toBeVisible()
-  await page.getByRole('button', { name: 'Create lesson' }).click()
+  await page.getByRole('button', { name: 'Create class' }).click()
   // Wait for the builder (the new-lesson page has a Title field too).
-  await expect(page.getByRole('list', { name: 'Lesson blocks' })).toBeVisible()
+  await expect(page.getByRole('list', { name: 'Class blocks' })).toBeVisible()
 
   // Second lesson: template (default) + preset, then straight to the builder.
-  await page.getByRole('link', { name: 'Back to lessons' }).click()
-  await page.getByRole('link', { name: 'New lesson' }).click()
+  await page.getByRole('link', { name: 'Back to classes' }).click()
+  await startNewClass(page)
   await page.getByLabel('Title').fill('Second')
   await page.getByLabel('Load a preset').selectOption({ label: 'Studio' })
   const again = page.getByRole('group', { name: 'Equipment available today' })
@@ -39,9 +39,9 @@ test('save an equipment preset once, then set up a lesson from a template and th
     'aria-pressed',
     'false',
   )
-  await page.getByRole('button', { name: 'Create lesson' }).click()
+  await page.getByRole('button', { name: 'Create class' }).click()
 
-  const blocks = page.getByRole('list', { name: 'Lesson blocks' }).locator('> li')
+  const blocks = page.getByRole('list', { name: 'Class blocks' }).locator('> li')
   await expect(blocks).toHaveCount(12)
   // The equipment is summarised in the header; open the details to see the chips.
   await expect(page.getByText(/Reformer, Box/).first()).toBeVisible()
@@ -52,8 +52,9 @@ test('save an equipment preset once, then set up a lesson from a template and th
       .getByRole('button', { name: 'Box' }),
   ).toHaveAttribute('aria-pressed', 'true')
 
-  // The builder can load another preset too; manage presets under Templates.
-  await page.getByRole('link', { name: 'Templates', exact: true }).click()
+  // Manage presets under More.
+  await page.getByRole('link', { name: 'More', exact: true }).click()
+  await page.getByRole('link', { name: /Equipment presets/ }).click()
   await expect(page.getByRole('heading', { name: 'My equipment presets' })).toBeVisible()
   const row = page.getByRole('listitem').filter({ hasText: 'Reformer, Box' })
   await row.getByLabel('Rename Studio').fill('Main studio')

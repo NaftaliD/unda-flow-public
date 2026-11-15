@@ -17,11 +17,10 @@ import { LessonBuilderPage } from '@/features/lessons/LessonBuilderPage'
 import { LessonListPage } from '@/features/lessons/LessonListPage'
 import { LessonPrintPage } from '@/features/lessons/LessonPrintPage'
 import { MorePage } from '@/features/more/MorePage'
+import { BlocksPage, PresetsPage } from '@/features/more/MoreSubpages'
 import { NewLessonPage } from '@/features/lessons/NewLessonPage'
 import { SeriesEditorPage } from '@/features/series/SeriesEditorPage'
 import { SeriesListPage } from '@/features/series/SeriesListPage'
-import { TemplateEditorPage } from '@/features/templates/TemplateEditorPage'
-import { TemplateListPage } from '@/features/templates/TemplateListPage'
 import { AppLayout } from './AppLayout'
 import { NotFound } from './NotFound'
 
@@ -55,6 +54,9 @@ const homeRoute = createRoute({
 const newLessonRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/lessons/new',
+  // `from` = the class to start from: a class id, or "blank".
+  validateSearch: (search: Record<string, unknown>): { from?: string } =>
+    typeof search.from === 'string' && search.from !== '' ? { from: search.from } : {},
   component: NewLessonPage,
 })
 
@@ -76,22 +78,16 @@ const moreRoute = createRoute({
   component: MorePage,
 })
 
-const templatesRoute = createRoute({
+const presetsRoute = createRoute({
   getParentRoute: () => protectedRoute,
-  path: '/templates',
-  component: TemplateListPage,
+  path: '/more/presets',
+  component: PresetsPage,
 })
 
-const newTemplateRoute = createRoute({
+const blocksRoute = createRoute({
   getParentRoute: () => protectedRoute,
-  path: '/templates/new',
-  component: TemplateEditorPage,
-})
-
-const templateRoute = createRoute({
-  getParentRoute: () => protectedRoute,
-  path: '/templates/$id',
-  component: TemplateEditorPage,
+  path: '/more/blocks',
+  component: BlocksPage,
 })
 
 const seriesRoute = createRoute({
@@ -149,9 +145,8 @@ const routeTree = rootRoute.addChildren([
     lessonRoute,
     lessonPrintRoute,
     moreRoute,
-    templatesRoute,
-    newTemplateRoute,
-    templateRoute,
+    presetsRoute,
+    blocksRoute,
     seriesRoute,
     newSeriesRoute,
     seriesDetailRoute,

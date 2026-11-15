@@ -12,9 +12,10 @@ import {
 import { supabase } from '../supabaseClient'
 
 export type NewLessonInput = LessonFormValues & {
-  methodId: string
-  /** null = a blank lesson (no slots). */
-  templateId: string | null
+  /** The class to copy (an example, or one of your own); null = a blank class. */
+  fromLessonId: string | null
+  /** Needed for a blank class; a copy takes the source's method. */
+  methodId?: string
 }
 
 export function useCreateLesson() {
@@ -23,13 +24,12 @@ export function useCreateLesson() {
     mutationFn: async (input: NewLessonInput): Promise<string> => {
       const { data, error } = await supabase.rpc('create_lesson', {
         payload: {
-          method_id: input.methodId,
+          from_lesson_id: input.fromLessonId,
+          method_id: input.methodId ?? null,
           title: input.title,
-          lesson_date: input.lessonDate,
           level: input.level,
           target_duration_min: input.targetDurationMin ?? null,
           equipment_ids: input.equipmentIds,
-          template_id: input.templateId,
         },
       })
       if (error) throw error
@@ -97,7 +97,7 @@ function useLessonEdit<V>(
 
 export type LessonPatch = Partial<{
   title: string
-  lessonDate: string
+  lessonDate: string | null
   level: Lesson['level']
   targetDurationMin: number | null
   status: LessonStatus
@@ -424,4 +424,16 @@ export function useDeleteSlot(lessonId: string) {
     },
     (l, slotId) => ({ ...l, slots: l.slots.filter((s) => s.id !== slotId) }),
   )
+}
+
+/** Admin only: turn one of your own classes into a shared example class. */
+export function usePublishClass() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.rpc('publish_class', { p_id: id })
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: lessonKeys.all }),
+  })
 }

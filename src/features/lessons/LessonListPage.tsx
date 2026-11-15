@@ -26,7 +26,8 @@ export function LessonListPage() {
   const remove = useDeleteLesson()
   const [tab, setTab] = useState<LessonStatus>('draft')
 
-  const all = lessons.data ?? []
+  // Shared example classes are picked in "New class", not listed here.
+  const all = (lessons.data ?? []).filter((l) => l.ownerId !== null)
   const shown = all.filter((l) => l.status === tab)
 
   async function onDuplicate(l: LessonSummary) {
@@ -93,7 +94,9 @@ export function LessonListPage() {
                       {l.title}
                     </Link>
                     <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                      <span>{fmt.format(new Date(`${l.lessonDate}T00:00:00`))}</span>
+                      {l.lessonDate && (
+                        <span>{fmt.format(new Date(`${l.lessonDate}T00:00:00`))}</span>
+                      )}
                       <Badge tone="outline">{t(`levels.${l.level}`)}</Badge>
                       {l.targetDurationMin && (
                         <span>{t('lessons.minutes', { count: l.targetDurationMin })}</span>

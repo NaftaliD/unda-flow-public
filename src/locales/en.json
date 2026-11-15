@@ -10,7 +10,7 @@
     "library": "Library",
     "review": "Review",
     "home": "Home",
-    "lessons": "Lessons",
+    "lessons": "Classes",
     "templates": "Templates",
     "series": "Series",
     "more": "More",
@@ -31,8 +31,8 @@
   "home": {
     "greeting": "Hello, {{name}}",
     "greetingAnonymous": "Hello",
-    "emptyTitle": "No lessons yet",
-    "emptyBody": "Your lesson planner is on its way. Lessons you build will appear here.",
+    "emptyTitle": "No classes yet",
+    "emptyBody": "Start from an example class and make it yours.",
     "browseLibrary": "Browse the exercise library"
   },
   "config": {
@@ -119,7 +119,7 @@
       "positive": "Enter a whole number above zero",
       "emptyGroup": "Choose at least one item, or remove the empty requirement."
     },
-    "inUse": "This exercise is used in a lesson, so it cannot be deleted. Archive it instead.",
+    "inUse": "This exercise is used in a class, so it cannot be deleted. Archive it instead.",
     "bonusTitle": "Bonus accessories",
     "bonusHelp": "Optional extras that add variety or challenge but are not needed. They never hide the exercise when you do not have them."
   },
@@ -133,15 +133,15 @@
     "edit": "Edit"
   },
   "lessons": {
-    "title": "Lessons",
-    "new": "New lesson",
-    "newTitle": "New lesson",
-    "back": "Back to lessons",
+    "title": "Classes",
+    "new": "New class",
+    "newTitle": "New class",
+    "back": "Back to classes",
     "loading": "Loading…",
-    "notFound": "This lesson was not found.",
+    "notFound": "This class was not found.",
     "saveFailed": "Could not save that change. It was undone.",
-    "tabs": "Lesson status",
-    "emptyTab": "No lessons here yet.",
+    "tabs": "Class status",
+    "emptyTab": "No classes here yet.",
     "tab": {
       "draft": "Drafts",
       "ready": "Ready",
@@ -162,21 +162,22 @@
       "titlePlaceholder": "e.g. Monday reformer class",
       "date": "Date",
       "level": "Level",
-      "target": "Target duration (minutes)",
+      "target": "Class length (minutes)",
       "equipment": "Equipment available today",
       "equipmentHint": "Exercises are filtered to what these allow. You can change it later.",
-      "create": "Create lesson",
+      "create": "Create class",
       "creating": "Creating…",
-      "createFailed": "Could not create the lesson. Please try again.",
+      "createFailed": "Could not create the class. Please try again.",
       "required": "This field is required",
       "template": "Template",
-      "templateBlank": "Blank lesson (add blocks yourself)",
-      "templateHint": "The template sets the blocks of the lesson. You can still add, remove or reorder them."
+      "templateBlank": "Blank class (add blocks yourself)",
+      "templateHint": "The template sets the blocks of the class. You can still add, remove or reorder them.",
+      "targetQuick": "Common class lengths"
     },
     "builder": {
       "print": "Print / PDF",
       "status": "Status",
-      "blocks": "Lesson blocks",
+      "blocks": "Class blocks",
       "total": "Planned: {{time}}",
       "totalOfTarget": "Planned: {{time}} of {{target}} min",
       "missingDuration_one": "{{count}} exercise without a duration",
@@ -211,7 +212,7 @@
       "removeBlockConfirm": "Remove this block and the exercises in it?",
       "optional": "Optional",
       "usually": "Usually {{count}}+ exercises",
-      "noBlocks": "This lesson has no blocks yet. Add one to start.",
+      "noBlocks": "This class has no blocks yet. Add one to start.",
       "saveAsTemplate": "Save as template",
       "templateName": "Template name",
       "templateSaved": "Saved as a template.",
@@ -225,7 +226,10 @@
       "tapToEdit": "Tap to add reps, time and springs",
       "editDetails": "Edit details",
       "hideDetails": "Hide details",
-      "noEquipment": "No equipment ticked"
+      "noEquipment": "No equipment ticked",
+      "publish": "Publish as example",
+      "published": "Published as an example class.",
+      "publishFailed": "Could not publish this class."
     },
     "picker": {
       "title": "Add to {{block}}",
@@ -245,11 +249,30 @@
       "reps": "{{count}} reps",
       "seconds": "{{count}} s",
       "springs": "springs {{value}}"
+    },
+    "start": {
+      "intro": "Start from an example class or one of your own, then change anything you like. The original is never touched.",
+      "examples": "Example classes",
+      "noExamples": "There are no example classes yet.",
+      "recent": "Your recent classes",
+      "use": "Use this class",
+      "preview": "Preview",
+      "example": "Example",
+      "blocks_one": "{{count}} block",
+      "blocks_other": "{{count}} blocks",
+      "blankTitle": "Or start empty",
+      "blankBody": "A class with no blocks. Add the blocks you want.",
+      "blank": "Start blank",
+      "back": "Choose a different starting point",
+      "copy": "copy",
+      "fromSource": "Starting from “{{title}}”. You can change everything below and in the class itself.",
+      "fromBlank": "A blank class: you add the blocks yourself.",
+      "emptyBlock": "No exercises in this block."
     }
   },
   "templates": {
     "title": "Templates",
-    "intro": "A template is the list of blocks a new lesson starts with.",
+    "intro": "A template is the list of blocks a new class starts with.",
     "new": "New template",
     "newTitle": "New template",
     "back": "Back to templates",
@@ -259,14 +282,14 @@
     "mine": "Mine",
     "sharedHeading": "Shared templates",
     "mineHeading": "My templates",
-    "emptyMine": "You have no templates of your own yet. Duplicate a shared one, or save a lesson as a template.",
+    "emptyMine": "You have no templates of your own yet. Duplicate a shared one, or save a class as a template.",
     "slotCount_one": "{{count}} block",
     "slotCount_other": "{{count}} blocks",
     "duplicate": "Duplicate as mine",
     "delete": "Delete",
-    "confirmDelete": "Delete this template? Lessons already made from it are not affected.",
+    "confirmDelete": "Delete this template? Classes already made from it are not affected.",
     "readOnly": "This is a shared template. Duplicate it to edit your own copy.",
-    "adminEdit": "You can edit this shared template as an admin. Existing lessons are not affected.",
+    "adminEdit": "You can edit this shared template as an admin. Existing classes are not affected.",
     "publish": "Publish to the shared library",
     "form": {
       "name": "Name",
@@ -290,12 +313,12 @@
     },
     "blocks": {
       "title": "My blocks",
-      "intro": "Your own block types. They appear in templates, lessons and the library.",
+      "intro": "Your own block types. They appear in templates, classes and the library.",
       "name": "Name",
       "goal": "What it is for (optional)",
       "add": "Add block",
       "delete": "Delete",
-      "inUse": "This block is still used by an exercise, lesson or template.",
+      "inUse": "This block is still used by an exercise, class or template.",
       "empty": "You have no custom blocks yet.",
       "saveFailed": "Could not save the block."
     },
@@ -304,7 +327,7 @@
   },
   "series": {
     "title": "Series",
-    "intro": "A series is a ready-made set of exercises for one block, added to a lesson in one click.",
+    "intro": "A series is a ready-made set of exercises for one block, added to a class in one click.",
     "new": "New series",
     "newTitle": "New series",
     "back": "Back to series",
@@ -315,9 +338,9 @@
     "emptyShared": "There are no shared series yet.",
     "exerciseCount_one": "{{count}} exercise",
     "exerciseCount_other": "{{count}} exercises",
-    "confirmDelete": "Delete this series? Lessons that already used it are not affected.",
+    "confirmDelete": "Delete this series? Classes that already used it are not affected.",
     "readOnly": "This is a shared series. Duplicate it to edit your own copy.",
-    "adminEdit": "You can edit this shared series as an admin. Existing lessons are not affected.",
+    "adminEdit": "You can edit this shared series as an admin. Existing classes are not affected.",
     "addSeries": "Add series",
     "added_one": "Added {{count}} exercise.",
     "added_other": "Added {{count}} exercises.",
@@ -340,8 +363,8 @@
   },
   "presets": {
     "title": "My equipment presets",
-    "intro": "A preset is a saved set of equipment, such as your studio or a home setup. Load it into a lesson with one click.",
-    "empty": "You have no presets yet. Tick your equipment in a lesson and choose “Save as preset”.",
+    "intro": "A preset is a saved set of equipment, such as your studio or a home setup. Load it into a class with one click.",
+    "empty": "You have no presets yet. Tick your equipment in a class and choose “Save as preset”.",
     "noEquipment": "No equipment",
     "load": "Load a preset",
     "saveAs": "Save as preset",
@@ -353,12 +376,17 @@
     "saveFailed": "Could not save the preset.",
     "rename": "Rename {{name}}",
     "delete": "Delete {{name}}",
-    "confirmDelete": "Delete the preset “{{name}}”? Lessons are not affected."
+    "confirmDelete": "Delete the preset “{{name}}”? Classes are not affected."
   },
   "more": {
     "title": "More",
     "templatesBody": "Templates, equipment presets and your own blocks",
     "seriesBody": "Ready-made sets of exercises for a block",
-    "reviewBody": "Check imported exercises"
+    "reviewBody": "Check imported exercises",
+    "back": "Back",
+    "presets": "Equipment presets",
+    "presetsBody": "Saved sets of equipment, such as your studio",
+    "blocks": "My blocks",
+    "blocksBody": "Your own block types"
   }
 }

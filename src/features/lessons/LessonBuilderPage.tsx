@@ -12,7 +12,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { Link, useParams } from '@tanstack/react-router'
+import { Link, useNavigate, useParams } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -26,6 +26,7 @@ import {
   useDeleteItem,
   useDeleteSlot,
   useMoveItem,
+  usePublishClass,
   useReorderItems,
   useReorderSlots,
   useSetLessonEquipment,
@@ -34,7 +35,6 @@ import {
   useUpdateSlot,
 } from '@/data/mutations/lessons'
 import { useAddSeriesToSlot } from '@/data/mutations/series'
-import { useSaveLessonAsTemplate } from '@/data/mutations/templates'
 import { useBlocks, useEquipment, useExercises } from '@/data/queries/library'
 import { useLesson, type Lesson, type LessonStatus } from '@/data/queries/lessons'
 import { useCurrentUser } from '@/data/queries/profile'
@@ -43,7 +43,8 @@ import { formatMinutes, lessonDuration, reorderIds } from '@/domain/lesson'
 import { LEVELS } from '@/domain/library'
 import { PresetBar } from '../presets/PresetBar'
 import { BlockCard } from './BlockCard'
-import { AddBlockDialog, SaveTemplateDialog } from './BuilderDialogs'
+import { AddBlockDialog } from './BuilderDialogs'
+import { ClassPreview } from './ClassPreview'
 import { EquipmentChips } from './EquipmentChips'
 import { ExercisePicker } from './ExercisePicker'
 import { SeriesPicker } from './SeriesPicker'
@@ -57,6 +58,7 @@ export function LessonBuilderPage() {
   const blocks = useBlocks()
   const equipment = useEquipment()
   const exercises = useExercises()
+  const { isAdmin } = useCurrentUser()
 
   if (lesson.isPending || blocks.isPending || equipment.isPending || exercises.isPending) {
     return <p className="p-6 text-sm text-muted-foreground">{t('lessons.loading')}</p>
@@ -71,12 +73,26 @@ export function LessonBuilderPage() {
       </section>
     )
   }
+  if (lesson.data.ownerId === null) {
+    if (isAdmin === undefined) {
+      return <p className="p-6 text-sm text-muted-foreground">{t('lessons.loading')}</p>
+    }
+    if (!isAdmin) {
+      return (
+        <ClassPreview
+          lesson={lesson.data}
+          exerciseById={new Map((exercises.data ?? []).map((e) => [e.id, e]))}
+        />
+      )
+    }
+  }
   return <Builder lesson={lesson.data} />
 }
 
 function Builder({ lesson }: { lesson: Lesson }) {
   const { t } = useTranslation()
-  const { userId } = useCurrentUser()
+  const { userId, isAdmin } = useCurrentUser()
+  const navigate = useNavigate()
   const blocks = useBlocks()
   const equipment = useEquipment()
   const exercises = useExercises()
@@ -85,10 +101,9 @@ function Builder({ lesson }: { lesson: Lesson }) {
   const updateSlot = useUpdateSlot(lesson.id)
   const addSlot = useAddSlot(lesson.id)
   const deleteSlot = useDeleteSlot(lesson.id)
-  const saveTemplate = useSaveLessonAsTemplate()
+  const publish = usePublishClass()
   const [addBlockOpen, setAddBlockOpen] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState(false)
-  const [templateOpen, setTemplateOpen] = useState(false)
   const reorderSlots = useReorderSlots(lesson.id)
   const reorderItems = useReorderItems(lesson.id)
   const addItem = useAddItem(lesson.id)
@@ -152,9 +167,23 @@ function Builder({ lesson }: { lesson: Lesson }) {
           {t('lessons.back')}
         </Link>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" onClick={() => setTemplateOpen(true)}>
-            {t('lessons.builder.saveAsTemplate')}
-          </Button>
+          {isAdmin && lesson.ownerId === userId && lesson.ownerId !== null && (
+            <Button
+              variant="outline"
+              disabled={publish.isPending}
+              onClick={() =>
+                publish.mutate(lesson.id, {
+                  onSuccess: () => {
+                    toast.success(t('lessons.builder.published'))
+                    void navigate({ to: '/' })
+                  },
+                  onError: () => toast.error(t('lessons.builder.publishFailed')),
+                })
+              }
+            >
+              {t('lessons.builder.publish')}
+            </Button>
+          )}
           <Link
             to="/lessons/$id/print"
             params={{ id: lesson.id }}
@@ -225,11 +254,11 @@ function Builder({ lesson }: { lesson: Lesson }) {
                 <Input
                   id="lesson-date"
                   type="date"
-                  key={lesson.lessonDate}
-                  defaultValue={lesson.lessonDate}
+                  key={lesson.lessonDate ?? ''}
+                  defaultValue={lesson.lessonDate ?? ''}
                   onBlur={(e) => {
-                    if (e.target.value && e.target.value !== lesson.lessonDate)
-                      update.mutate({ lessonDate: e.target.value })
+                    const v = e.target.value || null
+                    if (v !== lesson.lessonDate) update.mutate({ lessonDate: v })
                   }}
                 />
               </div>
@@ -338,25 +367,6 @@ function Builder({ lesson }: { lesson: Lesson }) {
         blocks={blocks.data ?? []}
         onAdd={(blockId, label) => addSlot.mutate({ id: crypto.randomUUID(), blockId, label })}
       />
-      <SaveTemplateDialog
-        open={templateOpen}
-        onClose={() => setTemplateOpen(false)}
-        defaultName={lesson.title}
-        pending={saveTemplate.isPending}
-        onSave={(name) =>
-          saveTemplate.mutate(
-            { lessonId: lesson.id, name },
-            {
-              onSuccess: () => {
-                setTemplateOpen(false)
-                toast.success(t('lessons.builder.templateSaved'))
-              },
-              onError: () => toast.error(t('lessons.builder.templateSaveFailed')),
-            },
-          )
-        }
-      />
-
       <SeriesPicker
         open={seriesSlot !== undefined}
         onClose={() => setSeriesSlotId(null)}

@@ -1,26 +1,26 @@
 import { expect, test } from '@playwright/test'
-import { signInViaMailpit } from './helpers.ts'
+import { signInViaMailpit, startNewClass } from './helpers.ts'
 
 // Needs the local Supabase stack with the seed imported (the sample CSV defines the series).
 test.skip(!process.env.E2E_LOCAL_SUPABASE, 'needs local Supabase (npm run db:start)')
 
-test('add a shared series to a lesson block, then build a series of your own', async ({
+test('add a shared series to a class block, then build a series of your own', async ({
   page,
   request,
 }) => {
   await signInViaMailpit(page, request, `e2e-series-${Date.now()}@example.com`)
 
-  // A lesson with the reformer.
-  await page.getByRole('link', { name: 'New lesson' }).click()
+  // A class with the reformer.
+  await startNewClass(page)
   await page.getByLabel('Title').fill('Series class')
   await page
     .getByRole('group', { name: 'Equipment available today' })
     .getByRole('button', { name: 'Reformer' })
     .click()
-  await page.getByRole('button', { name: 'Create lesson' }).click()
+  await page.getByRole('button', { name: 'Create class' }).click()
 
   // Add the whole foot-work series in one action.
-  const blocks = page.getByRole('list', { name: 'Lesson blocks' }).locator('> li')
+  const blocks = page.getByRole('list', { name: 'Class blocks' }).locator('> li')
   const footWork = blocks.filter({ has: page.getByRole('heading', { name: 'Foot work' }) })
   await footWork.getByRole('button', { name: 'Add series' }).click()
   const dialog = page.getByRole('dialog', { name: /Add a series to/ })
@@ -38,7 +38,7 @@ test('add a shared series to a lesson block, then build a series of your own', a
   await page.reload()
   await expect(
     page
-      .getByRole('list', { name: 'Lesson blocks' })
+      .getByRole('list', { name: 'Class blocks' })
       .locator('> li')
       .filter({ has: page.getByRole('heading', { name: 'Foot work' }) })
       .getByRole('list')

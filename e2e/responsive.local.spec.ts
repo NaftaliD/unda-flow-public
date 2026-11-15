@@ -31,14 +31,16 @@ for (const size of SIZES) {
         `e2e-resp-${size.width}-${lang}-${Date.now()}@example.com`,
       )
       // Wait until the session is established before navigating away.
-      await expect(page.getByRole('heading', { name: 'Lessons' })).toBeVisible()
+      await expect(page.getByRole('heading', { name: 'Classes', exact: true })).toBeVisible()
       if (lang === 'he') {
         await page.getByRole('button', { name: 'Language' }).click()
       }
 
       // Seed one class so the list and builder have content.
       await page.goto('/lessons/new')
-      await page.getByRole('textbox').first().fill('Responsive check')
+      // The first starting point is the shared example class, in either language.
+      await page.locator('a[href*="from="]').first().click()
+      await page.getByLabel(/Title|שם השיעור/).fill('Responsive check')
       await page.locator('button[type=submit]').click()
       await page.getByRole('list').first().waitFor()
       const builderUrl = page.url()
@@ -46,11 +48,13 @@ for (const size of SIZES) {
       const routes = [
         '/',
         '/lessons/new',
+        '/lessons/new?from=blank',
         builderUrl.replace(/^https?:\/\/[^/]+/, ''),
         '/exercises',
-        '/templates',
         '/series',
         '/more',
+        '/more/presets',
+        '/more/blocks',
       ]
       for (const r of routes) {
         await page.goto(r)

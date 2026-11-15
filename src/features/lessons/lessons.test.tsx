@@ -5,13 +5,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Block, Equipment, Exercise } from '@/data/queries/library'
 import type { Lesson, LessonSummary } from '@/data/queries/lessons'
 import type { Series } from '@/data/queries/series'
-import type { Template } from '@/data/queries/templates'
 
 const state = vi.hoisted(() => ({
   lessons: [] as unknown[],
   lesson: null as unknown,
   exercises: [] as unknown[],
-  templates: [] as unknown[],
   series: [] as unknown[],
   presets: [] as unknown[],
   savePreset: vi.fn(),
@@ -99,17 +97,8 @@ vi.mock('@/data/mutations/lessons', () => ({
   useMoveItem: state.stub,
   useDeleteItem: state.stub,
   useAddSlot: state.stub,
+  usePublishClass: state.stub,
   useDeleteSlot: () => ({ ...state.stub(), mutate: state.deleteSlot }),
-}))
-vi.mock('@/data/queries/templates', () => ({
-  templateKeys: {},
-  useTemplates: () => ({ data: state.templates, isPending: false }),
-}))
-vi.mock('@/data/mutations/templates', () => ({
-  useSaveLessonAsTemplate: state.stub,
-  useDuplicateTemplate: state.stub,
-  useDeleteTemplate: state.stub,
-  useSaveTemplate: state.stub,
 }))
 vi.mock('@/data/queries/series', () => ({
   seriesKeys: {},
@@ -149,6 +138,9 @@ function renderAt(path: string) {
 }
 
 const summary = (over: Partial<LessonSummary> & { id: string; title: string }): LessonSummary => ({
+  ownerId: 'u1',
+  blockCount: 12,
+  exerciseCount: 0,
   lessonDate: '2026-11-16',
   level: 'fundamental',
   status: 'draft',
@@ -168,20 +160,12 @@ const item = (id: string, slotId: string, exerciseId: string, durationSec: numbe
   notes: null,
 })
 
-const tpl = (over: Partial<Template> & { id: string; name: string }): Template => ({
-  ownerId: null,
-  methodId: 'm1',
-  description: null,
-  targetDurationMin: null,
-  slots: [],
-  ...over,
-})
-
 function makeLesson(): Lesson {
   return {
     ...summary({ id: 'l1', title: 'Monday class', level: 'intermediate', targetDurationMin: 55 }),
     methodId: 'm1',
     notes: null,
+    sourceLessonId: null,
     equipmentIds: ['e-ref'],
     slots: [
       {
@@ -249,10 +233,6 @@ describe('lessons', () => {
       },
     ] satisfies Series[]
     state.create.mockReset().mockResolvedValue('new1')
-    state.templates = [
-      tpl({ id: 't-own', ownerId: 'u1', name: 'My short class' }),
-      tpl({ id: 't-shared', ownerId: null, name: 'Apparatus class' }),
-    ]
     state.updateSlot.mockReset()
     state.lessons = []
     state.lesson = makeLesson()
@@ -276,8 +256,8 @@ describe('lessons', () => {
 
   it('shows the empty state when there are no lessons', async () => {
     renderAt('/')
-    expect(await screen.findByText('No lessons yet')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'New lesson' })).toBeInTheDocument()
+    expect(await screen.findByText('No classes yet')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'New class' })).toBeInTheDocument()
   })
 
   it('filters the list by status tab', async () => {
@@ -367,36 +347,82 @@ describe('lessons', () => {
     confirm.mockRestore()
   })
 
-  it('new lesson defaults to the shared template', async () => {
+  it('new class starts with a choice: example classes, your own, or blank', async () => {
+    state.lessons = [
+      summary({ id: 'ex1', ownerId: null, title: 'Apparatus class', targetDurationMin: 45 }),
+      summary({ id: 'mine1', title: 'My Monday class' }),
+    ]
     renderAt('/lessons/new')
-    const select = await screen.findByLabelText('Template')
-    expect(select).toHaveValue('t-shared')
-
-    await userEvent.type(screen.getByLabelText('Title'), 'Tuesday')
-    await userEvent.click(screen.getByRole('button', { name: 'Create lesson' }))
-    expect(state.create).toHaveBeenLastCalledWith(
-      expect.objectContaining({ title: 'Tuesday', templateId: 't-shared', methodId: 'm1' }),
+    expect(await screen.findByRole('heading', { name: 'Example classes' })).toBeInTheDocument()
+    const example = screen.getByText('Apparatus class').closest('li')!
+    expect(within(example).getByText('Example')).toBeInTheDocument()
+    expect(within(example).getByRole('link', { name: 'Preview' })).toBeInTheDocument()
+    expect(within(example).getByRole('link', { name: 'Use this class' })).toHaveAttribute(
+      'href',
+      '/lessons/new?from=ex1',
+    )
+    const mine = screen.getByText('My Monday class').closest('li')!
+    expect(within(mine).queryByRole('link', { name: 'Preview' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Start blank' })).toHaveAttribute(
+      'href',
+      '/lessons/new?from=blank',
     )
   })
 
-  it('new lesson can start blank', async () => {
-    renderAt('/lessons/new')
-    await userEvent.selectOptions(await screen.findByLabelText('Template'), '')
-    await userEvent.type(screen.getByLabelText('Title'), 'Blank one')
-    await userEvent.click(screen.getByRole('button', { name: 'Create lesson' }))
-    expect(state.create).toHaveBeenLastCalledWith(expect.objectContaining({ templateId: null }))
+  it('the class list shows only your own classes, not the shared examples', async () => {
+    state.lessons = [
+      summary({ id: 'ex1', ownerId: null, title: 'Apparatus class' }),
+      summary({ id: 'mine1', title: 'My Monday class', lessonDate: null }),
+    ]
+    renderAt('/')
+    expect(await screen.findByText('My Monday class')).toBeInTheDocument()
+    expect(screen.queryByText('Apparatus class')).not.toBeInTheDocument()
   })
 
-  it('templates page: a normal user can view and duplicate a shared template, not edit it', async () => {
-    renderAt('/templates')
-    const shared = (await screen.findByText('Apparatus class')).closest('li')!
-    expect(within(shared).getByRole('link', { name: 'View' })).toBeInTheDocument()
-    expect(within(shared).getByRole('button', { name: 'Duplicate as mine' })).toBeInTheDocument()
-    expect(within(shared).queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument()
+  it('creating from an example keeps its name and sends what to copy', async () => {
+    state.lesson = { ...makeLesson(), id: 'ex1', ownerId: null, title: 'Apparatus class' }
+    renderAt('/lessons/new?from=ex1')
+    const title = await screen.findByLabelText('Title')
+    expect(title).toHaveValue('Apparatus class')
+    expect(screen.getByLabelText('Class length (minutes)')).toHaveValue(55)
 
-    const own = screen.getByText('My short class').closest('li')!
-    expect(within(own).getByRole('link', { name: 'Edit' })).toBeInTheDocument()
-    expect(within(own).getByRole('button', { name: 'Delete' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: '45 min' }))
+    expect(screen.getByLabelText('Class length (minutes)')).toHaveValue(45)
+    await userEvent.click(screen.getByRole('button', { name: 'Create class' }))
+    expect(state.create).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        fromLessonId: 'ex1',
+        title: 'Apparatus class',
+        targetDurationMin: 45,
+        equipmentIds: ['e-ref'],
+      }),
+    )
+  })
+
+  it('creating from one of your own classes titles the copy', async () => {
+    renderAt('/lessons/new?from=l1')
+    expect(await screen.findByLabelText('Title')).toHaveValue('Monday class (copy)')
+  })
+
+  it('a blank class sends no source', async () => {
+    renderAt('/lessons/new?from=blank')
+    await userEvent.type(await screen.findByLabelText('Title'), 'Blank one')
+    await userEvent.click(screen.getByRole('button', { name: 'Create class' }))
+    expect(state.create).toHaveBeenLastCalledWith(
+      expect.objectContaining({ fromLessonId: null, methodId: 'm1', title: 'Blank one' }),
+    )
+  })
+
+  it('a normal user sees an example class as a read-only preview', async () => {
+    state.lesson = { ...makeLesson(), ownerId: null, title: 'Apparatus class' }
+    renderAt('/lessons/l1')
+    expect(await screen.findByRole('heading', { name: /Apparatus class/ })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Use this class' })).toHaveAttribute(
+      'href',
+      '/lessons/new?from=l1',
+    )
+    expect(screen.queryByRole('button', { name: 'Add exercise' })).not.toBeInTheDocument()
+    expect(screen.getByText('Pelvic Curl')).toBeInTheDocument()
   })
 
   it("add series lists the block's series, greys one the equipment cannot support, and adds it", async () => {
@@ -430,7 +456,7 @@ describe('lessons', () => {
   })
 
   it('loading a preset replaces the equipment selection', async () => {
-    renderAt('/lessons/new')
+    renderAt('/lessons/new?from=blank')
     const group = await screen.findByRole('group', { name: 'Equipment available today' })
     await userEvent.click(within(group).getByRole('button', { name: 'Reformer' }))
     expect(within(group).getByRole('button', { name: 'Reformer' })).toHaveAttribute(
@@ -450,7 +476,7 @@ describe('lessons', () => {
   })
 
   it('saves the current selection as a preset', async () => {
-    renderAt('/lessons/new')
+    renderAt('/lessons/new?from=blank')
     const group = await screen.findByRole('group', { name: 'Equipment available today' })
     expect(screen.getByRole('button', { name: 'Save as preset' })).toBeDisabled()
     await userEvent.click(within(group).getByRole('button', { name: 'Reformer' }))

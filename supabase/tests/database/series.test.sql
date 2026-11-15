@@ -50,7 +50,7 @@ create temp table lesson (id uuid);
 grant all on lesson to authenticated;
 insert into lesson select public.create_lesson(jsonb_build_object(
   'method_id', (select id from public.methods where key = 'block'), 'title', 'S',
-  'template_id', '5f0b7a52-3c8e-4d1a-9b64-2e7c1a9d0b01'));
+  'from_lesson_id', '5f0b7a52-3c8e-4d1a-9b64-2e7c1a9d0b01'));
 
 create temp table slot (id uuid);
 grant all on slot to authenticated;

@@ -30,17 +30,24 @@ export type LessonSlot = {
 
 export type LessonSummary = {
   id: string
+  /** null = a shared example class (everyone can read it, admins edit it). */
+  ownerId: string | null
   title: string
-  lessonDate: string
+  /** Optional: a class is a plan, not a calendar entry. */
+  lessonDate: string | null
   level: Level
   status: LessonStatus
   targetDurationMin: number | null
   updatedAt: string
+  blockCount: number
+  exerciseCount: number
 }
 
 export type Lesson = LessonSummary & {
   methodId: string
   notes: string | null
+  /** The class this one was copied from, if any. */
+  sourceLessonId: string | null
   equipmentIds: string[]
   slots: LessonSlot[]
 }
@@ -57,18 +64,22 @@ export function useLessons() {
     queryFn: async (): Promise<LessonSummary[]> => {
       const { data, error } = await supabase
         .from('lessons')
-        .select('id, title, lesson_date, level, status, target_duration_min, updated_at')
-        .order('lesson_date', { ascending: false })
+        .select(
+          'id, owner_id, title, lesson_date, level, status, target_duration_min, updated_at, lesson_slots(id, is_skipped, lesson_items(id))',
+        )
         .order('updated_at', { ascending: false })
       if (error) throw error
       return data.map((l) => ({
         id: l.id,
+        ownerId: l.owner_id,
         title: l.title,
         lessonDate: l.lesson_date,
         level: l.level as Level,
         status: l.status,
         targetDurationMin: l.target_duration_min,
         updatedAt: l.updated_at,
+        blockCount: l.lesson_slots.length,
+        exerciseCount: l.lesson_slots.reduce((n, s) => n + s.lesson_items.length, 0),
       }))
     },
   })
@@ -77,11 +88,13 @@ export function useLessons() {
 export function useLesson(id: string) {
   return useQuery({
     queryKey: lessonKeys.detail(id),
+    // An empty id means "no class" (e.g. a blank new class): never ask the database for it.
+    enabled: id !== '',
     queryFn: async (): Promise<Lesson | null> => {
       const { data, error } = await supabase
         .from('lessons')
         .select(
-          'id, method_id, title, lesson_date, level, target_duration_min, notes, status, updated_at, lesson_equipment(equipment_id), lesson_slots(id, block_id, position, label, is_skipped, notes, hint, is_optional, min_exercises, lesson_items(id, lesson_slot_id, exercise_id, position, reps, duration_sec, springs, notes))',
+          'id, owner_id, method_id, source_lesson_id, title, lesson_date, level, target_duration_min, notes, status, updated_at, lesson_equipment(equipment_id), lesson_slots(id, block_id, position, label, is_skipped, notes, hint, is_optional, min_exercises, lesson_items(id, lesson_slot_id, exercise_id, position, reps, duration_sec, springs, notes))',
         )
         .eq('id', id)
         .maybeSingle()
@@ -89,7 +102,11 @@ export function useLesson(id: string) {
       if (!data) return null
       return {
         id: data.id,
+        ownerId: data.owner_id,
         methodId: data.method_id,
+        sourceLessonId: data.source_lesson_id,
+        blockCount: data.lesson_slots.length,
+        exerciseCount: data.lesson_slots.reduce((n, s) => n + s.lesson_items.length, 0),
         title: data.title,
         lessonDate: data.lesson_date,
         level: data.level as Level,

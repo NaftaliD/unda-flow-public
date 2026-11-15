@@ -233,7 +233,7 @@ describe('library', () => {
     await screen.findByText('Pelvic Curl')
     await userEvent.click(
       within(screen.getByRole('navigation', { name: 'Main' })).getByRole('link', {
-        name: 'Lessons',
+        name: 'Classes',
       }),
     )
 

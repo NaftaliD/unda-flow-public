@@ -12,9 +12,9 @@ test('magic link signs in, lands on the class list, and signs out', async ({ pag
 
   // No greeting: the signup trigger's display name is just the email prefix, so the page title
   // is shown instead (the profile trigger and RLS are covered by the pgTAP tests).
-  await expect(page.getByRole('heading', { name: 'Lessons' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Classes', exact: true })).toBeVisible()
   await expect(page.getByText(`Hello, ${local}`)).toHaveCount(0)
-  await expect(page.getByText('No lessons yet')).toBeVisible()
+  await expect(page.getByText('No classes yet')).toBeVisible()
 
   await page.getByRole('button', { name: 'Sign out' }).click()
   await expect(page).toHaveURL(/\/login$/)

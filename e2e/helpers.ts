@@ -31,3 +31,17 @@ export async function signInViaMailpit(page: Page, request: APIRequestContext, e
   // supabase-js consumes the token from the URL hash, leaving a bare "#"; assert on the path.
   await expect.poll(() => new URL(page.url()).pathname).toBe('/')
 }
+
+/**
+ * Opens "New class" and picks a starting point: the first example class ("example"), the
+ * class named `title`, or an empty class ("blank"). Leaves the page on the short new-class form.
+ */
+export async function startNewClass(page: Page, from: 'example' | 'blank' = 'example') {
+  await page.getByRole('link', { name: 'New class' }).first().click()
+  if (from === 'blank') {
+    await page.getByRole('link', { name: 'Start blank' }).click()
+  } else {
+    await page.getByRole('link', { name: 'Use this class' }).first().click()
+  }
+  await expect(page.getByLabel('Title')).toBeVisible()
+}

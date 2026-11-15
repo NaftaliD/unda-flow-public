@@ -1,15 +1,18 @@
 import { expect, test } from '@playwright/test'
-import { signInViaMailpit } from './helpers.ts'
+import { signInViaMailpit, startNewClass } from './helpers.ts'
 
 // Needs the local Supabase stack with the seed imported (see library.local.spec.ts).
 test.skip(!process.env.E2E_LOCAL_SUPABASE, 'needs local Supabase (npm run db:start)')
 
-test('plan a lesson, edit it, print it, and duplicate it', async ({ page, request }) => {
+test('plan a class from an example, edit it, print it, and duplicate it', async ({
+  page,
+  request,
+}) => {
   await signInViaMailpit(page, request, `e2e-lesson-${Date.now()}@example.com`)
 
   // The home page is the lesson list; a new user has none.
-  await expect(page.getByText('No lessons yet')).toBeVisible()
-  await page.getByRole('link', { name: 'New lesson' }).click()
+  await expect(page.getByText('No classes yet')).toBeVisible()
+  await startNewClass(page)
 
   const title = `E2E class ${Date.now()}`
   await page.getByLabel('Title').fill(title)
@@ -17,11 +20,11 @@ test('plan a lesson, edit it, print it, and duplicate it', async ({ page, reques
     .getByRole('group', { name: 'Equipment available today' })
     .getByRole('button', { name: 'Reformer' })
     .click()
-  await page.getByRole('button', { name: 'Create lesson' }).click()
+  await page.getByRole('button', { name: 'Create class' }).click()
 
   // The builder starts with the 12 default blocks.
   await expect(page.getByLabel('Title')).toHaveValue(title)
-  const blocks = page.getByRole('list', { name: 'Lesson blocks' }).locator('> li')
+  const blocks = page.getByRole('list', { name: 'Class blocks' }).locator('> li')
   await expect(blocks).toHaveCount(12)
 
   // Add an exercise to Foot work from the picker and set its reps.
@@ -47,7 +50,7 @@ test('plan a lesson, edit it, print it, and duplicate it', async ({ page, reques
   // Persisted: survives a reload.
   await page.reload()
   const row2 = page
-    .getByRole('list', { name: 'Lesson blocks' })
+    .getByRole('list', { name: 'Class blocks' })
     .locator('> li')
     .filter({ has: page.getByRole('heading', { name: 'Foot work' }) })
     .getByRole('listitem')
@@ -59,7 +62,7 @@ test('plan a lesson, edit it, print it, and duplicate it', async ({ page, reques
 
   // Skip a block, then print: the skipped block is absent, the exercise is there.
   const extraLeg = page
-    .getByRole('list', { name: 'Lesson blocks' })
+    .getByRole('list', { name: 'Class blocks' })
     .locator('> li')
     .filter({ has: page.getByRole('heading', { name: 'Extra leg' }) })
   await extraLeg.getByRole('button', { name: 'Skip block' }).click()
@@ -73,7 +76,7 @@ test('plan a lesson, edit it, print it, and duplicate it', async ({ page, reques
 
   // Back on the list, duplicate it: lands in the copy's builder.
   await page.getByRole('link', { name: 'Back to builder' }).click()
-  await page.getByRole('link', { name: 'Back to lessons' }).click()
+  await page.getByRole('link', { name: 'Back to classes' }).click()
   await expect(page.getByRole('link', { name: title })).toBeVisible()
   await page.getByRole('button', { name: 'Duplicate' }).click()
   await expect(page.getByLabel('Title')).toHaveValue(`${title} (copy)`)
