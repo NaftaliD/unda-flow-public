@@ -11,6 +11,7 @@ import {
 } from '@/data/mutations/exercises'
 import { useBlocks, useEquipment, useExercises } from '@/data/queries/library'
 import { useCurrentUser } from '@/data/queries/profile'
+import { formatDuration } from '@/domain/lesson'
 import { describeBonus, describeRequirements } from '@/domain/library'
 import type { ExerciseFormValues } from '@/domain/schemas'
 import { ExerciseForm } from './ExerciseForm'
@@ -111,7 +112,10 @@ export function ExercisePage() {
           <Detail label={t('exercise.description')} value={exercise.description} />
           <Detail label={t('exercise.cues')} value={exercise.cues} />
           <Detail label={t('exercise.reps')} value={exercise.defaultReps?.toString()} />
-          <Detail label={t('exercise.duration')} value={exercise.defaultDurationSec?.toString()} />
+          <Detail
+            label={t('exercise.duration')}
+            value={formatDuration(exercise.defaultDurationSec)}
+          />
           <Detail label={t('exercise.springs')} value={exercise.defaultSprings} />
         </dl>
         <Link

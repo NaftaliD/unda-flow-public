@@ -39,7 +39,7 @@ import { useBlocks, useEquipment, useExercises } from '@/data/queries/library'
 import { useLesson, type Lesson, type LessonStatus } from '@/data/queries/lessons'
 import { useCurrentUser } from '@/data/queries/profile'
 import { useSeries } from '@/data/queries/series'
-import { formatMinutes, lessonDuration, reorderIds } from '@/domain/lesson'
+import { lessonDuration, reorderIds } from '@/domain/lesson'
 import { LEVELS } from '@/domain/library'
 import { PresetBar } from '../presets/PresetBar'
 import { BlockCard } from './BlockCard'
@@ -47,6 +47,7 @@ import { AddBlockDialog } from './BuilderDialogs'
 import { ClassPreview } from './ClassPreview'
 import { EquipmentChips } from './EquipmentChips'
 import { ExercisePicker } from './ExercisePicker'
+import { TimeBar } from './TimeBar'
 import { SeriesPicker } from './SeriesPicker'
 
 const STATUSES: LessonStatus[] = ['draft', 'ready', 'taught']
@@ -130,15 +131,14 @@ function Builder({ lesson }: { lesson: Lesson }) {
     .map((e) => e.name)
   const blockById = useMemo(() => new Map((blocks.data ?? []).map((b) => [b.id, b])), [blocks.data])
 
-  const { totalSec, missingCount } = lessonDuration(
-    lesson.slots
-      .filter((s) => !s.isSkipped)
-      .flatMap((s) => s.items)
-      .map((i) => ({
+  const secondsOf = (slot: Lesson['slots'][number]) =>
+    lessonDuration(
+      slot.items.map((i) => ({
         durationSec: i.durationSec,
-        defaultDurationSec: exerciseById.get(i.exerciseId)?.defaultDurationSec ?? null,
+        defaultDurationSec: exerciseById.get(i.exerciseId)?.defaultDurationSec ?? 0,
       })),
-  )
+    ).totalSec
+  const totalSec = lesson.slots.filter((s) => !s.isSkipped).reduce((n, s) => n + secondsOf(s), 0)
 
   const pickerSlot = lesson.slots.find((s) => s.id === pickerSlotId)
   const seriesSlot = lesson.slots.find((s) => s.id === seriesSlotId)
@@ -194,6 +194,8 @@ function Builder({ lesson }: { lesson: Lesson }) {
         </div>
       </div>
 
+      <TimeBar totalSec={totalSec} targetMin={lesson.targetDurationMin} />
+
       <div className="flex flex-col gap-3 rounded-3xl bg-card p-3 text-card-foreground sm:gap-4 sm:p-4">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="lesson-title">{t('lessons.form.title')}</Label>
@@ -221,20 +223,6 @@ function Builder({ lesson }: { lesson: Lesson }) {
           ]
             .filter(Boolean)
             .join(' · ')}
-        </p>
-        <p className="text-sm" aria-live="polite">
-          {lesson.targetDurationMin
-            ? t('lessons.builder.totalOfTarget', {
-                time: formatMinutes(totalSec),
-                target: lesson.targetDurationMin,
-              })
-            : t('lessons.builder.total', { time: formatMinutes(totalSec) })}
-          {missingCount > 0 && (
-            <span className="text-muted-foreground">
-              {' · '}
-              {t('lessons.builder.missingDuration', { count: missingCount })}
-            </span>
-          )}
         </p>
         <Button
           variant="outline"
@@ -333,6 +321,7 @@ function Builder({ lesson }: { lesson: Lesson }) {
               <BlockCard
                 key={slot.id}
                 slot={slot}
+                minutes={Math.round(secondsOf(slot) / 60)}
                 block={blockById.get(slot.blockId)}
                 exerciseById={exerciseById}
                 available={available}

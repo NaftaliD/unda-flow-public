@@ -17,6 +17,7 @@ export function BlocksPanel() {
   const remove = useDeleteBlock()
   const [name, setName] = useState('')
   const [goal, setGoal] = useState('')
+  const [seconds, setSeconds] = useState('120')
   const [message, setMessage] = useState<string | null>(null)
 
   const all = blocks.data ?? []
@@ -34,9 +35,11 @@ export function BlocksPanel() {
         key: blockKeyFromName(name, new Set(mine.map((b) => b.key))),
         name: name.trim(),
         goal: goal.trim(),
+        defaultDurationSec: Math.max(Number.parseInt(seconds, 10) || 120, 1),
       })
       setName('')
       setGoal('')
+      setSeconds('120')
     } catch {
       setMessage(t('templates.blocks.saveFailed'))
     }
@@ -72,7 +75,10 @@ export function BlocksPanel() {
           ))}
         </ul>
       )}
-      <form onSubmit={(e) => void onSubmit(e)} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+      <form
+        onSubmit={(e) => void onSubmit(e)}
+        className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto]"
+      >
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="block-name">{t('templates.blocks.name')}</Label>
           <Input id="block-name" value={name} onChange={(e) => setName(e.target.value)} />
@@ -80,6 +86,17 @@ export function BlocksPanel() {
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="block-goal">{t('templates.blocks.goal')}</Label>
           <Input id="block-goal" value={goal} onChange={(e) => setGoal(e.target.value)} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="block-seconds">{t('templates.blocks.duration')}</Label>
+          <Input
+            id="block-seconds"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            value={seconds}
+            onChange={(e) => setSeconds(e.target.value)}
+          />
         </div>
         <div className="flex items-end">
           <Button type="submit" disabled={save.isPending || !name.trim()}>

@@ -7,7 +7,7 @@ import { Dialog } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import type { Block, Equipment, Exercise } from '@/data/queries/library'
 import { missingEquipment } from '@/domain/equipment'
-import { pickerEntries } from '@/domain/lesson'
+import { formatDuration, pickerEntries } from '@/domain/lesson'
 import { describeBonus, describeRequirements, type Level } from '@/domain/library'
 
 type Props = {
@@ -134,6 +134,9 @@ function PickerBody({
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="font-semibold">{exercise.name}</span>
                     <Badge tone="outline">{t(`levels.${exercise.level}`)}</Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {formatDuration(exercise.defaultDurationSec)}
+                    </span>
                     {added.has(exercise.id) && (
                       <Badge tone="accent">{t('lessons.picker.added')}</Badge>
                     )}

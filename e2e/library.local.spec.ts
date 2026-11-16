@@ -45,6 +45,11 @@ test('browse and filter the shared library, then add a private exercise', async 
   await page.getByRole('link', { name: 'New exercise' }).click()
   await page.getByLabel('Name').fill(name)
   await page.getByLabel('Block').selectOption({ label: 'Warm-up' })
+  // Every exercise has a time: a new one starts from its block's estimate (90 s for warm-up).
+  await expect(page.getByLabel('Time (seconds)')).toHaveValue('90')
+  await page.getByLabel('Block').selectOption({ label: 'Foot work' })
+  await expect(page.getByLabel('Time (seconds)')).toHaveValue('45')
+  await page.getByLabel('Block').selectOption({ label: 'Warm-up' })
   await page.getByRole('button', { name: 'Add requirement' }).click()
   await page.getByRole('button', { name: 'Chair' }).click()
   await page.getByRole('button', { name: 'Create exercise' }).click()

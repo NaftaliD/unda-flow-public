@@ -42,6 +42,7 @@ const blocks: Block[] = [
     name: 'Warm-up',
     goal: null,
     position: 1,
+    defaultDurationSec: 90,
   },
   {
     id: 'b-arm',
@@ -51,6 +52,7 @@ const blocks: Block[] = [
     name: 'Arm work',
     goal: null,
     position: 10,
+    defaultDurationSec: 90,
   },
 ]
 const equipment: Equipment[] = [
@@ -287,10 +289,31 @@ describe('lessons', () => {
     expect(within(curl).queryByText('Needs equipment that is not ticked')).not.toBeInTheDocument()
   })
 
-  it('builder totals the planned time, ignoring skipped blocks', async () => {
+  it('builder shows the time left, ignoring skipped blocks', async () => {
     renderAt('/lessons/l1')
-    // Pelvic Curl 120 s + Ring Squeeze's 60 s default = 3m; the skipped block's 600 s is left out
-    expect(await screen.findByText(/Planned: 3m of 55 min/)).toBeInTheDocument()
+    // Pelvic Curl 120 s + Ring Squeeze's 60 s default = 3 min; the skipped block's 600 s is left out
+    expect(await screen.findByText('3 of 55 min · 52 min left')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: 'Class time' })).toHaveAttribute(
+      'aria-valuenow',
+      '3',
+    )
+    // The block shows its own minutes
+    const warm = screen.getByText('Warm-up', { selector: 'h3' }).closest('li')!
+    expect(within(warm).getByText(/2 exercises · 3 min/)).toBeInTheDocument()
+  })
+
+  it('builder says by how much the class is overbooked', async () => {
+    const l = makeLesson()
+    state.lesson = { ...l, targetDurationMin: 2 }
+    renderAt('/lessons/l1')
+    expect(await screen.findByText('3 of 2 min · overbooked by 1 min')).toBeInTheDocument()
+  })
+
+  it('builder only counts minutes planned when there is no class length', async () => {
+    state.lesson = { ...makeLesson(), targetDurationMin: null }
+    renderAt('/lessons/l1')
+    expect(await screen.findByText(/3 min planned/)).toBeInTheDocument()
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
   })
 
   it('picker hides unavailable exercises by default and can show them with what is missing', async () => {

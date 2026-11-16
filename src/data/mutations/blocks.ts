@@ -17,6 +17,7 @@ export function useSaveBlock() {
       key: string
       name: string
       goal: string
+      defaultDurationSec: number
     }) => {
       const { error } = await supabase.from('blocks').insert({
         owner_id: b.ownerId,
@@ -25,6 +26,7 @@ export function useSaveBlock() {
         name: b.name,
         goal: b.goal || null,
         default_position: 100,
+        default_duration_sec: b.defaultDurationSec,
       })
       if (error) throw error
     },

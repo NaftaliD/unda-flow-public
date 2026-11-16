@@ -1,21 +1,47 @@
 import { isExerciseAvailable, type Requirement } from './equipment'
 import { filterExercises, LEVELS, type Level, type LibraryExercise } from './library'
 
-export type DurationItem = { durationSec: number | null; defaultDurationSec: number | null }
+/** An item's own time wins; otherwise the exercise's time (every exercise has one). */
+export type DurationItem = { durationSec: number | null; defaultDurationSec: number }
 
-/** Sum of item durations (falling back to the exercise default); items with neither are counted. */
-export function lessonDuration(items: readonly DurationItem[]): {
-  totalSec: number
-  missingCount: number
-} {
-  let totalSec = 0
-  let missingCount = 0
-  for (const i of items) {
-    const sec = i.durationSec ?? i.defaultDurationSec
-    if (sec === null) missingCount += 1
-    else totalSec += sec
+export function itemSeconds(item: DurationItem): number {
+  return item.durationSec ?? item.defaultDurationSec
+}
+
+/** Total time of the given items, in seconds. */
+export function lessonDuration(items: readonly DurationItem[]): { totalSec: number } {
+  return { totalSec: items.reduce((sum, i) => sum + itemSeconds(i), 0) }
+}
+
+export type TimeStatus = {
+  usedMin: number
+  /** null when the class has no length set. */
+  targetMin: number | null
+  /** Whole minutes still free (0 when full or over). */
+  leftMin: number
+  /** Whole minutes over the class length (0 when within it). */
+  overMin: number
+  /** 'none' without a class length; otherwise how the plan compares to it. */
+  state: 'none' | 'under' | 'full' | 'over'
+  /** How much of the class length is used, 0 to 1 (capped). */
+  fraction: number
+}
+
+/** Time used against the class length: how much is left, or by how much it is overbooked. */
+export function timeStatus(totalSec: number, targetMin: number | null): TimeStatus {
+  const usedMin = Math.round(totalSec / 60)
+  if (!targetMin) {
+    return { usedMin, targetMin: null, leftMin: 0, overMin: 0, state: 'none', fraction: 0 }
   }
-  return { totalSec, missingCount }
+  const diff = targetMin - usedMin
+  return {
+    usedMin,
+    targetMin,
+    leftMin: Math.max(diff, 0),
+    overMin: Math.max(-diff, 0),
+    state: diff > 0 ? 'under' : diff === 0 ? 'full' : 'over',
+    fraction: Math.min(totalSec / 60 / targetMin, 1),
+  }
 }
 
 export type ItemWarning = 'unavailable' | 'archived'

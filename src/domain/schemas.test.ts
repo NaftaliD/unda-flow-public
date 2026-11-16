@@ -1,11 +1,25 @@
 import { describe, expect, it } from 'vitest'
 import { exerciseFormSchema, lessonFormSchema } from './schemas'
 
-const base = { name: 'Pelvic Curl', blockId: 'b1', level: 'fundamental' as const, groups: [] }
+const base = {
+  name: 'Pelvic Curl',
+  blockId: 'b1',
+  level: 'fundamental' as const,
+  groups: [],
+  defaultDurationSec: 90,
+}
 
 describe('exerciseFormSchema', () => {
   it('accepts a minimal exercise with no equipment', () => {
     expect(exerciseFormSchema.safeParse(base).success).toBe(true)
+  })
+
+  it('requires a time: every exercise has one', () => {
+    expect(exerciseFormSchema.safeParse({ ...base, defaultDurationSec: undefined }).success).toBe(
+      false,
+    )
+    expect(exerciseFormSchema.safeParse({ ...base, defaultDurationSec: '' }).success).toBe(false)
+    expect(exerciseFormSchema.safeParse({ ...base, defaultDurationSec: 0 }).success).toBe(false)
   })
 
   it('rejects an empty name', () => {

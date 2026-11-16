@@ -27,7 +27,7 @@ export function useSaveExercise() {
           description: input.description ?? '',
           cues: input.cues ?? '',
           default_reps: input.defaultReps ?? null,
-          default_duration_sec: input.defaultDurationSec ?? null,
+          default_duration_sec: input.defaultDurationSec,
           default_springs: input.defaultSprings ?? '',
           review_status: input.reviewStatus ?? null,
           groups: input.groups,

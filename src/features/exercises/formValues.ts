@@ -10,7 +10,7 @@ export function toFormValues(e: Exercise, nameOverride?: string): ExerciseFormIn
     description: e.description ?? '',
     cues: e.cues ?? '',
     defaultReps: e.defaultReps ?? '',
-    defaultDurationSec: e.defaultDurationSec ?? '',
+    defaultDurationSec: e.defaultDurationSec,
     defaultSprings: e.defaultSprings ?? '',
     groups: requirementsToGroups(e.requirements),
     optionalIds: optionalEquipmentIds(e.requirements),

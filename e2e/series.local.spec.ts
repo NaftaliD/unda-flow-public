@@ -26,6 +26,9 @@ test('add a shared series to a class block, then build a series of your own', as
   const dialog = page.getByRole('dialog', { name: /Add a series to/ })
   await dialog.getByRole('button', { name: /Reformer foot work/ }).click()
   await expect(page.getByText('Added 3 exercises.')).toBeVisible()
+  // 3 foot-work exercises at 45 s each: about 2 minutes, shown on the block and in the time bar
+  await expect(footWork.getByText(/3 exercises · 2 min/)).toBeVisible()
+  await expect(page.getByText(/^2 min planned/)).toBeVisible()
 
   // The three exercises arrive in series order.
   const rows = footWork.getByRole('list').getByRole('listitem')

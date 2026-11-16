@@ -25,14 +25,14 @@ export type Database = {
           Tables: {
             "blocks": {
                   Row: {
-                    "default_position": number,"goal": string | null,"id": string,"key": string,"method_id": string,"name": string,"owner_id": string | null
+                    "default_duration_sec": number,"default_position": number,"goal": string | null,"id": string,"key": string,"method_id": string,"name": string,"owner_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "default_position"?: number,"goal"?: string | null,"id"?: string,"key": string,"method_id": string,"name": string,"owner_id"?: string | null
+                    "default_duration_sec"?: number,"default_position"?: number,"goal"?: string | null,"id"?: string,"key": string,"method_id": string,"name": string,"owner_id"?: string | null
                   }
                   Update: {
-                    "default_position"?: number,"goal"?: string | null,"id"?: string,"key"?: string,"method_id"?: string,"name"?: string,"owner_id"?: string | null
+                    "default_duration_sec"?: number,"default_position"?: number,"goal"?: string | null,"id"?: string,"key"?: string,"method_id"?: string,"name"?: string,"owner_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -125,14 +125,14 @@ isOneToOne: false
                   ]
                 },"exercises": {
                   Row: {
-                    "block_id": string,"created_at": string,"cues": string | null,"default_duration_sec": number | null,"default_reps": number | null,"default_springs": string | null,"description": string | null,"id": string,"is_archived": boolean,"level": Database["public"]['Enums']["exercise_level"],"media_url": string | null,"method_id": string,"name": string,"owner_id": string | null,"review_status": Database["public"]['Enums']["review_status"],"updated_at": string
+                    "block_id": string,"created_at": string,"cues": string | null,"default_duration_sec": number,"default_reps": number | null,"default_springs": string | null,"description": string | null,"id": string,"is_archived": boolean,"level": Database["public"]['Enums']["exercise_level"],"media_url": string | null,"method_id": string,"name": string,"owner_id": string | null,"review_status": Database["public"]['Enums']["review_status"],"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "block_id": string,"created_at"?: string,"cues"?: string | null,"default_duration_sec"?: number | null,"default_reps"?: number | null,"default_springs"?: string | null,"description"?: string | null,"id"?: string,"is_archived"?: boolean,"level"?: Database["public"]['Enums']["exercise_level"],"media_url"?: string | null,"method_id": string,"name": string,"owner_id"?: string | null,"review_status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string
+                    "block_id": string,"created_at"?: string,"cues"?: string | null,"default_duration_sec": number,"default_reps"?: number | null,"default_springs"?: string | null,"description"?: string | null,"id"?: string,"is_archived"?: boolean,"level"?: Database["public"]['Enums']["exercise_level"],"media_url"?: string | null,"method_id": string,"name": string,"owner_id"?: string | null,"review_status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string
                   }
                   Update: {
-                    "block_id"?: string,"created_at"?: string,"cues"?: string | null,"default_duration_sec"?: number | null,"default_reps"?: number | null,"default_springs"?: string | null,"description"?: string | null,"id"?: string,"is_archived"?: boolean,"level"?: Database["public"]['Enums']["exercise_level"],"media_url"?: string | null,"method_id"?: string,"name"?: string,"owner_id"?: string | null,"review_status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string
+                    "block_id"?: string,"created_at"?: string,"cues"?: string | null,"default_duration_sec"?: number,"default_reps"?: number | null,"default_springs"?: string | null,"description"?: string | null,"id"?: string,"is_archived"?: boolean,"level"?: Database["public"]['Enums']["exercise_level"],"media_url"?: string | null,"method_id"?: string,"name"?: string,"owner_id"?: string | null,"review_status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string
                   }
                   Relationships: [
                     {

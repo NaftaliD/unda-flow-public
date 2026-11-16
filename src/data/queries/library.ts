@@ -11,13 +11,15 @@ export type Block = {
   name: string
   goal: string | null
   position: number
+  /** Placeholder time per exercise in this block, in seconds. */
+  defaultDurationSec: number
 }
 export type Equipment = { id: string; key: string; name: string; kind: 'apparatus' | 'prop' }
 export type Exercise = LibraryExercise & {
   description: string | null
   cues: string | null
   defaultReps: number | null
-  defaultDurationSec: number | null
+  defaultDurationSec: number
   defaultSprings: string | null
 }
 
@@ -34,7 +36,7 @@ export function useBlocks() {
     queryFn: async (): Promise<Block[]> => {
       const { data, error } = await supabase
         .from('blocks')
-        .select('id, owner_id, method_id, key, name, goal, default_position')
+        .select('id, owner_id, method_id, key, name, goal, default_position, default_duration_sec')
         .order('default_position')
         .order('name')
       if (error) throw error
@@ -46,6 +48,7 @@ export function useBlocks() {
         name: b.name,
         goal: b.goal,
         position: b.default_position,
+        defaultDurationSec: b.default_duration_sec,
       }))
     },
   })

@@ -278,7 +278,7 @@ Each increment is a vertical slice: migration + data layer + UI + tests, deploye
 - **Done when:** a new lesson from a template + preset takes under a minute to set up.
 
 ### Increment 4a — Usability and flows
-- **Progress:** 4a-1 (phone shell and builder density) is merged. 4a-2 (classes) is built: templates are gone, example classes are shared classes (`owner_id IS NULL`), "New class" starts from a starting-point screen (example classes, your own, or blank), the date is optional, and the UI says "class".
+- **Progress:** 4a-1 (phone shell and builder density) is merged. 4a-3 (time) is built: every exercise has a time (a trigger fills a missing one from the block's `default_duration_sec` placeholder: warm-up 90 s, foot work 45, abdominal 180, hip work 120, stretch 120, articulation 120, FBI 180, extra leg 120, lateral 120, arm work 60, back extension 120; the instructor adjusts them), and the builder has a sticky time bar ("32 of 45 min · 13 min left" / "overbooked by 5 min") plus minutes per block. 4a-2 (classes) is built: templates are gone, example classes are shared classes (`owner_id IS NULL`), "New class" starts from a starting-point screen (example classes, your own, or blank), the date is optional, and the UI says "class".
 The features are in; this increment makes what exists good to use. Feature work stops after it.
 - **Phone shell and builder density:** compact header and bottom tab bar, no horizontal overflow, collapsed exercise rows, one-line empty blocks.
 - **One concept, classes:** templates are removed as a separate thing; a template is just an example class, and creating a class starts by picking one (shared example classes, your own, or blank). The date is optional; class length is a first-class setting.

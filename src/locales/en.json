@@ -91,7 +91,7 @@
     "description": "Description",
     "cues": "Cues",
     "reps": "Default reps",
-    "duration": "Default duration (seconds)",
+    "duration": "Time (seconds)",
     "springs": "Springs",
     "equipmentTitle": "Equipment required",
     "equipmentHelp": "Each requirement is met by any one of the items chosen in it. Add another requirement when more than one thing is needed.",
@@ -121,7 +121,8 @@
     },
     "inUse": "This exercise is used in a class, so it cannot be deleted. Archive it instead.",
     "bonusTitle": "Bonus accessories",
-    "bonusHelp": "Optional extras that add variety or challenge but are not needed. They never hide the exercise when you do not have them."
+    "bonusHelp": "Optional extras that add variety or challenge but are not needed. They never hide the exercise when you do not have them.",
+    "durationHelp": "How long it usually takes. A new exercise starts from the block's estimate; you can change it."
   },
   "review": {
     "title": "Review queue",
@@ -268,6 +269,13 @@
       "fromSource": "Starting from “{{title}}”. You can change everything below and in the class itself.",
       "fromBlank": "A blank class: you add the blocks yourself.",
       "emptyBlock": "No exercises in this block."
+    },
+    "time": {
+      "label": "Class time",
+      "none": "{{used}} min planned. Set a class length to see the time left.",
+      "under": "{{used}} of {{target}} min · {{left}} min left",
+      "full": "{{used}} of {{target}} min · the class is full",
+      "over": "{{used}} of {{target}} min · overbooked by {{over}} min"
     }
   },
   "templates": {
@@ -320,7 +328,8 @@
       "delete": "Delete",
       "inUse": "This block is still used by an exercise, class or template.",
       "empty": "You have no custom blocks yet.",
-      "saveFailed": "Could not save the block."
+      "saveFailed": "Could not save the block.",
+      "duration": "Typical time per exercise (seconds)"
     },
     "edit": "Edit",
     "view": "View"

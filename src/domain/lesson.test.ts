@@ -3,7 +3,9 @@ import {
   formatDuration,
   formatMinutes,
   itemWarnings,
+  itemSeconds,
   lessonDuration,
+  timeStatus,
   moveInList,
   pickerEntries,
   reorderIds,
@@ -24,18 +26,59 @@ function ex(over: Partial<LibraryExercise> & { id: string }): LibraryExercise {
 }
 
 describe('lessonDuration', () => {
-  it('sums item durations, falls back to defaults, counts the unknown', () => {
+  it('sums item durations and falls back to the exercise time', () => {
+    expect(itemSeconds({ durationSec: 60, defaultDurationSec: 30 })).toBe(60)
+    expect(itemSeconds({ durationSec: null, defaultDurationSec: 90 })).toBe(90)
     expect(
       lessonDuration([
         { durationSec: 60, defaultDurationSec: 30 },
         { durationSec: null, defaultDurationSec: 90 },
-        { durationSec: null, defaultDurationSec: null },
       ]),
-    ).toEqual({ totalSec: 150, missingCount: 1 })
+    ).toEqual({ totalSec: 150 })
   })
 
-  it('is zero for an empty lesson', () => {
-    expect(lessonDuration([])).toEqual({ totalSec: 0, missingCount: 0 })
+  it('is zero for an empty class', () => {
+    expect(lessonDuration([])).toEqual({ totalSec: 0 })
+  })
+})
+
+describe('timeStatus', () => {
+  it('says how much is left', () => {
+    expect(timeStatus(32 * 60, 45)).toEqual({
+      usedMin: 32,
+      targetMin: 45,
+      leftMin: 13,
+      overMin: 0,
+      state: 'under',
+      fraction: 32 / 45,
+    })
+  })
+
+  it('is full at exactly the class length', () => {
+    expect(timeStatus(45 * 60, 45)).toMatchObject({
+      state: 'full',
+      leftMin: 0,
+      overMin: 0,
+      fraction: 1,
+    })
+  })
+
+  it('says by how much it is overbooked, and caps the bar', () => {
+    expect(timeStatus(50 * 60, 45)).toMatchObject({
+      state: 'over',
+      leftMin: 0,
+      overMin: 5,
+      fraction: 1,
+    })
+  })
+
+  it('rounds to whole minutes', () => {
+    expect(timeStatus(44 * 60 + 40, 45)).toMatchObject({ usedMin: 45, state: 'full' })
+  })
+
+  it('has nothing to compare without a class length', () => {
+    expect(timeStatus(600, null)).toMatchObject({ usedMin: 10, state: 'none', targetMin: null })
+    expect(timeStatus(600, 0).state).toBe('none')
   })
 })
 

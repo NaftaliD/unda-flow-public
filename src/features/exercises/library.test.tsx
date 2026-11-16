@@ -30,6 +30,7 @@ const blocks: Block[] = [
     name: 'Warm-up',
     goal: null,
     position: 1,
+    defaultDurationSec: 90,
   },
   {
     id: 'b-abs',
@@ -39,6 +40,7 @@ const blocks: Block[] = [
     name: 'Abdominal work',
     goal: null,
     position: 3,
+    defaultDurationSec: 90,
   },
 ]
 const equipment: Equipment[] = [
@@ -59,7 +61,7 @@ const base: Exercise = {
   description: null,
   cues: null,
   defaultReps: null,
-  defaultDurationSec: null,
+  defaultDurationSec: 60,
   defaultSprings: null,
 }
 

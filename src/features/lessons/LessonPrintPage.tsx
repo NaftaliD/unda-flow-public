@@ -40,7 +40,7 @@ export function LessonPrintPage() {
       .flatMap((s) => s.items)
       .map((i) => ({
         durationSec: i.durationSec,
-        defaultDurationSec: exerciseById.get(i.exerciseId)?.defaultDurationSec ?? null,
+        defaultDurationSec: exerciseById.get(i.exerciseId)?.defaultDurationSec ?? 0,
       })),
   )
   const date = l.lessonDate
@@ -85,6 +85,21 @@ export function LessonPrintPage() {
             <h2 className="flex items-baseline gap-2 text-base font-semibold">
               <span className="label-caps text-muted-foreground">{index + 1}</span>
               {s.label}
+              {s.items.length > 0 && (
+                <span className="text-sm font-normal text-muted-foreground">
+                  {t('lessons.minutes', {
+                    count: Math.round(
+                      lessonDuration(
+                        s.items.map((i) => ({
+                          durationSec: i.durationSec,
+                          defaultDurationSec:
+                            exerciseById.get(i.exerciseId)?.defaultDurationSec ?? 0,
+                        })),
+                      ).totalSec / 60,
+                    ),
+                  })}
+                </span>
+              )}
             </h2>
             {s.notes && (
               <p className="whitespace-pre-line text-sm text-muted-foreground">{s.notes}</p>

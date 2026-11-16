@@ -31,6 +31,8 @@ import { describeBonus } from '@/domain/library'
 
 type Props = {
   slot: LessonSlot
+  /** Planned time of this block, in whole minutes. */
+  minutes: number
   block: Block | undefined
   exerciseById: ReadonlyMap<string, Exercise>
   available: ReadonlySet<string>
@@ -51,7 +53,7 @@ const dragHandle =
   'inline-flex size-8 shrink-0 cursor-grab items-center justify-center rounded-pill text-muted-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring touch-none'
 
 export function BlockCard(props: Props) {
-  const { slot, onUpdateSlot, onAdd, onAddSeries, onRemoveSlot, onReorderItems } = props
+  const { slot, minutes, onUpdateSlot, onAdd, onAddSeries, onRemoveSlot, onReorderItems } = props
   const { t } = useTranslation()
   const {
     attributes,
@@ -111,7 +113,8 @@ export function BlockCard(props: Props) {
           </h3>
           {slot.items.length > 0 && !slot.isSkipped && (
             <p className="text-sm text-muted-foreground">
-              {t('lessons.builder.itemCount', { count: slot.items.length })}
+              {t('lessons.builder.itemCount', { count: slot.items.length })} ·{' '}
+              {t('lessons.minutes', { count: minutes })}
             </p>
           )}
           {info.hint && (

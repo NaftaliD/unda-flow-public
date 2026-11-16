@@ -27,7 +27,7 @@ test('start from an example, copy your own class, and start blank with a custom 
   await page.getByRole('button', { name: 'Create class' }).click()
   const blocks = page.getByRole('list', { name: 'Class blocks' }).locator('> li')
   await expect(blocks).toHaveCount(12)
-  await expect(page.getByText(/45 min/).first()).toBeVisible()
+  await expect(page.getByText('0 of 45 min · 45 min left')).toBeVisible()
 
   // Remove a block, then start a new class from this one: the copy has the same 11 blocks.
   await page.getByRole('button', { name: 'Remove block Extra leg' }).click()

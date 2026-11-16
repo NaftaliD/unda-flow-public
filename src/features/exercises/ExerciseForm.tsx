@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { ReactNode } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useEffect, type ReactNode } from 'react'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Chip } from '@/components/ui/chip'
@@ -33,17 +33,20 @@ function Field({
   label,
   htmlFor,
   error,
+  hint,
   children,
 }: {
   label: string
   htmlFor: string
   error?: string
+  hint?: string
   children: ReactNode
 }) {
   return (
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
+      {hint && !error && <p className="text-sm text-muted-foreground">{hint}</p>}
       {error && (
         <p role="alert" className="text-sm font-medium">
           {error}
@@ -68,11 +71,27 @@ export function ExerciseForm({
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    getValues,
+    setValue,
+    formState: { errors, dirtyFields },
   } = useForm<ExerciseFormInput, unknown, ExerciseFormValues>({
     resolver: zodResolver(exerciseFormSchema),
     defaultValues,
   })
+
+  // A new exercise starts from its block's time estimate. Changing the block updates the time
+  // unless it was typed by hand; an existing exercise keeps its saved time on load.
+  const blockId = useWatch({ control, name: 'blockId' })
+  const typedByHand = Boolean(dirtyFields.defaultDurationSec)
+  useEffect(() => {
+    const block = blocks.find((b) => b.id === blockId)
+    if (!block) return
+    const current = getValues('defaultDurationSec')
+    const empty = current === '' || current === undefined || current === null
+    if (empty || (blockId !== defaultValues.blockId && !typedByHand)) {
+      setValue('defaultDurationSec', block.defaultDurationSec)
+    }
+  }, [blockId, blocks, defaultValues.blockId, getValues, setValue, typedByHand])
 
   const required = t('exercise.errors.required')
 
@@ -135,6 +154,7 @@ export function ExerciseForm({
           label={t('exercise.duration')}
           htmlFor="ex-duration"
           error={errors.defaultDurationSec ? t('exercise.errors.positive') : undefined}
+          hint={t('exercise.durationHelp')}
         >
           <Input id="ex-duration" inputMode="numeric" {...register('defaultDurationSec')} />
         </Field>
