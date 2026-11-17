@@ -17,6 +17,7 @@ import {
   type LibraryFilter,
 } from '@/domain/library'
 import { MovementCard } from './MovementCard'
+import { SetsView } from './SetsView'
 
 type Scope = NonNullable<LibraryFilter['scope']>
 const SCOPES: Exclude<Scope, 'all'>[] = ['shared', 'mine']
@@ -34,6 +35,7 @@ export function LibraryPage() {
   const [scope, setScope] = useState<Scope>('all')
   const [showArchived, setShowArchived] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [view, setView] = useState<'exercises' | 'sets'>('exercises')
   const [available, setAvailable] = useState<ReadonlySet<string>>(new Set())
 
   const visible = useMemo(
@@ -83,12 +85,23 @@ export function LibraryPage() {
     <section className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4 sm:gap-6 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">{t('library.title')}</h1>
-        <Link
-          to="/exercises/new"
-          className="inline-flex h-10 items-center rounded-pill bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-        >
-          {t('library.new')}
-        </Link>
+        {view === 'exercises' && (
+          <Link
+            to="/exercises/new"
+            className="inline-flex h-10 items-center rounded-pill bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            {t('library.new')}
+          </Link>
+        )}
+      </div>
+
+      <div role="group" aria-label={t('library.view.label')} className="flex gap-1.5">
+        <Chip selected={view === 'exercises'} onClick={() => setView('exercises')}>
+          {t('library.view.exercises')}
+        </Chip>
+        <Chip selected={view === 'sets'} onClick={() => setView('sets')}>
+          {t('library.view.sets')}
+        </Chip>
       </div>
 
       <div className="flex flex-col gap-3 rounded-3xl border border-border p-4 sm:gap-4">
@@ -130,7 +143,7 @@ export function LibraryPage() {
                 ))}
               </Select>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className={`flex flex-col gap-1.5 ${view === 'sets' ? 'hidden' : ''}`}>
               <Label htmlFor="lib-level">{t('library.level')}</Label>
               <Select
                 id="lib-level"
@@ -166,7 +179,7 @@ export function LibraryPage() {
           </div>
 
           <div
-            className="flex flex-wrap items-center gap-2"
+            className={`flex flex-wrap items-center gap-2 ${view === 'sets' ? 'hidden' : ''}`}
             role="group"
             aria-label={t('library.scope')}
           >
@@ -189,7 +202,14 @@ export function LibraryPage() {
         </div>
       </div>
 
-      {exercises.isError ? (
+      {view === 'sets' ? (
+        <SetsView
+          search={search}
+          blockId={blockId}
+          available={available}
+          isAdmin={isAdmin === true}
+        />
+      ) : exercises.isError ? (
         <p role="alert" className="text-sm font-medium">
           {t('library.loadError')}
         </p>

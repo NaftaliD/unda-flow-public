@@ -11,6 +11,7 @@ const state = vi.hoisted(() => ({
   lesson: null as unknown,
   exercises: [] as unknown[],
   series: [] as unknown[],
+  admin: false,
   presets: [] as unknown[],
   savePreset: vi.fn(),
   addSeries: vi.fn(),
@@ -29,7 +30,7 @@ vi.mock('@/data/auth', () => ({
 }))
 vi.mock('@/data/queries/profile', () => ({
   useProfile: () => ({ data: undefined }),
-  useCurrentUser: () => ({ userId: 'u1', isAdmin: false }),
+  useCurrentUser: () => ({ userId: 'u1', isAdmin: state.admin }),
   fetchIsAdmin: () => Promise.resolve(false),
 }))
 
@@ -206,6 +207,7 @@ describe('lessons', () => {
     state.addItem.mockReset()
     state.deleteSlot.mockReset()
     state.addSeries.mockReset()
+    state.admin = false
     state.savePreset.mockReset().mockResolvedValue('p1')
     state.presets = [
       { id: 'p-studio', name: 'Studio', equipmentIds: ['e-ref', 'e-ring'] },
@@ -316,23 +318,29 @@ describe('lessons', () => {
     expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
   })
 
-  it('picker hides unavailable exercises by default and can show them with what is missing', async () => {
+  it('the Add dialog hides unavailable exercises by default and lets you tick several to add at once', async () => {
     renderAt('/lessons/l1')
     await screen.findByText('Pelvic Curl')
     const warmCard = screen.getByText('Warm-up', { selector: 'h3' }).closest('li')!
-    await userEvent.click(within(warmCard).getByRole('button', { name: 'Add exercise' }))
+    await userEvent.click(within(warmCard).getByRole('button', { name: /^Add$/ }))
 
     const dialog = await screen.findByRole('dialog', { name: 'Add to Warm-up' }, { timeout: 2000 })
     expect(within(dialog).getByText('Roll Up')).toBeInTheDocument()
     expect(within(dialog).queryByText('Ring Roll')).not.toBeInTheDocument()
     expect(within(dialog).queryByText('Arm Circles')).not.toBeInTheDocument()
+    expect(within(dialog).getByRole('button', { name: 'Tick exercises to add' })).toBeDisabled()
 
     await userEvent.click(within(dialog).getByRole('button', { name: 'Show unavailable' }))
     expect(within(dialog).getByText('Ring Roll')).toBeInTheDocument()
     expect(within(dialog).getAllByText('Missing: Ring').length).toBeGreaterThan(0)
 
+    // Tick two, then add both in one go; nothing is added until the button is pressed.
     await userEvent.click(within(dialog).getByText('Roll Up'))
-    expect(state.addItem).toHaveBeenCalledWith({
+    await userEvent.click(within(dialog).getByText('Pelvic Curl'))
+    expect(state.addItem).not.toHaveBeenCalled()
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Add 2 exercises' }))
+    expect(state.addItem).toHaveBeenCalledTimes(2)
+    expect(state.addItem).toHaveBeenNthCalledWith(1, {
       id: expect.any(String),
       slotId: 's1',
       exerciseId: 'x-roll',
@@ -340,6 +348,10 @@ describe('lessons', () => {
       durationSec: 60,
       springs: '1 red',
     })
+    expect(state.addItem).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ slotId: 's1', exerciseId: 'x-curl' }),
+    )
   })
 
   it('can skip a block', async () => {
@@ -448,34 +460,54 @@ describe('lessons', () => {
     expect(screen.getByText('Pelvic Curl')).toBeInTheDocument()
   })
 
-  it("add series lists the block's series, greys one the equipment cannot support, and adds it", async () => {
+  it("the Add dialog's Sets tab lists the block's sets, greys one the equipment cannot support, and adds it", async () => {
     renderAt('/lessons/l1')
     await screen.findByText('Pelvic Curl')
     const warmCard = screen.getByText('Warm-up', { selector: 'h3' }).closest('li')!
-    await userEvent.click(within(warmCard).getByRole('button', { name: 'Add series' }))
+    await userEvent.click(within(warmCard).getByRole('button', { name: /^Add$/ }))
 
-    const dialog = await screen.findByRole(
-      'dialog',
-      { name: 'Add a series to Warm-up' },
-      { timeout: 2000 },
-    )
+    const dialog = await screen.findByRole('dialog', { name: 'Add to Warm-up' }, { timeout: 2000 })
+    await userEvent.click(within(dialog).getByRole('tab', { name: 'Sets (2)' }))
     expect(within(dialog).getByText('Easy warm-up')).toBeInTheDocument()
     expect(within(dialog).queryByText('Arms sample')).not.toBeInTheDocument()
-    const ring = within(dialog).getByText('Ring warm-up').closest('button')!
+    const ring = within(dialog).getByText('Ring warm-up').closest('li')!
     expect(within(ring).getByText('Missing: Ring')).toBeInTheDocument()
 
+    // Open a set to see what is in it, then add it whole.
     await userEvent.click(within(dialog).getByText('Easy warm-up'))
+    expect(within(dialog).getAllByText('Roll Up').length).toBeGreaterThan(0)
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Add Easy warm-up' }))
     expect(state.addSeries).toHaveBeenCalledWith({ slotId: 's1', seriesId: 'sr-ok' })
   })
 
-  it('series page: a normal user can view and duplicate a shared series, not edit or delete it', async () => {
-    renderAt('/series')
-    const shared = (await screen.findByText('Easy warm-up')).closest('li')!
-    expect(within(shared).getByRole('link', { name: 'View' })).toBeInTheDocument()
-    expect(within(shared).getByRole('button', { name: 'Duplicate as mine' })).toBeInTheDocument()
-    expect(within(shared).queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument()
-    const own = screen.getByText('Ring warm-up').closest('li')!
-    expect(within(own).getByRole('link', { name: 'Edit' })).toBeInTheDocument()
+  it('library Sets view: sets by block, expandable; a normal user cannot edit them', async () => {
+    renderAt('/exercises')
+    await userEvent.click(await screen.findByRole('button', { name: 'Sets' }))
+    const block = await screen.findByRole('region', { name: 'Warm-up' })
+    expect(within(block).getByText('Easy warm-up')).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Arm work' })).toBeInTheDocument()
+    await userEvent.click(within(block).getByText('Easy warm-up'))
+    expect(within(block).getByText('Roll Up')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'New set' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument()
+    // the exercise-only controls are hidden in this view
+    expect(screen.queryByRole('link', { name: 'New exercise' })).not.toBeInTheDocument()
+  })
+
+  it('library Sets view: an admin can add and edit sets', async () => {
+    state.admin = true
+    renderAt('/exercises')
+    await userEvent.click(await screen.findByRole('button', { name: 'Sets' }))
+    expect(await screen.findByRole('button', { name: 'New set' })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Edit' }).length).toBeGreaterThan(0)
+  })
+
+  it('library Sets view: the search finds a set by an exercise in it', async () => {
+    renderAt('/exercises')
+    await userEvent.click(await screen.findByRole('button', { name: 'Sets' }))
+    await userEvent.type(screen.getByLabelText('Search'), 'Arm Circles')
+    expect(await screen.findByText('Arms sample')).toBeInTheDocument()
+    expect(screen.queryByText('Easy warm-up')).not.toBeInTheDocument()
   })
 
   it('loading a preset replaces the equipment selection', async () => {

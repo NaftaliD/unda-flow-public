@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import i18n from 'i18next'
 import { toast } from 'sonner'
 import { lessonKeys } from '../queries/lessons'
-import { seriesKeys, type Series } from '../queries/series'
+import { seriesKeys } from '../queries/series'
 import { supabase } from '../supabaseClient'
 
 export type SaveSeriesInput = {
@@ -25,26 +25,6 @@ export function useSaveSeries() {
           block_id: input.blockId,
           name: input.name,
           exercise_ids: input.exerciseIds,
-        },
-      })
-      if (error) throw error
-      return data
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: seriesKeys.all }),
-  })
-}
-
-/** Copies any visible series (e.g. a shared one) as a private series. */
-export function useDuplicateSeries() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: async (s: Series): Promise<string> => {
-      const { data, error } = await supabase.rpc('save_series', {
-        payload: {
-          shared: false,
-          block_id: s.blockId,
-          name: `${s.name} (copy)`,
-          exercise_ids: s.exerciseIds,
         },
       })
       if (error) throw error

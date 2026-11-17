@@ -43,12 +43,11 @@ import { lessonDuration, reorderIds } from '@/domain/lesson'
 import { LEVELS } from '@/domain/library'
 import { PresetBar } from '../presets/PresetBar'
 import { BlockCard } from './BlockCard'
+import { AddDialog } from './AddDialog'
 import { AddBlockDialog } from './BuilderDialogs'
 import { ClassPreview } from './ClassPreview'
 import { EquipmentChips } from './EquipmentChips'
-import { ExercisePicker } from './ExercisePicker'
 import { TimeBar } from './TimeBar'
-import { SeriesPicker } from './SeriesPicker'
 
 const STATUSES: LessonStatus[] = ['draft', 'ready', 'taught']
 
@@ -112,7 +111,6 @@ function Builder({ lesson }: { lesson: Lesson }) {
   const moveItem = useMoveItem(lesson.id)
   const deleteItem = useDeleteItem(lesson.id)
   const [pickerSlotId, setPickerSlotId] = useState<string | null>(null)
-  const [seriesSlotId, setSeriesSlotId] = useState<string | null>(null)
   const series = useSeries()
   const addSeries = useAddSeriesToSlot(lesson.id)
 
@@ -141,7 +139,6 @@ function Builder({ lesson }: { lesson: Lesson }) {
   const totalSec = lesson.slots.filter((s) => !s.isSkipped).reduce((n, s) => n + secondsOf(s), 0)
 
   const pickerSlot = lesson.slots.find((s) => s.id === pickerSlotId)
-  const seriesSlot = lesson.slots.find((s) => s.id === seriesSlotId)
   const slotRefs = lesson.slots.map((s) => ({ id: s.id, label: s.label }))
 
   function onSlotDragEnd(e: DragEndEvent) {
@@ -329,7 +326,6 @@ function Builder({ lesson }: { lesson: Lesson }) {
                 otherSlots={slotRefs.filter((s) => s.id !== slot.id)}
                 onUpdateSlot={(patch) => updateSlot.mutate({ slotId: slot.id, ...patch })}
                 onAdd={() => setPickerSlotId(slot.id)}
-                onAddSeries={() => setSeriesSlotId(slot.id)}
                 onRemoveSlot={() => deleteSlot.mutate(slot.id)}
                 onReorderItems={(ids) => reorderItems.mutate({ slotId: slot.id, ids })}
                 onUpdateItem={(patch) => updateItem.mutate(patch)}
@@ -356,18 +352,7 @@ function Builder({ lesson }: { lesson: Lesson }) {
         blocks={blocks.data ?? []}
         onAdd={(blockId, label) => addSlot.mutate({ id: crypto.randomUUID(), blockId, label })}
       />
-      <SeriesPicker
-        open={seriesSlot !== undefined}
-        onClose={() => setSeriesSlotId(null)}
-        blockName={seriesSlot ? (blockById.get(seriesSlot.blockId)?.name ?? '') : ''}
-        series={(series.data ?? []).filter((s) => s.blockId === seriesSlot?.blockId)}
-        exerciseById={exerciseById}
-        equipment={equipment.data ?? []}
-        available={available}
-        onPick={(s) => seriesSlot && addSeries.mutate({ slotId: seriesSlot.id, seriesId: s.id })}
-      />
-
-      <ExercisePicker
+      <AddDialog
         open={pickerSlot !== undefined}
         onClose={() => setPickerSlotId(null)}
         block={pickerSlot ? blockById.get(pickerSlot.blockId) : undefined}
@@ -376,16 +361,23 @@ function Builder({ lesson }: { lesson: Lesson }) {
         available={available}
         lessonLevel={lesson.level}
         userId={userId}
-        onPick={(e) =>
-          pickerSlot &&
-          addItem.mutate({
-            id: crypto.randomUUID(),
-            slotId: pickerSlot.id,
-            exerciseId: e.id,
-            reps: e.defaultReps,
-            durationSec: e.defaultDurationSec,
-            springs: e.defaultSprings,
-          })
+        sets={(series.data ?? []).filter((x) => x.blockId === pickerSlot?.blockId)}
+        exerciseById={exerciseById}
+        onAddExercises={(list) => {
+          if (!pickerSlot) return
+          for (const e of list) {
+            addItem.mutate({
+              id: crypto.randomUUID(),
+              slotId: pickerSlot.id,
+              exerciseId: e.id,
+              reps: e.defaultReps,
+              durationSec: e.defaultDurationSec,
+              springs: e.defaultSprings,
+            })
+          }
+        }}
+        onAddSet={(set) =>
+          pickerSlot && addSeries.mutate({ slotId: pickerSlot.id, seriesId: set.id })
         }
       />
     </section>

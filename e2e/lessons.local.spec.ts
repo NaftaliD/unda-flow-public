@@ -29,12 +29,12 @@ test('plan a class from an example, edit it, print it, and duplicate it', async 
 
   // Add an exercise to Foot work from the picker and set its reps.
   const footWork = blocks.filter({ has: page.getByRole('heading', { name: 'Foot work' }) })
-  await footWork.getByRole('button', { name: 'Add exercise' }).click()
+  await footWork.getByRole('button', { name: /^Add$/ }).click()
   const dialog = page.getByRole('dialog', { name: /Add to/ })
   const first = dialog.getByRole('listitem').first().getByRole('button')
   const exerciseName = (await first.locator('span.font-semibold').first().textContent())!.trim()
   await first.click()
-  await dialog.getByRole('button', { name: 'Done' }).click()
+  await dialog.getByRole('button', { name: 'Add 1 exercise' }).click()
 
   const row = footWork.getByRole('listitem').filter({ hasText: exerciseName }).first()
   await expect(row).toBeVisible()

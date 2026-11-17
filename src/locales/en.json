@@ -12,7 +12,6 @@
     "home": "Home",
     "lessons": "Classes",
     "templates": "Templates",
-    "series": "Series",
     "more": "More",
     "tabs": "Sections"
   },
@@ -80,7 +79,16 @@
     "versions_one": "{{count}} version",
     "versions_other": "{{count}} versions",
     "filters": "Filters",
-    "filtersActive": "Filters (on)"
+    "filtersActive": "Filters (on)",
+    "view": {
+      "label": "Library view",
+      "exercises": "Exercises",
+      "sets": "Sets"
+    },
+    "setsIntro": "Sets are ready-made groups of exercises for a block. Open one to see what is in it; add a whole set to a class from the class's Add button.",
+    "setsEmptyTitle": "No sets found",
+    "setsEmptyBody": "Try another search or block.",
+    "requiredField": "This field is required"
   },
   "exercise": {
     "newTitle": "New exercise",
@@ -230,7 +238,8 @@
       "noEquipment": "No equipment ticked",
       "publish": "Publish as example",
       "published": "Published as an example class.",
-      "publishFailed": "Could not publish this class."
+      "publishFailed": "Could not publish this class.",
+      "add": "Add"
     },
     "picker": {
       "title": "Add to {{block}}",
@@ -240,7 +249,10 @@
       "showUnavailable": "Show unavailable",
       "none": "No matching exercises.",
       "missing": "Missing: {{items}}",
-      "added": "Added"
+      "added": "Added",
+      "pickSome": "Tick exercises to add",
+      "addCount_one": "Add {{count}} exercise",
+      "addCount_other": "Add {{count}} exercises"
     },
     "print": {
       "button": "Print / Save as PDF",
@@ -276,6 +288,12 @@
       "under": "{{used}} of {{target}} min · {{left}} min left",
       "full": "{{used}} of {{target}} min · the class is full",
       "over": "{{used}} of {{target}} min · overbooked by {{over}} min"
+    },
+    "add": {
+      "title": "Add to {{block}}",
+      "exercises": "Exercises",
+      "sets_one": "Sets ({{count}})",
+      "sets_other": "Sets ({{count}})"
     }
   },
   "templates": {
@@ -335,27 +353,15 @@
     "view": "View"
   },
   "series": {
-    "title": "Series",
-    "intro": "A series is a ready-made set of exercises for one block, added to a class in one click.",
-    "new": "New series",
-    "newTitle": "New series",
-    "back": "Back to series",
-    "notFound": "This series was not found.",
-    "mineHeading": "My series",
-    "sharedHeading": "Shared series",
-    "emptyMine": "You have no series of your own yet. Duplicate a shared one or create your own.",
-    "emptyShared": "There are no shared series yet.",
+    "new": "New set",
+    "newTitle": "New set",
     "exerciseCount_one": "{{count}} exercise",
     "exerciseCount_other": "{{count}} exercises",
-    "confirmDelete": "Delete this series? Classes that already used it are not affected.",
-    "readOnly": "This is a shared series. Duplicate it to edit your own copy.",
-    "adminEdit": "You can edit this shared series as an admin. Existing classes are not affected.",
-    "addSeries": "Add series",
+    "confirmDelete": "Delete this set? Classes that already used it are not affected.",
     "added_one": "Added {{count}} exercise.",
     "added_other": "Added {{count}} exercises.",
     "picker": {
-      "title": "Add a series to {{block}}",
-      "none": "There are no series for this block yet. You can create one under Series."
+      "none": "There are no sets for this block yet."
     },
     "form": {
       "name": "Name",
@@ -366,9 +372,12 @@
       "moveUp": "Move {{name}} up",
       "moveDown": "Move {{name}} down",
       "remove": "Remove {{name}}",
-      "save": "Save series",
-      "saveFailed": "Could not save the series."
-    }
+      "save": "Save set",
+      "saveFailed": "Could not save the set."
+    },
+    "shared": "Shared",
+    "addSet": "Add {{name}}",
+    "editTitle": "Edit set"
   },
   "presets": {
     "title": "My equipment presets",
@@ -390,7 +399,6 @@
   "more": {
     "title": "More",
     "templatesBody": "Templates, equipment presets and your own blocks",
-    "seriesBody": "Ready-made sets of exercises for a block",
     "reviewBody": "Check imported exercises",
     "back": "Back",
     "presets": "Equipment presets",

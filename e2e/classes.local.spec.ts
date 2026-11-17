@@ -16,7 +16,7 @@ test('start from an example, copy your own class, and start blank with a custom 
   await page.getByRole('link', { name: 'Preview' }).first().click()
   await expect(page.getByRole('heading', { name: 'Apparatus class - 12 blocks' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Use this class' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Add exercise' })).toHaveCount(0) // read-only
+  await expect(page.getByRole('button', { name: /^Add$/ })).toHaveCount(0) // read-only
 
   // Use it: the class length quick picks work and the example's name is the starting title.
   await page.getByRole('link', { name: 'Use this class' }).click()

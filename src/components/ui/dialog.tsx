@@ -33,7 +33,10 @@ export function Dialog({
     <dialog
       ref={ref}
       aria-label={title}
-      onClose={onClose}
+      // React passes a nested dialog's close event up to its parent dialog: only react to our own.
+      onClose={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
       onClick={(e) => {
         if (e.target === ref.current) onClose()
       }}

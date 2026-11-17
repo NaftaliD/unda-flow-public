@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -10,49 +11,36 @@ import { missingEquipment } from '@/domain/equipment'
 import { formatDuration, pickerEntries } from '@/domain/lesson'
 import { describeBonus, describeRequirements, type Level } from '@/domain/library'
 
-type Props = {
-  open: boolean
-  onClose: () => void
+type ChooserProps = {
   block: Block | undefined
   exercises: readonly Exercise[]
   equipment: readonly Equipment[]
   available: ReadonlySet<string>
   lessonLevel: Level
   userId: string | undefined
-  onPick: (exercise: Exercise) => void
+  /** Called with everything ticked when "Add N" is pressed. */
+  onAdd: (exercises: Exercise[]) => void
 }
 
-/** "Add exercise" dialog, pre-filtered to the block, the lesson level and today's equipment. */
-export function ExercisePicker(props: Props) {
-  const { open, onClose, block } = props
-  const { t } = useTranslation()
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      title={t('lessons.picker.title', { block: block?.name ?? '' })}
-    >
-      <PickerBody {...props} />
-    </Dialog>
-  )
-}
-
-function PickerBody({
-  onClose,
+/**
+ * Tick any number of exercises, then add them all at once. Pre-filtered to the block, the level
+ * and the equipment available; shared exercises are added as they are, never copied.
+ */
+export function ExerciseChooser({
   block,
   exercises,
   equipment,
   available,
   lessonLevel,
   userId,
-  onPick,
-}: Props) {
+  onAdd,
+}: ChooserProps) {
   const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [anyBlock, setAnyBlock] = useState(false)
   const [allLevels, setAllLevels] = useState(false)
   const [showUnavailable, setShowUnavailable] = useState(false)
-  const [added, setAdded] = useState<ReadonlySet<string>>(new Set())
+  const [picked, setPicked] = useState<readonly string[]>([])
 
   const entries = useMemo(
     () =>
@@ -82,17 +70,17 @@ function PickerBody({
   )
 
   const nameOf = (id: string) => equipment.find((e) => e.id === id)?.name ?? '?'
+  const toggle = (id: string) =>
+    setPicked((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]))
+
+  function add() {
+    const byId = new Map(exercises.map((e) => [e.id, e]))
+    // Keep the order the exercises were ticked in.
+    onAdd(picked.map((id) => byId.get(id)).filter((e): e is Exercise => e !== undefined))
+  }
 
   return (
-    <div className="flex max-h-[85dvh] flex-col gap-4 p-5">
-      <div className="flex items-start justify-between gap-3">
-        <h2 className="text-lg font-semibold">
-          {t('lessons.picker.title', { block: block?.name ?? '' })}
-        </h2>
-        <Button variant="outline" size="sm" onClick={onClose}>
-          {t('lessons.picker.done')}
-        </Button>
-      </div>
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
       <Input
         type="search"
         aria-label={t('library.search')}
@@ -114,50 +102,91 @@ function PickerBody({
       {entries.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t('lessons.picker.none')}</p>
       ) : (
-        <ul className="flex flex-col gap-2 overflow-y-auto">
+        <ul className="flex min-h-0 flex-col gap-2 overflow-y-auto">
           {entries.map(({ exercise, available: ok }) => {
             const missing = ok
               ? []
               : missingEquipment(exercise.requirements, available).map((ids) =>
                   ids.map(nameOf).join(' / '),
                 )
+            const on = picked.includes(exercise.id)
             return (
               <li key={exercise.id}>
                 <button
                   type="button"
-                  onClick={() => {
-                    onPick(exercise)
-                    setAdded(new Set(added).add(exercise.id))
-                  }}
-                  className={`flex w-full flex-col gap-1 rounded-2xl border border-border p-3 text-start hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${ok ? '' : 'opacity-60'}`}
+                  aria-pressed={on}
+                  onClick={() => toggle(exercise.id)}
+                  className={`flex w-full items-start gap-3 rounded-2xl border p-3 text-start hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${on ? 'border-primary bg-muted' : 'border-border'} ${ok ? '' : 'opacity-60'}`}
                 >
-                  <span className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold">{exercise.name}</span>
-                    <Badge tone="outline">{t(`levels.${exercise.level}`)}</Badge>
-                    <span className="text-sm text-muted-foreground">
-                      {formatDuration(exercise.defaultDurationSec)}
+                  <span
+                    aria-hidden
+                    className={`mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-md border ${on ? 'border-primary bg-primary text-primary-foreground' : 'border-border'}`}
+                  >
+                    {on && <Check className="size-3.5" />}
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col gap-1">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold">{exercise.name}</span>
+                      <Badge tone="outline">{t(`levels.${exercise.level}`)}</Badge>
+                      <span className="text-sm text-muted-foreground">
+                        {formatDuration(exercise.defaultDurationSec)}
+                      </span>
                     </span>
-                    {added.has(exercise.id) && (
-                      <Badge tone="accent">{t('lessons.picker.added')}</Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {describeRequirements(exercise.requirements, nameOf) ||
+                        t('library.noEquipment')}
+                      {describeBonus(exercise.requirements, nameOf) &&
+                        ` · ${t('library.bonus', { items: describeBonus(exercise.requirements, nameOf) })}`}
+                    </span>
+                    {!ok && (
+                      <span className="text-sm font-medium">
+                        {t('lessons.picker.missing', { items: missing.join(', ') })}
+                      </span>
                     )}
                   </span>
-                  <span className="text-sm text-muted-foreground">
-                    {describeRequirements(exercise.requirements, nameOf) ||
-                      t('library.noEquipment')}
-                    {describeBonus(exercise.requirements, nameOf) &&
-                      ` · ${t('library.bonus', { items: describeBonus(exercise.requirements, nameOf) })}`}
-                  </span>
-                  {!ok && (
-                    <span className="text-sm font-medium">
-                      {t('lessons.picker.missing', { items: missing.join(', ') })}
-                    </span>
-                  )}
                 </button>
               </li>
             )
           })}
         </ul>
       )}
+      <div className="sticky bottom-0 -mx-1 bg-background px-1 pt-2">
+        <Button className="w-full" disabled={picked.length === 0} onClick={add}>
+          {picked.length === 0
+            ? t('lessons.picker.pickSome')
+            : t('lessons.picker.addCount', { count: picked.length })}
+        </Button>
+      </div>
     </div>
+  )
+}
+
+type PickerProps = ChooserProps & {
+  open: boolean
+  onClose: () => void
+}
+
+/** The chooser in its own dialog (used where only exercises are offered, e.g. editing a set). */
+export function ExercisePicker({ open, onClose, onAdd, ...rest }: PickerProps) {
+  const { t } = useTranslation()
+  const title = t('lessons.picker.title', { block: rest.block?.name ?? '' })
+  return (
+    <Dialog open={open} onClose={onClose} title={title}>
+      <div className="flex max-h-[85dvh] flex-col gap-3 p-5">
+        <div className="flex items-start justify-between gap-3">
+          <h2 className="text-lg font-semibold">{title}</h2>
+          <Button variant="outline" size="sm" onClick={onClose}>
+            {t('lessons.picker.done')}
+          </Button>
+        </div>
+        <ExerciseChooser
+          {...rest}
+          onAdd={(list) => {
+            onAdd(list)
+            onClose()
+          }}
+        />
+      </div>
+    </Dialog>
   )
 }

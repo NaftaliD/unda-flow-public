@@ -12,7 +12,6 @@
     "home": "בית",
     "lessons": "שיעורים",
     "templates": "תבניות",
-    "series": "סדרות",
     "more": "עוד",
     "tabs": "מקטעים"
   },
@@ -82,7 +81,16 @@
     "versions_two": "{{count}} גרסאות",
     "versions_other": "{{count}} גרסאות",
     "filters": "סינון",
-    "filtersActive": "סינון (פעיל)"
+    "filtersActive": "סינון (פעיל)",
+    "view": {
+      "label": "תצוגת ספרייה",
+      "exercises": "תרגילים",
+      "sets": "סדרות"
+    },
+    "setsIntro": "סדרות הן קבוצות תרגילים מוכנות לבלוק. פותחים סדרה כדי לראות מה בתוכה, ומוסיפים סדרה שלמה לשיעור בכפתור ההוספה של השיעור.",
+    "setsEmptyTitle": "לא נמצאו סדרות",
+    "setsEmptyBody": "אפשר לנסות חיפוש או בלוק אחר.",
+    "requiredField": "שדה חובה"
   },
   "exercise": {
     "newTitle": "תרגיל חדש",
@@ -237,7 +245,8 @@
       "noEquipment": "לא סומן ציוד",
       "publish": "פרסום כשיעור לדוגמה",
       "published": "פורסם כשיעור לדוגמה.",
-      "publishFailed": "לא ניתן לפרסם את השיעור."
+      "publishFailed": "לא ניתן לפרסם את השיעור.",
+      "add": "הוספה"
     },
     "picker": {
       "title": "הוספה אל {{block}}",
@@ -247,7 +256,11 @@
       "showUnavailable": "הצגת תרגילים לא זמינים",
       "none": "לא נמצאו תרגילים מתאימים.",
       "missing": "חסר: {{items}}",
-      "added": "נוסף"
+      "added": "נוסף",
+      "pickSome": "מסמנים תרגילים להוספה",
+      "addCount_one": "הוספת תרגיל {{count}}",
+      "addCount_two": "הוספת {{count}} תרגילים",
+      "addCount_other": "הוספת {{count}} תרגילים"
     },
     "print": {
       "button": "הדפסה / שמירה כ-PDF",
@@ -284,6 +297,13 @@
       "under": "{{used}} מתוך {{target}} דקות · נשארו {{left}} דקות",
       "full": "{{used}} מתוך {{target}} דקות · השיעור מלא",
       "over": "{{used}} מתוך {{target}} דקות · חריגה של {{over}} דקות"
+    },
+    "add": {
+      "title": "הוספה אל {{block}}",
+      "exercises": "תרגילים",
+      "sets_one": "סדרות ({{count}})",
+      "sets_two": "סדרות ({{count}})",
+      "sets_other": "סדרות ({{count}})"
     }
   },
   "templates": {
@@ -344,28 +364,16 @@
     "view": "צפייה"
   },
   "series": {
-    "title": "סדרות",
-    "intro": "סדרה היא קבוצת תרגילים מוכנה לבלוק אחד, שמוסיפים לשיעור בלחיצה אחת.",
     "new": "סדרה חדשה",
     "newTitle": "סדרה חדשה",
-    "back": "חזרה לסדרות",
-    "notFound": "הסדרה לא נמצאה.",
-    "mineHeading": "הסדרות שלי",
-    "sharedHeading": "סדרות משותפות",
-    "emptyMine": "עדיין אין סדרות משלכם. אפשר לשכפל סדרה משותפת או ליצור חדשה.",
-    "emptyShared": "אין עדיין סדרות משותפות.",
     "exerciseCount_one": "תרגיל {{count}}",
     "exerciseCount_two": "{{count}} תרגילים",
     "exerciseCount_other": "{{count}} תרגילים",
     "confirmDelete": "למחוק את הסדרה? שיעורים שכבר השתמשו בה לא ישתנו.",
-    "readOnly": "זו סדרה משותפת. אפשר לשכפל אותה ולערוך עותק משלכם.",
-    "adminEdit": "כמנהלים אפשר לערוך את הסדרה המשותפת. שיעורים קיימים לא ישתנו.",
-    "addSeries": "הוספת סדרה",
     "added_one": "נוסף תרגיל {{count}}.",
     "added_two": "נוספו {{count}} תרגילים.",
     "added_other": "נוספו {{count}} תרגילים.",
     "picker": {
-      "title": "הוספת סדרה אל {{block}}",
       "none": "אין עדיין סדרות לבלוק הזה. אפשר ליצור אחת בעמוד הסדרות."
     },
     "form": {
@@ -379,7 +387,10 @@
       "remove": "הסרת {{name}}",
       "save": "שמירת הסדרה",
       "saveFailed": "לא ניתן לשמור את הסדרה."
-    }
+    },
+    "shared": "משותפת",
+    "addSet": "הוספת {{name}}",
+    "editTitle": "עריכת סדרה"
   },
   "presets": {
     "title": "ערכות הציוד שלי",
@@ -401,7 +412,6 @@
   "more": {
     "title": "עוד",
     "templatesBody": "תבניות, ערכות ציוד ובלוקים משלכם",
-    "seriesBody": "סטים מוכנים של תרגילים לבלוק",
     "reviewBody": "בדיקת תרגילים שיובאו",
     "back": "חזרה",
     "presets": "ערכות ציוד",

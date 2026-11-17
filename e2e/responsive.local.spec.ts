@@ -51,7 +51,6 @@ for (const size of SIZES) {
         '/lessons/new?from=blank',
         builderUrl.replace(/^https?:\/\/[^/]+/, ''),
         '/exercises',
-        '/series',
         '/more',
         '/more/presets',
         '/more/blocks',

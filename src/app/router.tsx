@@ -19,8 +19,6 @@ import { LessonPrintPage } from '@/features/lessons/LessonPrintPage'
 import { MorePage } from '@/features/more/MorePage'
 import { BlocksPage, PresetsPage } from '@/features/more/MoreSubpages'
 import { NewLessonPage } from '@/features/lessons/NewLessonPage'
-import { SeriesEditorPage } from '@/features/series/SeriesEditorPage'
-import { SeriesListPage } from '@/features/series/SeriesListPage'
 import { AppLayout } from './AppLayout'
 import { NotFound } from './NotFound'
 
@@ -90,24 +88,6 @@ const blocksRoute = createRoute({
   component: BlocksPage,
 })
 
-const seriesRoute = createRoute({
-  getParentRoute: () => protectedRoute,
-  path: '/series',
-  component: SeriesListPage,
-})
-
-const newSeriesRoute = createRoute({
-  getParentRoute: () => protectedRoute,
-  path: '/series/new',
-  component: SeriesEditorPage,
-})
-
-const seriesDetailRoute = createRoute({
-  getParentRoute: () => protectedRoute,
-  path: '/series/$id',
-  component: SeriesEditorPage,
-})
-
 const exercisesRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/exercises',
@@ -147,9 +127,6 @@ const routeTree = rootRoute.addChildren([
     moreRoute,
     presetsRoute,
     blocksRoute,
-    seriesRoute,
-    newSeriesRoute,
-    seriesDetailRoute,
     exercisesRoute,
     newExerciseRoute,
     exerciseRoute,

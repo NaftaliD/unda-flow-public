@@ -6,7 +6,7 @@ import { signOut } from '@/data/auth'
 import { useCurrentUser } from '@/data/queries/profile'
 
 type Entry = {
-  to: '/more/presets' | '/more/blocks' | '/series' | '/admin/review'
+  to: '/more/presets' | '/more/blocks' | '/admin/review'
   title: string
   body: string
 }
@@ -20,7 +20,6 @@ export function MorePage() {
   const entries: Entry[] = [
     { to: '/more/presets', title: t('more.presets'), body: t('more.presetsBody') },
     { to: '/more/blocks', title: t('more.blocks'), body: t('more.blocksBody') },
-    { to: '/series', title: t('nav.series'), body: t('more.seriesBody') },
     ...(isAdmin
       ? [{ to: '/admin/review' as const, title: t('nav.review'), body: t('more.reviewBody') }]
       : []),
