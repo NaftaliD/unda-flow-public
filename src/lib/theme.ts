@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
 
-/** The person's choice. "system" follows the device setting. */
+/** The person's choice. "system" follows the device setting. Light unless chosen otherwise. */
 export type ThemePref = 'system' | 'light' | 'dark'
 export type ResolvedTheme = 'light' | 'dark'
 
@@ -12,14 +12,14 @@ export function resolveTheme(pref: ThemePref, systemDark: boolean): ResolvedThem
 }
 
 export function parsePref(value: string | null | undefined): ThemePref {
-  return value === 'light' || value === 'dark' ? value : 'system'
+  return value === 'dark' || value === 'system' ? value : 'light'
 }
 
 function readStoredPref(): ThemePref {
   try {
     return parsePref(localStorage.getItem(THEME_KEY))
   } catch {
-    return 'system' // storage blocked: the theme just is not remembered
+    return 'light' // storage blocked: the theme just is not remembered
   }
 }
 
@@ -39,7 +39,8 @@ function apply() {
 export function setThemePref(next: ThemePref) {
   pref = next
   try {
-    if (next === 'system') localStorage.removeItem(THEME_KEY)
+    // Light is the default, so only the other choices are stored.
+    if (next === 'light') localStorage.removeItem(THEME_KEY)
     else localStorage.setItem(THEME_KEY, next)
   } catch {
     /* not remembered */

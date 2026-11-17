@@ -24,14 +24,16 @@
   --terracotta-deep: #b05a42;
 
   /* Dark theme (olive night): only used under :root[data-theme='dark'] below. */
-  --night: #1c211a;
-  --night-card: #283026;
+  --night: #161a14; /* page */
+  --night-card: #252d22; /* cards: clearly lifted from the page */
+  --night-raised: #323c2e; /* hover and neutral fills on cards */
   --night-secondary: #3a4536;
-  --night-header: #2f392c;
+  --night-header: #2b3627;
   --night-text: #f3ede3;
-  --night-muted: #c4cbb8;
-  --night-border: #6f7b67;
-  --night-accent: #e08a70;
+  --night-muted: #c9d0bd;
+  --night-border: #7a8670;
+  --night-accent: #e8977d;
+  --night-primary: #c3cfa8; /* buttons and selected chips: bright sage, not grey */
 
   --background: var(--cream);
   --foreground: var(--ink);
@@ -59,12 +61,12 @@
     --foreground: var(--night-text);
     --card: var(--night-card);
     --card-foreground: var(--night-text);
-    --primary: var(--sage);
+    --primary: var(--night-primary);
     --primary-foreground: var(--night);
     --secondary: var(--night-secondary);
     --secondary-foreground: var(--night-text);
     --accent: var(--night-accent);
-    --muted: var(--night-card);
+    --muted: var(--night-raised);
     --muted-foreground: var(--night-muted);
     --border: var(--night-border);
     --ring: var(--night-accent);

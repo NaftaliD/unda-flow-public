@@ -11,12 +11,12 @@ describe('resolveTheme', () => {
 })
 
 describe('parsePref', () => {
-  it('accepts light and dark, and treats anything else as system', () => {
+  it('accepts dark and system, and is light by default', () => {
     expect(parsePref('dark')).toBe('dark')
-    expect(parsePref('light')).toBe('light')
     expect(parsePref('system')).toBe('system')
-    expect(parsePref('purple')).toBe('system')
-    expect(parsePref(null)).toBe('system')
+    expect(parsePref('light')).toBe('light')
+    expect(parsePref('purple')).toBe('light')
+    expect(parsePref(null)).toBe('light')
   })
 })
 
@@ -34,9 +34,11 @@ describe('setThemePref', () => {
     expect(document.documentElement.dataset.theme).toBe('light')
   })
 
-  it('forgets the choice on "system"', () => {
-    setThemePref('dark')
+  it('remembers "match my device", and forgets the choice when back on light (the default)', () => {
     setThemePref('system')
+    expect(localStorage.getItem(THEME_KEY)).toBe('system')
+    setThemePref('dark')
+    setThemePref('light')
     expect(localStorage.getItem(THEME_KEY)).toBeNull()
   })
 })

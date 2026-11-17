@@ -41,7 +41,7 @@ export function Dialog({
         if (e.target === ref.current) onClose()
       }}
       className={cn(
-        'm-auto max-h-[85dvh] w-[min(40rem,calc(100vw-2rem))] rounded-3xl bg-background p-0 text-foreground backdrop:bg-foreground/40',
+        'm-auto max-h-[85dvh] w-[min(40rem,calc(100vw-2rem))] rounded-3xl bg-background p-0 text-foreground backdrop:bg-black/60',
         className,
       )}
     >

@@ -61,19 +61,22 @@ describe('light theme non-text contrast (3:1)', () => {
 const DARK_TEXT: [string, string][] = [
   ['night-text', 'night'],
   ['night-text', 'night-card'],
+  ['night-text', 'night-raised'], // hover and neutral fills on cards
   ['night-muted', 'night'],
   ['night-muted', 'night-card'],
+  ['night-muted', 'night-raised'],
   ['night-text', 'night-secondary'],
   ['night-text', 'night-header'],
-  ['night', 'sage'], // text on the primary (sage) buttons
+  ['night', 'night-primary'], // text on the primary buttons and selected chips
 ]
 const DARK_NON_TEXT: [string, string][] = [
   ['night-border', 'night'],
   ['night-border', 'night-card'],
   ['night-accent', 'night'], // focus ring
   ['night-accent', 'night-card'],
-  ['sage', 'night'], // primary fills
-  ['sage', 'night-card'],
+  ['night-border', 'night-raised'],
+  ['night-primary', 'night'], // primary fills
+  ['night-primary', 'night-card'],
 ]
 
 describe('dark theme contrast', () => {

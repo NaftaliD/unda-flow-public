@@ -19,7 +19,7 @@ export function TimeBar({ totalSec, targetMin }: { totalSec: number; targetMin: 
           : t('lessons.time.over', { used: s.usedMin, target: s.targetMin, over: s.overMin })
 
   return (
-    <div className="sticky top-0 z-10 -mx-4 flex flex-col gap-1.5 bg-background/95 px-4 py-2 backdrop-blur sm:mx-0 sm:px-0">
+    <div className="sticky top-0 z-10 -mx-4 flex flex-col gap-1.5 bg-background px-4 py-2 sm:mx-0 sm:px-0">
       <p aria-live="polite" className="flex items-center gap-2 text-sm font-semibold">
         {s.state === 'over' && <AlertTriangle className="size-4 shrink-0" aria-hidden />}
         {text}
