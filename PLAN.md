@@ -24,7 +24,7 @@ First user: one instructor (the developer's partner, who also curates the shared
 | D3 | Equipment is binary (available / not available) in v1. Quantities are backlog. |
 | D4 | Offline use = **export a lesson to PDF** (browser print stylesheet, which handles Hebrew/RTL natively). No offline app cache in v1. |
 | D5 | Private data is scoped to an **authenticated user ID**, never to an IP address (IPs change and are shared by everyone on the same Wi-Fi). Auth and row-level security are on from Increment 0. |
-| D6 | Shared library content stores **names, block, equipment, level only**, written in our own words where descriptions exist. Do not copy text, images, or video from the provider or any other training provider. Do not use "the provider" in the product name, branding, or marketing. |
+| D6 | Shared library content stores **names, block, equipment, level only**, written in our own words where descriptions exist. Do not copy text, images, or video from any commercial training provider's materials. Do not use a provider's name in the product name, branding, or marketing. |
 
 ## 3. Brand and theme (Unda Pilates)
 
@@ -84,7 +84,7 @@ Supabase
 
 Rules that keep later increments cheap:
 
-- **Domain is pure.** Equipment matching, duration totals, template expansion live in `src/domain` with unit tests.
+- **Domain is pure.** Equipment matching, time totals and status, the teach-view steps, filtering live in `src/domain` with unit tests.
 - **Only `src/data` touches Supabase.**
 - **Every schema change is an additive migration** in `supabase/migrations`, so new increments attach to a running system with live data.
 - **Generated DB types** (`supabase gen types`) are committed and checked in CI.
@@ -98,15 +98,15 @@ unda-flow/
 ├─ src/
 │  ├─ app/            router, providers, layout, theme, i18n setup
 │  ├─ locales/        en.json, he.json
-│  ├─ domain/         types.ts, schemas.ts, equipment.ts, lesson.ts, *.test.ts
+│  ├─ domain/         equipment.ts, lesson.ts, library.ts, series.ts, teach.ts, schemas.ts, *.test.ts
 │  ├─ data/           supabaseClient.ts, queries/, mutations/, database.types.ts
-│  ├─ features/       auth/ equipment/ exercises/ templates/ lessons/ settings/ admin/
-│  └─ components/     shared UI (shadcn)
+│  ├─ features/       admin/ auth/ exercises/ lessons/ more/ presets/
+│  └─ components/     shared UI primitives (hand-written)
 ├─ public/brand/      logo SVGs
 ├─ supabase/
 │  ├─ migrations/
 │  └─ seed/           exercises.sample.csv (committed sample); the real list is git-ignored in seed/private/ (blocks, methods, equipment are reference data in the library migration)
-├─ scripts/           import-exercises.ts (local, secret key), csv.ts, build-import.ts
+├─ scripts/           import-exercises.ts and import-examples.ts (local, secret key), csv.ts, build-import.ts, build-examples.ts
 ├─ e2e/
 ├─ wrangler.jsonc
 └─ .github/workflows/ci.yml
