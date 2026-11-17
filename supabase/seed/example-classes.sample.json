@@ -1,0 +1,82 @@
+{
+  "classes": [
+    {
+      "id": "5f0b7a52-3c8e-4d1a-9b64-2e7c1a9d0b01",
+      "title": "Apparatus class - 45 min",
+      "notes": "The standard 12-block apparatus class, filled with a few exercises. (Development data: the real class is imported from a private file.)",
+      "level": "fundamental",
+      "targetDurationMin": 45,
+      "equipment": ["reformer", "box"],
+      "slots": [
+        {
+          "block": "warm_up",
+          "label": "Warm-up",
+          "items": [
+            { "exercise": "Pelvic Curl", "equipment": "mat|reformer|cadillac", "reps": 8 },
+            { "exercise": "Chest Lift", "equipment": "mat|reformer|cadillac", "reps": 8 },
+            { "exercise": "Spine Twist Supine", "equipment": "mat|reformer|cadillac", "reps": 6 }
+          ]
+        },
+        {
+          "block": "foot_work",
+          "label": "Foot work",
+          "items": [
+            { "exercise": "Calf Raises", "equipment": "reformer", "reps": 10 },
+            { "exercise": "Heels", "equipment": "reformer", "reps": 10 },
+            { "exercise": "Arches", "equipment": "reformer", "reps": 10 }
+          ]
+        },
+        {
+          "block": "abdominal",
+          "label": "Abdominal",
+          "items": [
+            { "exercise": "Hundred Prep", "equipment": "mat|reformer" },
+            { "exercise": "Short Box Round Back", "equipment": "reformer+box", "reps": 6 }
+          ]
+        },
+        {
+          "block": "hip_work",
+          "label": "Hip work",
+          "items": [
+            { "exercise": "Frog", "equipment": "reformer", "reps": 8 },
+            { "exercise": "Leg Circles", "equipment": "reformer", "reps": 5 }
+          ]
+        },
+        {
+          "block": "stretch",
+          "label": "Stretch",
+          "items": [{ "exercise": "Hip Flexor Stretch", "equipment": "reformer" }]
+        },
+        {
+          "block": "spinal_articulation",
+          "label": "Articulation",
+          "items": [{ "exercise": "Bridging", "equipment": "reformer", "reps": 6 }]
+        },
+        {
+          "block": "fbi",
+          "label": "FBI 1",
+          "items": [{ "exercise": "Elephant", "equipment": "reformer", "reps": 8 }]
+        },
+        {
+          "block": "lateral_rotation",
+          "label": "Lateral / rotation",
+          "items": [{ "exercise": "Side Bend", "equipment": "reformer", "reps": 5 }]
+        },
+        {
+          "block": "arm_work",
+          "label": "Arm work",
+          "items": [
+            { "exercise": "Arm Circles", "equipment": "reformer", "reps": 8 },
+            { "exercise": "Rowing Prep", "equipment": "reformer", "reps": 8 },
+            { "exercise": "Biceps Curl", "equipment": "reformer", "reps": 8 }
+          ]
+        },
+        {
+          "block": "back_extension",
+          "label": "Back extension",
+          "items": [{ "exercise": "Swan Prep", "equipment": "mat|reformer", "reps": 6 }]
+        }
+      ]
+    }
+  ]
+}

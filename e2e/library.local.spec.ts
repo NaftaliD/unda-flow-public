@@ -16,7 +16,7 @@ test('browse and filter the shared library, then add a private exercise', async 
   await expect(page.getByRole('heading', { name: 'Exercise library' })).toBeVisible()
 
   // Seeded shared content is visible to a brand-new user.
-  await expect(page.getByText('Pelvic Curl')).toBeVisible()
+  await expect(page.getByText('Pelvic Curl', { exact: true })).toBeVisible()
 
   // The same movement on several apparatus is one entry listing its versions.
   await page.getByLabel('Search').fill('Calf Raises')
@@ -27,12 +27,12 @@ test('browse and filter the shared library, then add a private exercise', async 
   // Chair only: mat/reformer/cadillac exercises disappear, chair exercises remain.
   const equipment = page.getByRole('group', { name: 'Equipment available today' })
   await equipment.getByRole('button', { name: 'Chair' }).click()
-  await expect(page.getByText('Pelvic Curl')).toHaveCount(0)
+  await expect(page.getByText('Pelvic Curl', { exact: true })).toHaveCount(0)
   await expect(page.getByText('Calf Raises').first()).toBeVisible()
   await equipment.getByRole('button', { name: 'Chair' }).click()
 
   // A shared exercise is read-only for a normal user, with "Duplicate as mine".
-  await page.getByRole('link', { name: /^Pelvic Curl/ }).click()
+  await page.getByRole('link', { name: /^Pelvic Curl(?! with)/ }).click()
   await expect(page.getByRole('link', { name: 'Duplicate as mine' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Save' })).toHaveCount(0)
   await page.getByRole('link', { name: 'Back to library' }).click()

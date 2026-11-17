@@ -1,0 +1,171 @@
+{
+  "classes": [
+    {
+      "title": "Classic mat class - 45 min",
+      "notes": "A 45-minute mat class built from classic mat repertoire, arranged in the block categories (the classic method itself is a later addition). An example to start from: change anything. Written as a draft for the instructor to review.",
+      "level": "intermediate",
+      "targetDurationMin": 45,
+      "equipment": ["mat"],
+      "slots": [
+        {
+          "block": "warm_up",
+          "label": "Warm-up",
+          "items": [
+            { "exercise": "Pelvic Curl", "equipment": "mat|reformer|cadillac", "reps": 8 },
+            { "exercise": "Chest Lift", "equipment": "mat|reformer|cadillac", "reps": 8 },
+            { "exercise": "Spine Twist Supine", "equipment": "mat|reformer|cadillac", "reps": 6 }
+          ]
+        },
+        {
+          "block": "abdominal",
+          "label": "Abdominal",
+          "hint": "A classic abdominal series.",
+          "items": [
+            { "exercise": "The Hundred", "equipment": "mat", "seconds": 240 },
+            { "exercise": "Single Leg Stretch", "equipment": "mat", "reps": 10 },
+            { "exercise": "Double Leg Stretch", "equipment": "mat", "reps": 8 },
+            { "exercise": "Criss-Cross", "equipment": "mat", "reps": 10 }
+          ]
+        },
+        {
+          "block": "spinal_articulation",
+          "label": "Articulation",
+          "items": [
+            { "exercise": "Roll Down", "equipment": "mat", "reps": 5 },
+            { "exercise": "Rolling Like a Ball", "equipment": "mat", "reps": 6 },
+            { "exercise": "Spine Stretch Forward", "equipment": "mat", "reps": 5 }
+          ]
+        },
+        {
+          "block": "hip_work",
+          "label": "Hip work",
+          "items": [
+            { "exercise": "Single Leg Circles", "equipment": "mat", "reps": 5 },
+            { "exercise": "Side Kick Front and Back", "equipment": "mat", "reps": 8 }
+          ]
+        },
+        {
+          "block": "leg_work",
+          "label": "Leg work",
+          "items": [{ "exercise": "Side Lying Leg Lifts", "equipment": "mat", "reps": 10 }]
+        },
+        {
+          "block": "lateral_rotation",
+          "label": "Lateral / rotation",
+          "items": [{ "exercise": "Saw", "equipment": "mat", "reps": 5, "seconds": 180 }]
+        },
+        {
+          "block": "fbi",
+          "label": "Full body integration",
+          "items": [{ "exercise": "Seal", "equipment": "mat", "reps": 6, "seconds": 240 }]
+        },
+        {
+          "block": "arm_work",
+          "label": "Arm work",
+          "items": [{ "exercise": "Side Lying Arm Openings", "equipment": "mat", "reps": 8 }]
+        },
+        {
+          "block": "back_extension",
+          "label": "Back extension",
+          "items": [
+            { "exercise": "Single Leg Kick", "equipment": "mat", "reps": 8 },
+            { "exercise": "Swimming", "equipment": "mat", "seconds": 120 }
+          ]
+        },
+        {
+          "block": "stretch",
+          "label": "Cool-down stretch",
+          "items": [
+            { "exercise": "Child's Pose", "equipment": "mat" },
+            { "exercise": "Hamstring Stretch Supine", "equipment": "mat" }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Reformer and ball class - 45 min",
+      "notes": "A 45-minute reformer class built around a small ball: every exercise needs the reformer and the ball. An example to start from: change anything, or swap the ball exercises for plain reformer ones if there is no ball. Written as a draft for the instructor to review.",
+      "level": "fundamental",
+      "targetDurationMin": 45,
+      "equipment": ["reformer", "ball"],
+      "slots": [
+        {
+          "block": "warm_up",
+          "label": "Warm-up",
+          "items": [
+            { "exercise": "Pelvic Curl with Ball Squeeze", "equipment": "reformer+ball", "reps": 8, "seconds": 150 },
+            { "exercise": "Chest Lift with Ball", "equipment": "reformer+ball", "reps": 8, "seconds": 150 }
+          ]
+        },
+        {
+          "block": "foot_work",
+          "label": "Foot work",
+          "items": [
+            { "exercise": "Parallel Heels with Ball", "equipment": "reformer+ball", "reps": 10, "seconds": 180 },
+            { "exercise": "Parallel Toes with Ball", "equipment": "reformer+ball", "reps": 10, "seconds": 180 }
+          ]
+        },
+        {
+          "block": "abdominal",
+          "label": "Abdominal",
+          "items": [
+            { "exercise": "Hundred Prep with Ball", "equipment": "reformer+ball", "seconds": 210 },
+            { "exercise": "Curl-Up with Ball Overhead", "equipment": "reformer+ball", "reps": 8, "seconds": 210 }
+          ]
+        },
+        {
+          "block": "hip_work",
+          "label": "Hip work",
+          "items": [
+            { "exercise": "Frog with Ball Squeeze", "equipment": "reformer+ball", "reps": 8, "seconds": 180 },
+            { "exercise": "Leg Circles with Ball Squeeze", "equipment": "reformer+ball", "reps": 5, "seconds": 180 }
+          ]
+        },
+        {
+          "block": "stretch",
+          "label": "Stretch",
+          "items": [
+            { "exercise": "Seated Forward Fold with Ball", "equipment": "reformer+ball", "seconds": 150 }
+          ]
+        },
+        {
+          "block": "spinal_articulation",
+          "label": "Articulation",
+          "items": [
+            { "exercise": "Bottom Lift with Ball Squeeze", "equipment": "reformer+ball", "reps": 6, "seconds": 180 }
+          ]
+        },
+        {
+          "block": "lateral_rotation",
+          "label": "Lateral / rotation",
+          "items": [
+            { "exercise": "Seated Rotation with Ball", "equipment": "reformer+ball", "reps": 6, "seconds": 180 }
+          ]
+        },
+        {
+          "block": "fbi",
+          "label": "Full body integration",
+          "items": [{ "exercise": "Ball Roll-Out", "equipment": "reformer+ball", "reps": 6, "seconds": 240 }]
+        },
+        {
+          "block": "leg_work",
+          "label": "Leg work",
+          "items": [{ "exercise": "Side Lying Ball Lift", "equipment": "reformer+ball", "reps": 10, "seconds": 180 }]
+        },
+        {
+          "block": "arm_work",
+          "label": "Arm work",
+          "items": [
+            { "exercise": "Ball Overhead Reach", "equipment": "reformer+ball", "reps": 8, "seconds": 90 },
+            { "exercise": "Ball Chest Press", "equipment": "reformer+ball", "reps": 8, "seconds": 90 }
+          ]
+        },
+        {
+          "block": "back_extension",
+          "label": "Back extension",
+          "items": [{ "exercise": "Prone Ball Extension", "equipment": "reformer+ball", "reps": 6, "seconds": 150 }]
+        }
+      ]
+    }
+  ]
+}

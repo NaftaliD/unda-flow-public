@@ -56,7 +56,7 @@ jobs:
         run: |
           npm run db:types
           git diff --exit-code -- src/data/database.types.ts
-      - name: Import seed exercises and run the local end-to-end specs
+      - name: Import seed exercises and example classes, then run the local end-to-end specs
         run: |
           STATUS="$(npx supabase status -o json)"
           field() { node -p "JSON.parse(process.argv[1])[process.argv[2]]" "$STATUS" "$1"; }
@@ -66,6 +66,7 @@ jobs:
           export VITE_SUPABASE_PUBLISHABLE_KEY="$(field PUBLISHABLE_KEY)"
           export E2E_LOCAL_SUPABASE=1
           npm run db:import
+          npm run db:import-examples
           npx playwright install --with-deps chromium
           npm run e2e
       - uses: actions/upload-artifact@v5

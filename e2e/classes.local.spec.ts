@@ -13,21 +13,31 @@ test('start from an example, copy your own class, and start blank with a custom 
   // The starting-point screen offers the shared example class (read-only preview) and blank.
   await page.getByRole('link', { name: 'New class' }).first().click()
   await expect(page.getByRole('heading', { name: 'Example classes' })).toBeVisible()
+  // Three example classes, each a ready-to-use 45-minute class.
+  for (const title of [
+    'Apparatus class - 45 min',
+    'Classic mat class - 45 min',
+    'Reformer and ball class - 45 min',
+  ]) {
+    await expect(page.getByRole('listitem').filter({ hasText: title })).toBeVisible()
+  }
   await page.getByRole('link', { name: 'Preview' }).first().click()
-  await expect(page.getByRole('heading', { name: 'Apparatus class - 12 blocks' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Apparatus class - 45 min' })).toBeVisible()
+  await expect(page.getByText('Pelvic Curl').first()).toBeVisible() // it comes with exercises
   await expect(page.getByRole('link', { name: 'Use this class' })).toBeVisible()
   await expect(page.getByRole('button', { name: /^Add$/ })).toHaveCount(0) // read-only
 
   // Use it: the class length quick picks work and the example's name is the starting title.
   await page.getByRole('link', { name: 'Use this class' }).click()
-  await expect(page.getByLabel('Title')).toHaveValue('Apparatus class - 12 blocks')
+  await expect(page.getByLabel('Title')).toHaveValue('Apparatus class - 45 min')
   await page.getByLabel('Title').fill('My first class')
   await page.getByRole('button', { name: '45 min' }).click()
   await expect(page.getByLabel('Class length (minutes)')).toHaveValue('45')
   await page.getByRole('button', { name: 'Create class' }).click()
   const blocks = page.getByRole('list', { name: 'Class blocks' }).locator('> li')
   await expect(blocks).toHaveCount(12)
-  await expect(page.getByText('0 of 45 min · 45 min left')).toBeVisible()
+  // The copy comes with the example's exercises, so some of the 45 minutes are already used.
+  await expect(page.getByText(/of 45 min/)).toBeVisible()
 
   // Remove a block, then start a new class from this one: the copy has the same 11 blocks.
   await page.getByRole('button', { name: 'Remove block Extra leg' }).click()

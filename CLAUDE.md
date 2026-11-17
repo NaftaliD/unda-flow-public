@@ -37,6 +37,10 @@ npm run db:test        # pgTAP tests in supabase/tests/database/
 # terminal for that one command; never commit it or put it in CI/Cloudflare.
 npm run db:import                                              # sample file (CI/dev)
 npm run db:import -- supabase/seed/private/exercises.block.csv  # the real list (staging/prod, local only)
+npm run db:import -- supabase/seed/example-exercises.csv --force # add the example-class exercises to a populated DB
+# Example classes (insert-only; shared classes people start from). Default = the committed dev/CI set.
+npm run db:import-examples
+npm run db:import-examples -- supabase/seed/example-classes.json supabase/seed/private/example-class-apparatus.json   # hosted
 ```
 
 The local e2e specs (`e2e/*.local.spec.ts`) also need the seed imported, and `admin.local.spec.ts` promotes a user with `docker exec supabase_db_unda-flow psql`.
@@ -65,5 +69,5 @@ Read `PLAN.md` before any work. It defines the product (a Pilates lesson planner
 - Supabase keys: client uses `VITE_SUPABASE_URL` + `VITE_SUPABASE_PUBLISHABLE_KEY` (`sb_publishable_...`; never the legacy anon/JWT keys). The secret key (`sb_secret_...`) is for local seed/import scripts only, never in client code, GitHub secrets or Cloudflare settings. Missing env vars show a config error screen (`src/data/env.ts`, `src/app/ConfigError.tsx`). Secrets go in git-ignored `.env.local`, with a committed `.env.example`.
 - The hosted project has "Automatically expose new tables" off: every table-creating migration must explicitly `ENABLE ROW LEVEL SECURITY` and `GRANT` privileges to `authenticated` (and `anon` only where intended). Never rely on default privileges. That includes `service_role` (the secret key's role) for tables the import script touches: local Supabase auto-grants and hides a missing grant until production.
 - Content: exercise/block names stay in English; write descriptions in our own words; do not copy text/images/video from the provider or other providers, and don't use "the provider" in branding (D6).
-- Example content (new exercises, example classes) is authored only when the product owner has asked for it, and is flagged `needs_review` for the instructor. Ask before changing the data model or seed content.
+- Example content (new exercises, example classes) is authored only when the product owner has asked for it, and is flagged `needs_review` for the instructor. The three 45-minute example classes (apparatus, classic mat, reformer + ball) and the ~33 exercises behind the last two were written for 4a-5; `npm run db:import` (no args) imports the sample list plus `example-exercises.csv`, and CI also runs `db:import-examples`. Ask before changing the data model or seed content.
 - Keep `main` deployable; one increment per branch/PR series. Order of work: migration + RLS, regenerate types, data hooks, then UI.

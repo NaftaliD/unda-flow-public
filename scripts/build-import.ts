@@ -9,6 +9,8 @@ export type ImportExercise = {
   block_id: string
   name: string
   level: string
+  description: string | null
+  cues: string | null
   review_status: 'needs_review'
 }
 export type ImportSeries = { id: string; owner_id: null; block_id: string; name: string }
@@ -27,6 +29,11 @@ export function uuidV5(name: string, namespace: string = NAMESPACE): string {
   hash[8] = ((hash[8] ?? 0) & 0x3f) | 0x80
   const hex = hash.subarray(0, 16).toString('hex')
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
+}
+
+/** The id an imported exercise gets: the same name and equipment spec always give the same id. */
+export function exerciseId(name: string, spec: string): string {
+  return uuidV5(`${name.trim()}|${spec.trim()}`)
 }
 
 export type Lookups = {
@@ -64,7 +71,7 @@ export function buildImport(csvText: string, lookups: Lookups) {
       }
     }
 
-    const id = uuidV5(`${name}|${spec}`)
+    const id = exerciseId(name, spec)
     if (seen.has(id)) errors.push(`line ${line}: duplicate "${name}" with equipment "${spec}"`)
     seen.add(id)
 
@@ -84,6 +91,8 @@ export function buildImport(csvText: string, lookups: Lookups) {
       block_id: blockId,
       name,
       level,
+      description: (row.description ?? '').trim() || null,
+      cues: (row.cues ?? '').trim() || null,
       review_status: 'needs_review',
     })
     for (const r of parsed) {

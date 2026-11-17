@@ -1,10 +1,13 @@
 /**
- * Imports an exercise CSV as shared exercises (needs_review). Defaults to the small sample file
- * supabase/seed/exercises.sample.csv; the real list lives outside git (supabase/seed/private/).
+ * Imports exercise CSVs as shared exercises (needs_review). With no argument it imports the small
+ * sample file and the example-class exercises (supabase/seed/exercises.sample.csv and
+ * example-exercises.csv); the real list lives outside git (supabase/seed/private/). Optional CSV
+ * columns `description` and `cues` are imported too.
  * Run locally with the SECRET key; it never belongs in the client, CI secrets or Cloudflare.
  *
  *   SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_... npm run db:import
  *   npm run db:import -- supabase/seed/private/exercises.block.csv     (or EXERCISE_CSV=path)
+ *   npm run db:import -- supabase/seed/example-exercises.csv --force   (add the example exercises)
  *
  * Insert-only: refuses to run when shared exercises already exist (so admin corrections are
  * never overwritten and deleted rows are not resurrected), unless --force, which skips
@@ -17,36 +20,21 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { buildImport } from './build-import.ts'
+import { connect, fail, IGNORE_DUPLICATES } from './rest.ts'
 
 const force = process.argv.includes('--force')
 const seriesOnly = process.argv.includes('--series-only')
-const csvArg = process.argv.slice(2).find((a) => !a.startsWith('--'))
-const csvPath = resolve(csvArg ?? process.env.EXERCISE_CSV ?? 'supabase/seed/exercises.sample.csv')
-const baseUrl = (process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? '').replace(/\/$/, '')
-const secretKey = process.env.SUPABASE_SECRET_KEY ?? ''
+const csvArgs = process.argv.slice(2).filter((a) => !a.startsWith('--'))
+// No argument: the committed dev/CI files (the sample list and the example-class exercises).
+const csvPaths = (
+  csvArgs.length > 0
+    ? csvArgs
+    : process.env.EXERCISE_CSV
+      ? [process.env.EXERCISE_CSV]
+      : ['supabase/seed/exercises.sample.csv', 'supabase/seed/example-exercises.csv']
+).map((p) => resolve(p))
 
-if (!baseUrl) fail('SUPABASE_URL is not set.')
-if (!secretKey.startsWith('sb_secret_')) fail('SUPABASE_SECRET_KEY must be a sb_secret_... key.')
-
-async function rest<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${baseUrl}/rest/v1/${path}`, {
-    ...init,
-    headers: {
-      apikey: secretKey,
-      'Content-Type': 'application/json',
-      ...(init.headers as Record<string, string> | undefined),
-    },
-  })
-  if (!res.ok)
-    throw new Error(`${init.method ?? 'GET'} ${path} -> ${res.status} ${await res.text()}`)
-  const text = await res.text()
-  return (text ? JSON.parse(text) : null) as T
-}
-
-function fail(message: string): never {
-  console.error(message)
-  process.exit(1)
-}
+const { rest } = connect()
 
 const [methods, blocks, equipment, existing] = await Promise.all([
   rest<{ id: string }[]>('methods?key=eq.block&select=id'),
@@ -61,14 +49,18 @@ if (existing.length > 0 && !force && !seriesOnly) {
   fail('Shared exercises already exist. Nothing imported. Use --force to add only missing rows.')
 }
 
-const csv = readFileSync(csvPath, 'utf8')
-const { exercises, requirements, series, seriesItems } = buildImport(csv, {
+const lookups = {
   methodId: method.id,
   blocksByKey: new Map(blocks.map((b) => [b.key, b.id])),
   equipmentByKey: new Map(equipment.map((e) => [e.key, e.id])),
-})
+}
+const built = csvPaths.map((p) => buildImport(readFileSync(p, 'utf8'), lookups))
+const exercises = built.flatMap((b) => b.exercises)
+const requirements = built.flatMap((b) => b.requirements)
+const series = built.flatMap((b) => b.series)
+const seriesItems = built.flatMap((b) => b.seriesItems)
 
-const ignore = { Prefer: 'resolution=ignore-duplicates,return=minimal' }
+const ignore = IGNORE_DUPLICATES
 if (!seriesOnly) {
   await rest('exercises?on_conflict=id', {
     method: 'POST',

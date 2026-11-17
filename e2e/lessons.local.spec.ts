@@ -16,10 +16,12 @@ test('plan a class from an example, edit it, print it, and duplicate it', async 
 
   const title = `E2E class ${Date.now()}`
   await page.getByLabel('Title').fill(title)
-  await page
-    .getByRole('group', { name: 'Equipment available today' })
-    .getByRole('button', { name: 'Reformer' })
-    .click()
+  // The example comes with its equipment already ticked (reformer and box).
+  await expect(
+    page
+      .getByRole('group', { name: 'Equipment available today' })
+      .getByRole('button', { name: 'Reformer' }),
+  ).toHaveAttribute('aria-pressed', 'true')
   await page.getByRole('button', { name: 'Create class' }).click()
 
   // The builder starts with the 12 default blocks.

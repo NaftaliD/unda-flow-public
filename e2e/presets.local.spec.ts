@@ -13,9 +13,12 @@ test('save an equipment preset once, then set up a class from an example and the
   // First lesson: tick the equipment and save it as a preset.
   await startNewClass(page)
   await page.getByLabel('Title').fill('First')
+  // The example comes with reformer and box already ticked.
   const equipment = page.getByRole('group', { name: 'Equipment available today' })
-  await equipment.getByRole('button', { name: 'Reformer' }).click()
-  await equipment.getByRole('button', { name: 'Box' }).click()
+  await expect(equipment.getByRole('button', { name: 'Reformer' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
   await page.getByRole('button', { name: 'Save as preset' }).click()
   await page.getByLabel('Preset name').fill('Studio')
   await page.getByRole('button', { name: 'Save', exact: true }).click()
@@ -28,8 +31,15 @@ test('save an equipment preset once, then set up a class from an example and the
   await page.getByRole('link', { name: 'Back to classes' }).click()
   await startNewClass(page)
   await page.getByLabel('Title').fill('Second')
-  await page.getByLabel('Load a preset').selectOption({ label: 'Studio' })
   const again = page.getByRole('group', { name: 'Equipment available today' })
+  // Clear what the example ticked, then loading the preset puts it back.
+  await again.getByRole('button', { name: 'Reformer' }).click()
+  await again.getByRole('button', { name: 'Box' }).click()
+  await expect(again.getByRole('button', { name: 'Reformer' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await page.getByLabel('Load a preset').selectOption({ label: 'Studio' })
   await expect(again.getByRole('button', { name: 'Reformer' })).toHaveAttribute(
     'aria-pressed',
     'true',

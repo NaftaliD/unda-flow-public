@@ -18,10 +18,12 @@ test('add exercises and a whole set to a block from one Add dialog, then browse 
   // A class with the reformer.
   await startNewClass(page)
   await page.getByLabel('Title').fill('Sets class')
-  await page
-    .getByRole('group', { name: 'Equipment available today' })
-    .getByRole('button', { name: 'Reformer' })
-    .click()
+  // The example comes with its equipment already ticked (reformer and box).
+  await expect(
+    page
+      .getByRole('group', { name: 'Equipment available today' })
+      .getByRole('button', { name: 'Reformer' }),
+  ).toHaveAttribute('aria-pressed', 'true')
   await page.getByRole('button', { name: 'Create class' }).click()
 
   const blocks = page.getByRole('list', { name: 'Class blocks' }).locator('> li')
@@ -36,14 +38,13 @@ test('add exercises and a whole set to a block from one Add dialog, then browse 
   await expect(dialog.getByText('Calf Raises')).toBeVisible()
   await dialog.getByRole('button', { name: 'Add Reformer foot work' }).click()
   await expect(page.getByText('Added 3 exercises.')).toBeVisible()
-  // 3 foot-work exercises at 45 s each: about 2 minutes, on the block and in the time bar
-  await expect(footWork.getByText(/3 exercises · 2 min/)).toBeVisible()
-  await expect(page.getByText(/^2 min planned/)).toBeVisible()
+  // The example already had 3 foot-work exercises; the set appended its 3 after them, in order.
   const rows = footWork.getByRole('list').getByRole('listitem')
-  await expect(rows).toHaveCount(3)
-  await expect(rows.nth(0)).toContainText('Calf Raises')
-  await expect(rows.nth(1)).toContainText('Heels')
-  await expect(rows.nth(2)).toContainText('Arches')
+  await expect(rows).toHaveCount(6)
+  await expect(footWork.getByText(/6 exercises/)).toBeVisible()
+  await expect(rows.nth(3)).toContainText('Calf Raises')
+  await expect(rows.nth(4)).toContainText('Heels')
+  await expect(rows.nth(5)).toContainText('Arches')
 
   // The Exercises tab: tick several, add them together.
   await warmUp.getByRole('button', { name: /^Add$/ }).click()
@@ -52,7 +53,7 @@ test('add exercises and a whole set to a block from one Add dialog, then browse 
   await options.nth(0).click()
   await options.nth(0).click()
   await picker.getByRole('button', { name: 'Add 2 exercises' }).click()
-  await expect(warmUp.getByText(/2 exercises/)).toBeVisible()
+  await expect(warmUp.getByText(/5 exercises/)).toBeVisible() // 3 from the example + 2 ticked
 
   // Persisted across a reload.
   await page.reload()
@@ -63,7 +64,7 @@ test('add exercises and a whole set to a block from one Add dialog, then browse 
       .filter({ has: page.getByRole('heading', { name: 'Foot work' }) })
       .getByRole('list')
       .getByRole('listitem'),
-  ).toHaveCount(3)
+  ).toHaveCount(6)
 
   // Library: the Sets view lists the set by block; a normal user cannot edit it.
   await page.getByRole('link', { name: 'Library', exact: true }).click()
@@ -75,7 +76,8 @@ test('add exercises and a whole set to a block from one Add dialog, then browse 
 })
 
 test('an admin creates and edits a shared set in the library', async ({ page, request }) => {
-  const email = `e2e-setadmin-${Date.now()}@example.com`
+  const stamp = Date.now()
+  const email = `e2e-setadmin-${stamp}@example.com`
   await signInViaMailpit(page, request, email)
   psql(
     `update public.profiles set role = 'admin' where id = (select id from auth.users where email = '${email}')`,
@@ -87,7 +89,7 @@ test('an admin creates and edits a shared set in the library', async ({ page, re
   await page.getByRole('button', { name: 'New set' }).click()
 
   const dialog = page.getByRole('dialog', { name: 'New set' })
-  await dialog.getByLabel('Name').fill('Admin warm-up set')
+  await dialog.getByLabel('Name').fill(`Admin warm-up set ${stamp}`)
   await dialog.getByLabel('Block', { exact: true }).selectOption({ label: 'Warm-up' })
   await dialog.getByRole('button', { name: 'Add exercise' }).click()
   const picker = page.getByRole('dialog', { name: /Add to/ })
@@ -98,7 +100,7 @@ test('an admin creates and edits a shared set in the library', async ({ page, re
   await picker.getByRole('button', { name: 'Add 2 exercises' }).click()
   await dialog.getByRole('button', { name: 'Save set' }).click()
 
-  const created = page.getByRole('listitem').filter({ hasText: 'Admin warm-up set' })
+  const created = page.getByRole('listitem').filter({ hasText: `Admin warm-up set ${stamp}` })
   await expect(created).toBeVisible()
   await expect(created.getByText('2 exercises')).toBeVisible()
   await expect(created.getByText('Shared')).toBeVisible()
@@ -106,9 +108,9 @@ test('an admin creates and edits a shared set in the library', async ({ page, re
   // Edit it: rename.
   await created.getByRole('button', { name: 'Edit' }).click()
   const edit = page.getByRole('dialog', { name: 'Edit set' })
-  await edit.getByLabel('Name').fill('Admin warm-up renamed')
+  await edit.getByLabel('Name').fill(`Admin warm-up renamed ${stamp}`)
   await edit.getByRole('button', { name: 'Save set' }).click()
   await expect(
-    page.getByRole('listitem').filter({ hasText: 'Admin warm-up renamed' }),
+    page.getByRole('listitem').filter({ hasText: `Admin warm-up renamed ${stamp}` }),
   ).toBeVisible()
 })

@@ -49,7 +49,9 @@ export function StartingPoint() {
   const { t } = useTranslation()
   const lessons = useLessons()
   const all = lessons.data ?? []
-  const examples = all.filter((l) => l.ownerId === null)
+  const examples = all
+    .filter((l) => l.ownerId === null)
+    .sort((a, b) => a.title.localeCompare(b.title))
   const recent = all.filter((l) => l.ownerId !== null).slice(0, 5)
 
   return (

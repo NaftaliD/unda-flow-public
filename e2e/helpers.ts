@@ -41,6 +41,7 @@ export async function startNewClass(page: Page, from: 'example' | 'blank' = 'exa
   if (from === 'blank') {
     await page.getByRole('link', { name: 'Start blank' }).click()
   } else {
+    // The first example (alphabetically) is the 12-block apparatus class.
     await page.getByRole('link', { name: 'Use this class' }).first().click()
   }
   await expect(page.getByLabel('Title')).toBeVisible()
