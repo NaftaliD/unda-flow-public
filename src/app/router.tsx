@@ -16,6 +16,7 @@ import { NewExercisePage } from '@/features/exercises/NewExercisePage'
 import { LessonBuilderPage } from '@/features/lessons/LessonBuilderPage'
 import { LessonListPage } from '@/features/lessons/LessonListPage'
 import { LessonPrintPage } from '@/features/lessons/LessonPrintPage'
+import { TeachPage } from '@/features/lessons/TeachPage'
 import { MorePage } from '@/features/more/MorePage'
 import { BlocksPage, PresetsPage } from '@/features/more/MoreSubpages'
 import { NewLessonPage } from '@/features/lessons/NewLessonPage'
@@ -88,6 +89,12 @@ const blocksRoute = createRoute({
   component: BlocksPage,
 })
 
+const lessonTeachRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/lessons/$id/teach',
+  component: TeachPage,
+})
+
 const exercisesRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/exercises',
@@ -124,6 +131,7 @@ const routeTree = rootRoute.addChildren([
     newLessonRoute,
     lessonRoute,
     lessonPrintRoute,
+    lessonTeachRoute,
     moreRoute,
     presetsRoute,
     blocksRoute,

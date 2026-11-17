@@ -19,6 +19,7 @@ const state = vi.hoisted(() => ({
   addItem: vi.fn(),
   deleteSlot: vi.fn(),
   updateSlot: vi.fn(),
+  updateLesson: vi.fn(),
   stub: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, isError: false }),
 }))
 
@@ -90,7 +91,7 @@ vi.mock('@/data/mutations/lessons', () => ({
   useCreateLesson: () => ({ ...state.stub(), mutateAsync: state.create }),
   useDuplicateLesson: state.stub,
   useDeleteLesson: state.stub,
-  useUpdateLesson: state.stub,
+  useUpdateLesson: () => ({ ...state.stub(), mutate: state.updateLesson }),
   useSetLessonEquipment: state.stub,
   useUpdateSlot: () => ({ ...state.stub(), mutate: state.updateSlot }),
   useReorderSlots: state.stub,
@@ -207,6 +208,8 @@ describe('lessons', () => {
     state.addItem.mockReset()
     state.deleteSlot.mockReset()
     state.addSeries.mockReset()
+    state.updateLesson.mockReset()
+    sessionStorage.clear()
     state.admin = false
     state.savePreset.mockReset().mockResolvedValue('p1')
     state.presets = [
@@ -539,6 +542,53 @@ describe('lessons', () => {
     await userEvent.type(screen.getByLabelText('Preset name'), 'My studio')
     await userEvent.click(screen.getByRole('button', { name: 'Save' }))
     expect(state.savePreset).toHaveBeenCalledWith({ name: 'My studio', equipmentIds: ['e-ref'] })
+  })
+
+  it('teach view shows one exercise at a time, in large type, and steps through the class', async () => {
+    renderAt('/lessons/l1/teach')
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Pelvic Curl' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Exercise 1 of 2')).toBeInTheDocument()
+    expect(screen.getByText('2m')).toBeInTheDocument() // 120 s
+    expect(screen.getByText('Use a series if you can.')).toBeInTheDocument() // the block's hint
+    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
+    // The skipped block is not taught
+    expect(screen.queryByText('Arm Circles')).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }))
+    expect(screen.getByRole('heading', { level: 1, name: 'Ring Squeeze' })).toBeInTheDocument()
+    expect(screen.getByText('Exercise 2 of 2')).toBeInTheDocument()
+    expect(screen.queryByText('Use a series if you can.')).not.toBeInTheDocument() // first exercise only
+    await userEvent.click(screen.getByRole('button', { name: 'Previous' }))
+    expect(screen.getByRole('heading', { level: 1, name: 'Pelvic Curl' })).toBeInTheDocument()
+  })
+
+  it('teach view: the arrow keys move, the end offers to mark the class as taught', async () => {
+    renderAt('/lessons/l1/teach')
+    await screen.findByRole('heading', { level: 1, name: 'Pelvic Curl' })
+    await userEvent.keyboard('{ArrowRight}')
+    expect(screen.getByRole('heading', { level: 1, name: 'Ring Squeeze' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Finish' }))
+    expect(await screen.findByRole('heading', { name: 'Class complete' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Mark as taught' }))
+    expect(state.updateLesson).toHaveBeenCalledWith({ status: 'taught' })
+    await userEvent.click(screen.getByRole('button', { name: 'Back to the last exercise' }))
+    expect(screen.getByRole('heading', { level: 1, name: 'Ring Squeeze' })).toBeInTheDocument()
+  })
+
+  it('teach view remembers the place after a reload', async () => {
+    sessionStorage.setItem('unda-teach-step:l1', '1')
+    renderAt('/lessons/l1/teach')
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Ring Squeeze' }),
+    ).toBeInTheDocument()
+  })
+
+  it('teach view says so when there is nothing to teach', async () => {
+    state.lesson = { ...makeLesson(), slots: [] }
+    renderAt('/lessons/l1/teach')
+    expect(await screen.findByText(/nothing to teach yet/i)).toBeInTheDocument()
   })
 
   it('print view leaves out skipped blocks', async () => {

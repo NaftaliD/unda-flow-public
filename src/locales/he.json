@@ -246,7 +246,8 @@
       "publish": "פרסום כשיעור לדוגמה",
       "published": "פורסם כשיעור לדוגמה.",
       "publishFailed": "לא ניתן לפרסם את השיעור.",
-      "add": "הוספה"
+      "add": "הוספה",
+      "teach": "הוראה"
     },
     "picker": {
       "title": "הוספה אל {{block}}",
@@ -304,7 +305,8 @@
       "sets_one": "סדרות ({{count}})",
       "sets_two": "סדרות ({{count}})",
       "sets_other": "סדרות ({{count}})"
-    }
+    },
+    "teach": "הוראה"
   },
   "templates": {
     "title": "תבניות",
@@ -418,5 +420,25 @@
     "presetsBody": "סטים שמורים של ציוד, כמו הסטודיו שלכם",
     "blocks": "הבלוקים שלי",
     "blocksBody": "סוגי בלוקים משלכם"
+  },
+  "teach": {
+    "exit": "יציאה",
+    "jump": "מעבר לבלוק",
+    "empty": "אין עדיין מה ללמד. כדאי להוסיף קודם תרגילים לשיעור.",
+    "doneTitle": "השיעור הסתיים",
+    "markTaught": "סימון כנלמד",
+    "markedTaught": "סומן כנלמד.",
+    "back": "חזרה לתרגיל האחרון",
+    "reps_one": "חזרה {{count}}",
+    "reps_two": "{{count}} חזרות",
+    "reps_other": "{{count}} חזרות",
+    "progress": "התקדמות בשיעור",
+    "stepOf": "תרגיל {{current}} מתוך {{total}}",
+    "inBlock": "{{current}} מתוך {{total}}",
+    "facts": "חזרות, זמן וקפיצים",
+    "steps": "מעבר בין תרגילים",
+    "previous": "הקודם",
+    "next": "הבא",
+    "finish": "סיום"
   }
 }

@@ -239,7 +239,8 @@
       "publish": "Publish as example",
       "published": "Published as an example class.",
       "publishFailed": "Could not publish this class.",
-      "add": "Add"
+      "add": "Add",
+      "teach": "Teach"
     },
     "picker": {
       "title": "Add to {{block}}",
@@ -294,7 +295,8 @@
       "exercises": "Exercises",
       "sets_one": "Sets ({{count}})",
       "sets_other": "Sets ({{count}})"
-    }
+    },
+    "teach": "Teach"
   },
   "templates": {
     "title": "Templates",
@@ -405,5 +407,24 @@
     "presetsBody": "Saved sets of equipment, such as your studio",
     "blocks": "My blocks",
     "blocksBody": "Your own block types"
+  },
+  "teach": {
+    "exit": "Exit",
+    "jump": "Jump to a block",
+    "empty": "There is nothing to teach yet. Add exercises to the class first.",
+    "doneTitle": "Class complete",
+    "markTaught": "Mark as taught",
+    "markedTaught": "Marked as taught.",
+    "back": "Back to the last exercise",
+    "reps_one": "{{count}} rep",
+    "reps_other": "{{count}} reps",
+    "progress": "Progress through the class",
+    "stepOf": "Exercise {{current}} of {{total}}",
+    "inBlock": "{{current}} of {{total}}",
+    "facts": "Reps, time and springs",
+    "steps": "Move between exercises",
+    "previous": "Previous",
+    "next": "Next",
+    "finish": "Finish"
   }
 }

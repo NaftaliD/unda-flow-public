@@ -65,11 +65,14 @@ export function AppLayout() {
 
   const onMore = MORE_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`))
   const onLibrary = path === '/exercises' || path.startsWith('/exercises/')
+  // The teach view uses the whole screen: no app header or tab bar.
+  const immersive = path.endsWith('/teach')
 
   return (
     <div className="flex min-h-dvh flex-col">
       <header
         dir="ltr"
+        hidden={immersive}
         className="flex items-center justify-between bg-primary px-4 py-3 text-primary-foreground print:hidden"
       >
         <div className="flex items-center gap-4">
@@ -102,11 +105,12 @@ export function AppLayout() {
           </Button>
         </div>
       </header>
-      <main className="flex-1 pb-20 md:pb-0 print:pb-0">
+      <main className={`flex-1 print:pb-0 ${immersive ? '' : 'pb-20 md:pb-0'}`}>
         <Outlet />
       </main>
       <nav
         aria-label={t('nav.tabs')}
+        hidden={immersive}
         className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-3 bg-primary text-primary-foreground md:hidden print:hidden"
       >
         <TabLink

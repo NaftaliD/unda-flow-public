@@ -104,6 +104,13 @@ export function LessonListPage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
+                    <Link
+                      to="/lessons/$id/teach"
+                      params={{ id: l.id }}
+                      className="inline-flex h-8 items-center rounded-pill border border-border px-3 text-sm font-semibold hover:bg-muted"
+                    >
+                      {t('lessons.teach')}
+                    </Link>
                     <Button
                       variant="outline"
                       size="sm"

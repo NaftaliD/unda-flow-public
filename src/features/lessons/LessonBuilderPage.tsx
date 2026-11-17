@@ -182,6 +182,13 @@ function Builder({ lesson }: { lesson: Lesson }) {
             </Button>
           )}
           <Link
+            to="/lessons/$id/teach"
+            params={{ id: lesson.id }}
+            className="inline-flex h-10 items-center rounded-pill border border-border px-5 text-sm font-semibold hover:bg-muted"
+          >
+            {t('lessons.builder.teach')}
+          </Link>
+          <Link
             to="/lessons/$id/print"
             params={{ id: lesson.id }}
             className="inline-flex h-10 items-center rounded-pill bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
