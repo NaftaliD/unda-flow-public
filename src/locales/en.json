@@ -13,7 +13,8 @@
     "lessons": "Classes",
     "templates": "Templates",
     "more": "More",
-    "tabs": "Sections"
+    "tabs": "Sections",
+    "skip": "Skip to the main content"
   },
   "login": {
     "title": "Welcome back",
@@ -426,5 +427,12 @@
     "previous": "Previous",
     "next": "Next",
     "finish": "Finish"
+  },
+  "theme": {
+    "title": "Appearance",
+    "system": "Match my device",
+    "light": "Light",
+    "dark": "Dark",
+    "help": "The dark theme is easier on the eyes in a dim studio. Printouts are always light."
   }
 }

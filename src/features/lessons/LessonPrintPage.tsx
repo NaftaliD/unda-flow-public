@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button'
 import { useBlocks, useEquipment, useExercises } from '@/data/queries/library'
 import { useLesson } from '@/data/queries/lessons'
 import { formatMinutes, lessonDuration } from '@/domain/lesson'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 /** Print-optimised lesson. The app header is hidden by AppLayout when printing. */
 export function LessonPrintPage() {
   const { t, i18n } = useTranslation()
   const { id } = useParams({ strict: false }) as { id: string }
   const lesson = useLesson(id)
+  useDocumentTitle(lesson.data?.title)
   const blocks = useBlocks()
   const equipment = useEquipment()
   const exercises = useExercises()

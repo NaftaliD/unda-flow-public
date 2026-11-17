@@ -6,10 +6,12 @@ import { useDeleteExercise, useSetReviewStatus } from '@/data/mutations/exercise
 import { useBlocks, useEquipment, useExercises } from '@/data/queries/library'
 import { useCurrentUser } from '@/data/queries/profile'
 import { ExerciseCard } from '@/features/exercises/ExerciseCard'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 /** Admin queue: shared exercises still marked needs_review. */
 export function ReviewPage() {
   const { t } = useTranslation()
+  useDocumentTitle(t('nav.review'))
   const { userId } = useCurrentUser()
   const exercises = useExercises()
   const blocks = useBlocks()

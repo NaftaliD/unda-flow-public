@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { signInWithMagicLink } from '@/data/auth'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 export function LoginPage() {
   const { t } = useTranslation()
+  useDocumentTitle(t('login.title'))
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
 
@@ -29,7 +31,7 @@ export function LoginPage() {
         <LanguageSwitcher />
       </header>
       <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-6 px-4 pb-16">
-        <Logo kind="full" tone="dark" className="mx-auto h-24" />
+        <Logo kind="full" tone="auto" className="mx-auto h-24" />
 
         {status === 'sent' ? (
           <section className="flex flex-col gap-3 rounded-3xl bg-card p-6 text-card-foreground">

@@ -5,6 +5,7 @@ import { useBlocks, useEquipment, useExercises } from '@/data/queries/library'
 import type { ExerciseFormInput, ExerciseFormValues } from '@/domain/schemas'
 import { ExerciseForm } from './ExerciseForm'
 import { toFormValues } from './formValues'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 const EMPTY: ExerciseFormInput = {
   name: '',
@@ -22,6 +23,7 @@ const EMPTY: ExerciseFormInput = {
 /** New private exercise; `?from=<id>` prefills it as a copy ("duplicate as mine"). */
 export function NewExercisePage() {
   const { t } = useTranslation()
+  useDocumentTitle(t('library.new'))
   const navigate = useNavigate()
   const { from } = useSearch({ strict: false }) as { from?: string }
   const exercises = useExercises()

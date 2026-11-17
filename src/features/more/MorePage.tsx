@@ -2,8 +2,10 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { ThemeSwitcher } from '@/components/ThemeSwitcher'
 import { signOut } from '@/data/auth'
 import { useCurrentUser } from '@/data/queries/profile'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 type Entry = {
   to: '/more/presets' | '/more/blocks' | '/admin/review'
@@ -14,6 +16,7 @@ type Entry = {
 /** Everything that does not fit in the phone tab bar: the secondary sections and sign out. */
 export function MorePage() {
   const { t } = useTranslation()
+  useDocumentTitle(t('more.title'))
   const navigate = useNavigate()
   const { isAdmin } = useCurrentUser()
 
@@ -49,6 +52,7 @@ export function MorePage() {
           </li>
         ))}
       </ul>
+      <ThemeSwitcher />
       <div>
         <Button variant="outline" onClick={() => void onSignOut()}>
           {t('nav.signOut')}

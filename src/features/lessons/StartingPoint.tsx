@@ -2,9 +2,11 @@ import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { useLessons, type LessonSummary } from '@/data/queries/lessons'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 function ClassCard({ l, example }: { l: LessonSummary; example: boolean }) {
   const { t } = useTranslation()
+  useDocumentTitle(t('lessons.newTitle'))
   const details = [
     l.targetDurationMin ? t('lessons.minutes', { count: l.targetDurationMin }) : null,
     t(`levels.${l.level}`),

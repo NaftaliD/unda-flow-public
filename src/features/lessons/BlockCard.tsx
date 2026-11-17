@@ -49,7 +49,7 @@ type Props = {
 }
 
 const dragHandle =
-  'inline-flex size-8 shrink-0 cursor-grab items-center justify-center rounded-pill text-muted-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring touch-none'
+  'inline-flex size-8 pointer-coarse:size-11 shrink-0 cursor-grab items-center justify-center rounded-pill text-muted-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring touch-none'
 
 export function BlockCard(props: Props) {
   const { slot, minutes, onUpdateSlot, onAdd, onRemoveSlot, onReorderItems } = props

@@ -5,8 +5,10 @@ import './app/theme.css'
 import { ConfigError } from './app/ConfigError'
 import { Providers } from './app/providers'
 import { missingEnv } from './data/env'
+import { initTheme } from './lib/theme'
 
 async function main() {
+  initTheme()
   const root = createRoot(document.getElementById('root')!)
   const missing = missingEnv()
 

@@ -13,7 +13,8 @@ export function LanguageSwitcher() {
     <Button
       variant="ghost"
       size="sm"
-      aria-label={t('nav.language')}
+      // The accessible name must contain the visible text (WCAG 2.5.3).
+      aria-label={`${t('nav.language')}: ${LABELS[next]}`}
       lang={next}
       onClick={() => void i18n.changeLanguage(next)}
     >

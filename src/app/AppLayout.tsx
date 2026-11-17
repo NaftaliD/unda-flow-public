@@ -19,7 +19,7 @@ function NavLink({
     <Link
       to={to}
       activeOptions={{ exact: to === '/' }}
-      className="rounded-pill px-3 py-1.5 hover:bg-primary-foreground/15 data-[status=active]:bg-primary-foreground/20"
+      className="rounded-pill px-3 py-1.5 hover:bg-black/15 focus-visible:outline-2 focus-visible:outline-header-foreground data-[status=active]:bg-black/25"
     >
       {children}
     </Link>
@@ -41,7 +41,7 @@ function TabLink({
     <Link
       to={to}
       aria-current={active ? 'page' : undefined}
-      className={`flex min-h-14 flex-col items-center justify-center gap-0.5 px-2 text-xs font-semibold focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-ring ${active ? 'bg-primary-foreground/20' : 'hover:bg-primary-foreground/10'}`}
+      className={`flex min-h-14 flex-col items-center justify-center gap-0.5 px-2 text-xs font-semibold focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-header-foreground ${active ? 'bg-black/25' : 'hover:bg-black/15'}`}
     >
       {icon}
       {children}
@@ -70,16 +70,27 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <a
+        href="#main"
+        onClick={(e) => {
+          // Move focus without touching the address (the router owns the URL).
+          e.preventDefault()
+          document.getElementById('main')?.focus()
+        }}
+        className="sr-only focus:not-sr-only focus:fixed focus:start-2 focus:top-2 focus:z-50 focus:rounded-pill focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:outline-2 focus:outline-ring"
+      >
+        {t('nav.skip')}
+      </a>
       <header
         dir="ltr"
         hidden={immersive}
-        className="flex items-center justify-between bg-primary px-4 py-3 text-primary-foreground print:hidden"
+        className="flex items-center justify-between bg-header px-4 py-3 text-header-foreground print:hidden"
       >
         <div className="flex items-center gap-4">
           <Link
             to="/"
             aria-label={t('nav.home')}
-            className="rounded-pill focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+            className="rounded-pill focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-header-foreground"
           >
             <Logo kind="compact" tone="light" className="h-7 sm:h-9" />
           </Link>
@@ -105,13 +116,17 @@ export function AppLayout() {
           </Button>
         </div>
       </header>
-      <main className={`flex-1 print:pb-0 ${immersive ? '' : 'pb-20 md:pb-0'}`}>
+      <main
+        id="main"
+        tabIndex={-1}
+        className={`flex-1 outline-none print:pb-0 ${immersive ? '' : 'pb-20 md:pb-0'}`}
+      >
         <Outlet />
       </main>
       <nav
         aria-label={t('nav.tabs')}
         hidden={immersive}
-        className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-3 bg-primary text-primary-foreground md:hidden print:hidden"
+        className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-3 bg-header text-header-foreground md:hidden print:hidden"
       >
         <TabLink
           to="/"

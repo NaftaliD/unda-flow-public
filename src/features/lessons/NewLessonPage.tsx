@@ -15,6 +15,7 @@ import { lessonFormSchema, type LessonFormInput, type LessonFormValues } from '@
 import { PresetBar } from '../presets/PresetBar'
 import { EquipmentChips } from './EquipmentChips'
 import { StartingPoint } from './StartingPoint'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 const LENGTHS = [30, 45, 50, 55, 60]
 
@@ -65,6 +66,7 @@ function NewClassForm({
   const navigate = useNavigate()
   const equipment = useEquipment()
   const create = useCreateLesson()
+  useDocumentTitle(t('lessons.newTitle'))
   const isExample = source?.ownerId === null
   const {
     register,

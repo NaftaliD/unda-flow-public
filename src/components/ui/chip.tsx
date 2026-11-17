@@ -13,7 +13,7 @@ export function Chip({
       type={type}
       aria-pressed={selected}
       className={cn(
-        'inline-flex h-8 items-center rounded-pill border px-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+        'inline-flex h-8 items-center rounded-pill border px-3 pointer-coarse:h-10 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
         selected
           ? 'border-primary bg-primary text-primary-foreground'
           : 'border-border bg-transparent text-foreground hover:bg-muted',

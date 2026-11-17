@@ -18,12 +18,14 @@ import {
 } from '@/domain/library'
 import { MovementCard } from './MovementCard'
 import { SetsView } from './SetsView'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 type Scope = NonNullable<LibraryFilter['scope']>
 const SCOPES: Exclude<Scope, 'all'>[] = ['shared', 'mine']
 
 export function LibraryPage() {
   const { t } = useTranslation()
+  useDocumentTitle(t('library.title'))
   const { userId, isAdmin } = useCurrentUser()
   const exercises = useExercises()
   const blocks = useBlocks()

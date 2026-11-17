@@ -48,6 +48,7 @@ import { AddBlockDialog } from './BuilderDialogs'
 import { ClassPreview } from './ClassPreview'
 import { EquipmentChips } from './EquipmentChips'
 import { TimeBar } from './TimeBar'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 const STATUSES: LessonStatus[] = ['draft', 'ready', 'taught']
 
@@ -92,6 +93,7 @@ export function LessonBuilderPage() {
 function Builder({ lesson }: { lesson: Lesson }) {
   const { t } = useTranslation()
   const { userId, isAdmin } = useCurrentUser()
+  useDocumentTitle(lesson.title)
   const navigate = useNavigate()
   const blocks = useBlocks()
   const equipment = useEquipment()

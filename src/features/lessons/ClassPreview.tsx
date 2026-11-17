@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import type { Lesson } from '@/data/queries/lessons'
 import type { Exercise } from '@/data/queries/library'
 import { formatDuration } from '@/domain/lesson'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 /**
  * Read-only view of a shared example class, for people who cannot edit it. The way to use it is
@@ -17,6 +18,7 @@ export function ClassPreview({
   exerciseById: ReadonlyMap<string, Exercise>
 }) {
   const { t } = useTranslation()
+  useDocumentTitle(lesson.title)
   const slots = lesson.slots.filter((s) => !s.isSkipped)
 
   return (

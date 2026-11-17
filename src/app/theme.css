@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/assistant';
 
+/* `dark:` follows the chosen theme (data-theme), not the browser setting. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
 /*
  * Unda brand tokens (PLAN.md section 3). This is the ONLY file allowed to contain raw hex values;
  * components use the semantic tokens below via Tailwind (bg-background, text-primary, ...).
@@ -15,6 +18,20 @@
   --terracotta: #c76f56;
   --ink: #2f3329; /* approximate, sampled from the logo; confirm with the designer */
   --ink-muted: #565c4d;
+  /* Darker variants for things that must be seen against cream: control borders and the focus
+     ring (WCAG non-text contrast, 3:1 on cream and warm cream; checked in theme.test.ts). */
+  --sage-deep: #728068;
+  --terracotta-deep: #b05a42;
+
+  /* Dark theme (olive night): only used under :root[data-theme='dark'] below. */
+  --night: #1c211a;
+  --night-card: #283026;
+  --night-secondary: #3a4536;
+  --night-header: #2f392c;
+  --night-text: #f3ede3;
+  --night-muted: #c4cbb8;
+  --night-border: #6f7b67;
+  --night-accent: #e08a70;
 
   --background: var(--cream);
   --foreground: var(--ink);
@@ -27,8 +44,33 @@
   --accent: var(--terracotta);
   --muted: var(--warm-cream);
   --muted-foreground: var(--ink-muted);
-  --border: var(--sage);
-  --ring: var(--terracotta);
+  --border: var(--sage-deep);
+  --ring: var(--terracotta-deep);
+  /* The app bar and tab bar keep their own colours so the cream logo always sits on a dark bar. */
+  --header: var(--olive);
+  --header-foreground: var(--cream);
+}
+
+/* Screen only: printouts stay light whatever the theme. */
+@media screen {
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+    --background: var(--night);
+    --foreground: var(--night-text);
+    --card: var(--night-card);
+    --card-foreground: var(--night-text);
+    --primary: var(--sage);
+    --primary-foreground: var(--night);
+    --secondary: var(--night-secondary);
+    --secondary-foreground: var(--night-text);
+    --accent: var(--night-accent);
+    --muted: var(--night-card);
+    --muted-foreground: var(--night-muted);
+    --border: var(--night-border);
+    --ring: var(--night-accent);
+    --header: var(--night-header);
+    --header-foreground: var(--night-text);
+  }
 }
 
 @theme inline {
@@ -45,6 +87,8 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
+  --color-header: var(--header);
+  --color-header-foreground: var(--header-foreground);
   --font-sans: 'Assistant Variable', ui-sans-serif, system-ui, sans-serif;
   --radius-pill: 9999px;
 }
@@ -62,6 +106,20 @@
   ::before,
   ::after {
     border-color: var(--border);
+  }
+}
+
+@layer base {
+  /* Respect the system setting for reduced motion: no transitions or animations. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

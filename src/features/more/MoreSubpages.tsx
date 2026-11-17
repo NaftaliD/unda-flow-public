@@ -3,9 +3,11 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PresetsPanel } from '../presets/PresetsPanel'
 import { BlocksPanel } from './BlocksPanel'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 function Page({ title, children }: { title: string; children: ReactNode }) {
   const { t } = useTranslation()
+  useDocumentTitle(title)
   return (
     <section className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4 sm:p-6">
       <Link to="/more" className="text-sm font-semibold underline">

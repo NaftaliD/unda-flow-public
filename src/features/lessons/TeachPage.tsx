@@ -9,6 +9,7 @@ import { useLesson } from '@/data/queries/lessons'
 import { useExercises } from '@/data/queries/library'
 import { formatDuration } from '@/domain/lesson'
 import { blockStarts, moveStep, teachSteps } from '@/domain/teach'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 /** Keep the screen awake while teaching, where the browser allows it. Released on leaving. */
 function useWakeLock() {
@@ -61,6 +62,7 @@ export function TeachPage() {
   const { t, i18n } = useTranslation()
   const { id } = useParams({ strict: false }) as { id: string }
   const lesson = useLesson(id)
+  useDocumentTitle(lesson.data?.title)
   const exercises = useExercises()
   const update = useUpdateLesson(id)
   const [index, setIndex] = useState(() => readStep(id))

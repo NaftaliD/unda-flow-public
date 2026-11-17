@@ -6,6 +6,17 @@
     <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Unda Flow</title>
+    <script>
+      // Apply the saved or device theme before the first paint, so there is no flash.
+      ;(function () {
+        try {
+          var p = localStorage.getItem('unda-theme')
+          var dark =
+            p === 'dark' || (p !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

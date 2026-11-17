@@ -27,10 +27,35 @@ export function Logo({
   className,
 }: {
   kind?: 'full' | 'compact'
-  tone?: 'light' | 'dark'
+  /** `auto`: dark artwork on the light theme, light artwork on the dark theme (plain pages). */
+  tone?: 'light' | 'dark' | 'auto'
   className?: string
 }) {
   const { t } = useTranslation()
+  if (tone === 'auto') {
+    const w = (k: 'light' | 'dark') => SIZES[`${kind}-${k}`]
+    return (
+      <>
+        <img
+          src={FILES[`${kind}-dark`]}
+          width={w('dark')[0]}
+          height={w('dark')[1]}
+          alt={t('app.logoAlt')}
+          className={cn('w-auto select-none dark:hidden', className)}
+          draggable={false}
+        />
+        <img
+          src={FILES[`${kind}-light`]}
+          width={w('light')[0]}
+          height={w('light')[1]}
+          alt=""
+          aria-hidden
+          className={cn('hidden w-auto select-none dark:inline', className)}
+          draggable={false}
+        />
+      </>
+    )
+  }
   const key = `${kind}-${tone}` as const
   const [width, height] = SIZES[key]
   return (

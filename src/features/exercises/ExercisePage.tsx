@@ -16,9 +16,11 @@ import { describeBonus, describeRequirements } from '@/domain/library'
 import type { ExerciseFormValues } from '@/domain/schemas'
 import { ExerciseForm } from './ExerciseForm'
 import { toFormValues } from './formValues'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 export function ExercisePage() {
   const { t } = useTranslation()
+  useDocumentTitle(t('library.title'))
   const { id } = useParams({ strict: false }) as { id: string }
   const navigate = useNavigate()
   const { userId, isAdmin } = useCurrentUser()

@@ -9,11 +9,13 @@ import { useSession } from '@/data/auth'
 import { useDeleteLesson, useDuplicateLesson } from '@/data/mutations/lessons'
 import { useLessons, type LessonStatus, type LessonSummary } from '@/data/queries/lessons'
 import { useProfile } from '@/data/queries/profile'
+import { useDocumentTitle } from '@/lib/useDocumentTitle'
 
 const TABS: LessonStatus[] = ['draft', 'ready', 'taught']
 
 export function LessonListPage() {
   const { t, i18n } = useTranslation()
+  useDocumentTitle(t('lessons.title'))
   const navigate = useNavigate()
   const session = useSession()
   const { data: profile } = useProfile(session?.user.id)

@@ -9,11 +9,12 @@ const buttonVariants = cva(
       variant: {
         primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
         outline: 'border border-border bg-transparent text-foreground hover:bg-muted',
-        ghost: 'text-inherit hover:bg-primary-foreground/15',
+        // Follows the text colour of wherever it sits (the app bar, or a plain page).
+        ghost: 'text-inherit hover:bg-current/15 focus-visible:outline-current',
       },
       size: {
-        default: 'h-10 px-5',
-        sm: 'h-8 px-3',
+        default: 'h-10 px-5 pointer-coarse:h-11',
+        sm: 'h-8 px-3 pointer-coarse:h-11 pointer-coarse:min-w-11',
       },
     },
     defaultVariants: { variant: 'primary', size: 'default' },
